@@ -108,81 +108,123 @@ Auth service, payment service, product service (all separate)
 
 ---------------------------------------------------------------------------------------------------------------------------------------------
 
+# 🧾 Docker Commands — 
+---
 
+## 1️⃣ Info & Version
 
-🧾 Docker Commands
-1️⃣ Info & Version
-Command	Meaning
-docker --version	Check installed Docker version
-docker version	Client vs Server version details
-docker info	Docker engine configuration
-2️⃣ Container (Lifecycle Management)
-Command	Meaning
-docker run [image]	Create and start container
-docker run -d [image]	Run container in background
-docker create [image]	Create container only
-docker start [container_id]	Start container
-docker stop [container_id]	Stop container
-docker restart [container_id]	Restart container
-docker pause [container_id]	Pause container
-docker unpause [container_id]	Resume container
-docker rm [container_id]	Remove stopped container
-docker rm -f [container_id]	Force remove container
-3️⃣ Container Listing & Bulk Operations
-Command	Meaning
-docker ps	List running containers
-docker ps -a	List all containers
-docker ps -q	Show running container IDs
-docker ps -a -q	Show all container IDs
-docker stop $(docker ps -q)	Stop all running containers
-docker rm $(docker ps -a -q)	Remove all stopped containers
-docker rm -f $(docker ps -a -q)	Remove all containers
-4️⃣ Images
-Command	Meaning
-docker images	List local images
-docker images -q	Show image IDs
-docker pull [image]	Download image
-docker rmi [image_id]	Remove image
-docker rmi -f [image_id]	Force remove image
-docker tag [image] [new_tag]	Tag image
-docker push [image]	Push image to registry
-docker history [image]	Show image layers
-docker inspect [image]	Inspect image metadata
-5️⃣ Cleanup & Disk Management
-Command	Meaning
-docker image prune	Remove dangling images
-docker image prune -a	Remove unused images
-docker container prune	Remove stopped containers
-docker network prune	Remove unused networks
-docker volume prune	Remove unused volumes
-docker system prune	Clean unused Docker objects
-docker system prune -a	Aggressive cleanup
-docker system df	Docker disk usage
-6️⃣ Logs & Monitoring
-Command	Meaning
-docker logs [container_id]	View container logs
-docker logs -f [container_id]	Stream logs
-docker stats	Live resource usage
-docker top [container_id]	Processes inside container
-docker events	Docker event stream
-7️⃣ Access & Execution
-Command	Meaning
-docker exec -it [container_id] bash	Shell inside container
-docker attach [container_id]	Attach to container output
-docker cp src dest	Copy files host ↔ container
-8️⃣ Networking
-Command	Meaning
-docker network ls	List networks
-docker network inspect [network]	Inspect network
-docker run -p host:container [image]	Port mapping
-docker run -P [image]	Random port mapping
-9️⃣ Volumes (Persistence)
-Command	Meaning
-docker volume ls	List volumes
-docker volume inspect [volume]	Inspect volume
-docker run -v host:container [image]	Mount volume
+| **Command**        | **Meaning**                      |
+| ------------------ | -------------------------------- |
+| `docker --version` | Check installed Docker version   |
+| `docker version`   | Client vs Server version details |
+| `docker info`      | Docker engine configuration      |
 
+---
 
+## 2️⃣ Container (Lifecycle Management)
+
+| **Command**                     | **Meaning**                 |
+| ------------------------------- | --------------------------- |
+| `docker run [image]`            | Create and start container  |
+| `docker run -d [image]`         | Run container in background |
+| `docker create [image]`         | Create container only       |
+| `docker start [container_id]`   | Start container             |
+| `docker stop [container_id]`    | Stop container              |
+| `docker restart [container_id]` | Restart container           |
+| `docker pause [container_id]`   | Pause container             |
+| `docker unpause [container_id]` | Resume container            |
+| `docker rm [container_id]`      | Remove stopped container    |
+| `docker rm -f [container_id]`   | Force remove container      |
+
+---
+
+## 3️⃣ Container Listing & Bulk Operations
+
+| **Command**                       | **Meaning**                   |
+| --------------------------------- | ----------------------------- |
+| `docker ps`                       | List running containers       |
+| `docker ps -a`                    | List all containers           |
+| `docker ps -q`                    | Show running container IDs    |
+| `docker ps -a -q`                 | Show all container IDs        |
+| `docker stop $(docker ps -q)`     | Stop all running containers   |
+| `docker rm $(docker ps -a -q)`    | Remove all stopped containers |
+| `docker rm -f $(docker ps -a -q)` | Remove all containers         |
+
+---
+
+## 4️⃣ Images
+
+| **Command**                    | **Meaning**            |
+| ------------------------------ | ---------------------- |
+| `docker images`                | List local images      |
+| `docker images -q`             | Show image IDs         |
+| `docker pull [image]`          | Download image         |
+| `docker rmi [image_id]`        | Remove image           |
+| `docker rmi -f [image_id]`     | Force remove image     |
+| `docker tag [image] [new_tag]` | Tag image              |
+| `docker push [image]`          | Push image to registry |
+| `docker history [image]`       | Show image layers      |
+| `docker inspect [image]`       | Inspect image metadata |
+
+---
+
+## 5️⃣ Cleanup & Disk Management
+
+| **Command**              | **Meaning**                 |
+| ------------------------ | --------------------------- |
+| `docker image prune`     | Remove dangling images      |
+| `docker image prune -a`  | Remove unused images        |
+| `docker container prune` | Remove stopped containers   |
+| `docker network prune`   | Remove unused networks      |
+| `docker volume prune`    | Remove unused volumes       |
+| `docker system prune`    | Clean unused Docker objects |
+| `docker system prune -a` | Aggressive cleanup          |
+| `docker system df`       | Docker disk usage           |
+
+---
+
+## 6️⃣ Logs & Monitoring
+
+| **Command**                     | **Meaning**                |
+| ------------------------------- | -------------------------- |
+| `docker logs [container_id]`    | View container logs        |
+| `docker logs -f [container_id]` | Stream logs                |
+| `docker stats`                  | Live resource usage        |
+| `docker top [container_id]`     | Processes inside container |
+| `docker events`                 | Docker event stream        |
+
+---
+
+## 7️⃣ Access & Execution
+
+| **Command**                           | **Meaning**                 |
+| ------------------------------------- | --------------------------- |
+| `docker exec -it [container_id] bash` | Shell inside container      |
+| `docker attach [container_id]`        | Attach to container output  |
+| `docker cp src dest`                  | Copy files host ↔ container |
+
+---
+
+## 8️⃣ Networking
+
+| **Command**                            | **Meaning**         |
+| -------------------------------------- | ------------------- |
+| `docker network ls`                    | List networks       |
+| `docker network inspect [network]`     | Inspect network     |
+| `docker run -p host:container [image]` | Port mapping        |
+| `docker run -P [image]`                | Random port mapping |
+
+---
+
+## 9️⃣ Volumes (Persistence)
+
+| **Command**                            | **Meaning**    |
+| -------------------------------------- | -------------- |
+| `docker volume ls`                     | List volumes   |
+| `docker volume inspect [volume]`       | Inspect volume |
+| `docker run -v host:container [image]` | Mount volume   |
+
+---
 
 
 
