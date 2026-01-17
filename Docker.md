@@ -1,26 +1,11 @@
 # 🐳 Docker Fundamentals & Installation (Ubuntu)
 
 ---
-
-## 📌 What You Will Learn
-
-✅ Docker & Containerization concepts
-
-✅ Monolithic vs Microservices
-
-✅ Virtualization vs Containerization
-
-✅ Docker installation on Ubuntu (official method)
-
-✅ Essential Docker commands (with meaning)
----
-
-
 ### 🔹 What is Docker?
 
 **Docker is an open-source containerization platform** that allows you to package applications along with their dependencies into lightweight, portable containers.
 
----
+
 
 ### 🔹 What is a Container?
 
@@ -32,8 +17,6 @@ A **container** is a lightweight, isolated runtime environment that includes:
 * Runtime
 
 Containers **share the host OS kernel**, making them faster than virtual machines.
-
----
 
 ### 🔹 What is Containerization?
 
@@ -59,7 +42,6 @@ A single WAR/JAR file running entire backend.
 ❌ Hard to scale
 ❌ Slow deployments
 
----
 
 ### 🔸 Microservices Architecture
 
@@ -87,8 +69,9 @@ Auth service, payment service, product service (all separate)
 | Isolation      | Low         | Strong         | Process-level    |
 
 > Containers are lighter than VMs because they **do not need a separate OS**.
+---
 
------------------------------------------------------------------------
+🐧 Docker Installation on Ubuntu (Official Method)
 
 | **Command**                                                                                    | **Meaning / What It Does**                                                                                          |
 | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
@@ -106,7 +89,7 @@ Auth service, payment service, product service (all separate)
 
 
 
----------------------------------------------------------------------------------------------------------------------------------------------
+---
 
 # 🧾 Docker Commands — 
 ---
@@ -119,7 +102,6 @@ Auth service, payment service, product service (all separate)
 | `docker version`   | Client vs Server version details |
 | `docker info`      | Docker engine configuration      |
 
----
 
 ## 2️⃣ Container (Lifecycle Management)
 
@@ -136,7 +118,6 @@ Auth service, payment service, product service (all separate)
 | `docker rm [container_id]`      | Remove stopped container    |
 | `docker rm -f [container_id]`   | Force remove container      |
 
----
 
 ## 3️⃣ Container Listing & Bulk Operations
 
@@ -150,7 +131,6 @@ Auth service, payment service, product service (all separate)
 | `docker rm $(docker ps -a -q)`    | Remove all stopped containers |
 | `docker rm -f $(docker ps -a -q)` | Remove all containers         |
 
----
 
 ## 4️⃣ Images
 
@@ -166,7 +146,6 @@ Auth service, payment service, product service (all separate)
 | `docker history [image]`       | Show image layers      |
 | `docker inspect [image]`       | Inspect image metadata |
 
----
 
 ## 5️⃣ Cleanup & Disk Management
 
@@ -181,7 +160,6 @@ Auth service, payment service, product service (all separate)
 | `docker system prune -a` | Aggressive cleanup          |
 | `docker system df`       | Docker disk usage           |
 
----
 
 ## 6️⃣ Logs & Monitoring
 
@@ -193,7 +171,6 @@ Auth service, payment service, product service (all separate)
 | `docker top [container_id]`     | Processes inside container |
 | `docker events`                 | Docker event stream        |
 
----
 
 ## 7️⃣ Access & Execution
 
@@ -203,7 +180,6 @@ Auth service, payment service, product service (all separate)
 | `docker attach [container_id]`        | Attach to container output  |
 | `docker cp src dest`                  | Copy files host ↔ container |
 
----
 
 ## 8️⃣ Networking
 
@@ -214,7 +190,6 @@ Auth service, payment service, product service (all separate)
 | `docker run -p host:container [image]` | Port mapping        |
 | `docker run -P [image]`                | Random port mapping |
 
----
 
 ## 9️⃣ Volumes (Persistence)
 
