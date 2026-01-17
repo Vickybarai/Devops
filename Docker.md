@@ -1,25 +1,19 @@
-# 🐳 Docker Fundamentals & Installation (Ubuntu)
+# 🐳 Docker 
 
 ---
-🔹 What is Docker? (Technical Definition)
-
+🔹** What is Docker?**
 Docker is an open-source containerization platform that enables developers and operations teams to build, package, ship, and run applications in isolated environments called containers.
 
 From a systems perspective, Docker abstracts:
-
 Application runtime
-
 Dependencies
-
 Environment configuration
 
 into a standardized, immutable unit that runs consistently across development, testing, and production.
 
-
 Docker eliminates the “works on my machine” problem by standardizing the runtime environment.
 
-🔹 What is a Container? (Low-Level View)
-
+🔹** What is a Container? **
 A container is a lightweight, isolated process that runs on a shared host operating system kernel using Linux kernel features such as:
 
 Namespaces → process, network, and filesystem isolation
@@ -27,111 +21,74 @@ Namespaces → process, network, and filesystem isolation
 cgroups → resource limits and control
 
 A container includes:
-
 Application binaries
-
 Required libraries
-
 Dependencies
-
 Runtime configuration
 
 📌 Key Technical Insight
-
 Containers are not virtual machines; they do not virtualize hardware or run a separate OS.
-
 Containers vs Virtual Machines (Core Difference)
-
 Containers share the host OS kernel
-
 Virtual machines run a full guest OS
 
 This is why containers:
-
 Start in seconds
-
 Consume fewer resources
-
 Enable high-density deployments
 
-🔹 What is Containerization? (Conceptual + Practical)
-
+🔹 **What is Containerization?** 
 Containerization is the process of packaging an application together with its dependencies and configuration into a single deployable unit that runs uniformly across environments.
 
 From an operational standpoint, containerization ensures:
-
 Environment consistency
-
 Predictable deployments
-
 Reduced configuration drift
 
 Key Advantages
-
 Faster startup – no OS boot required
-
 Lower resource usage – shared kernel model
-
 High portability – runs anywhere Docker is available
 
 Containerization decouples applications from infrastructure.
 
-🏗️ Architecture Comparison (High-Impact Topic)
-🔸 Monolithic Architecture
-
+🏗️** Architecture Comparison **
+🔸 **Monolithic Architecture**
 In a monolithic architecture, the entire application is built and deployed as a single unit.
 
 Characteristics
-
 Single codebase
-
 Tightly coupled components
-
 Shared memory and runtime
 
 📌 Example:
 A single WAR or JAR file containing UI, business logic, and database access.
 
-Limitations
-
+**Limitations**
 Scalability bottlenecks – entire app must scale together
-
 Slow deployments – small change requires full redeploy
-
 High blast radius – one failure can impact the entire system
 
 Monoliths are simpler to start with but harder to scale and evolve.
 
-🔸 Microservices Architecture
-
+🔸** Microservices Architecture**
 In a microservices architecture, the application is decomposed into small, independent services, each responsible for a specific business capability.
 
-Characteristics
-
+Characteristics :
 Independent services
-
 Each service runs in its own container
-
 Communication via APIs (REST, gRPC, messaging)
 
 📌 Example:
-
 Authentication service
-
 Payment service
-
 Product service
-
 Each service can be developed, deployed, and scaled independently.
 
 Advantages
-
 Independent scaling – scale only what is needed
-
 Faster deployments – smaller, isolated releases
-
 Fault isolation – failure in one service does not crash the system
-
 Docker and containerization are key enablers of microservices architecture.
 
 ---
@@ -149,7 +106,7 @@ Docker and containerization are key enablers of microservices architecture.
 > Containers are lighter than VMs because they **do not need a separate OS**.
 ---
 
-🐧 Docker Installation on Ubuntu (Official Method)
+**🐧 Docker Installation (Ubuntu)**
 
 | **Command**                                                                                    | **Meaning / What It Does**                                                                                          |
 | ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
