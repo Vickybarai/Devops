@@ -110,285 +110,77 @@ Auth service, payment service, product service (all separate)
 
 
 
-## 🧰 <h1>Docker Commands Cheat Sheet </h1>
----
-
-### ▶ Run a Container
-
-```bash
-docker run [ContainerImage]
-```
-
-Runs a container from an image.
-
----
-
-### ▶ Run in Detached Mode
-
-```bash
-docker run -d [ContainerImage]
-```
-
-Runs container in background.
-
----
-
-### ▶ List Running Containers
-
-```bash
-docker ps
-```
-
----
-
-### ▶ List All Containers
-
-```bash
-docker ps -a
-```
-
----
-
-### ▶ Create Container (Not Start)
-
-```bash
-docker create [ContainerImage]
-```
-
----
-
-### ▶ Start Container
-
-```bash
-docker start [ContainerID]
-```
-
----
-
-### ▶ Stop Container
-
-```bash
-docker stop [ContainerID]
-```
-
----
-
-### ▶ Remove Container
-
-```bash
-docker rm [ContainerID]
-```
-
----
-
-### ▶ Force Remove Container
-
-```bash
-docker rm -f [ContainerID]
-```
-
----
-
-### ▶ Port Mapping
-
-```bash
-docker run -p [HostPort]:[ContainerPort] [ContainerImage]
-```
-
-📌 Example:
-
-```bash
-docker run -p 8080:80 nginx
-```
-
----
-
-### ▶ Access Container Shell
-
-```bash
-docker exec -it [ContainerID] bash
-```
-
----
-
-### ▶ Random Port Mapping
-
-```bash
-docker run -P [ContainerImage]
-```
-
-Maps container ports to random host ports (32768–61000).
-
----
-
-### ▶ View Logs
-
-```bash
-docker logs [ContainerID]
-```
-
----
-
-### ▶ Resource Usage
-
-```bash
-docker stats [ContainerID]
-```
-
----
-
-
-
-
-## 📌 Docker Images Commands (Must-Know)
----
-
-### ▶ List Docker Images
-
-```bash
-docker images
-```
-
-📘 Meaning:
-
-* Displays all locally available Docker images
-* Shows repository, tag, image ID, size
-
-> Used to verify whether an image already exists locally.
-
----
-
-### ▶ Pull Image from Docker Hub
-
-```bash
-docker pull nginx
-```
-
-```bash
-docker pull nginx:latest
-```
-
-📘 Meaning:
-
-* Downloads image from Docker Hub
-* `latest` is the default tag
-
-> Pulling does not run the container, it only downloads the image.
-
----
-
-### ▶ Remove Docker Image
-
-```bash
-docker rmi [IMAGE_ID]
-```
-
-📘 Meaning:
-
-* Deletes image from local system
-* Container using the image must be stopped first
-
----
-
-### ▶ Force Remove Image
-
-```bash
-docker rmi -f [IMAGE_ID]
-```
-
-📘 Meaning:
-
-* Removes image even if containers depend on it
-
-⚠️ Use carefully in production.
-
----
-
-### ▶ Inspect Image (Very Important)
-
-```bash
-docker inspect [IMAGE_NAME]
-```
-
-📘 Meaning:
-
-* Shows metadata of image
-* Layers, environment variables, architecture
-
-📌 Interview favorite:
-
-> Helps in debugging and understanding image internals.
-
----
-
-### ▶ Image History (Layers)
-
-```bash
-docker history [IMAGE_NAME]
-```
-
-📘 Meaning:
-
-* Displays image layers
-* Shows how image was built step-by-step
-
-📌 Interview line:
-
-> Docker images are built in layers to optimize caching.
-
----
-
-### ▶ Tag an Image
-
-```bash
-docker tag nginx mynginx:v1
-```
-
-📘 Meaning:
-
-* Creates a new tag for an existing image
-* Commonly used before pushing to registry
-
----
-
-### ▶ Push Image to Docker Hub
-
-```bash
-docker push mynginx:v1
-```
-
-📘 Meaning:
-
-* Uploads image to Docker registry
-* Requires `docker login`
-
----
-
-### ▶ Remove Unused Images
-
-```bash
-docker image prune
-```
-
-📘 Meaning:
-
-* Deletes dangling (unused) images
-* Helps free disk space
-
----
-
-### ▶ Remove All Unused Images
-
-```bash
-docker image prune -a
-```
-
-📘 Meaning:
-
-* Removes all images not associated with containers
-
----
-
+🧾 Docker Commands
+1️⃣ Info & Version
+Command	Meaning
+docker --version	Check installed Docker version
+docker version	Client vs Server version details
+docker info	Docker engine configuration
+2️⃣ Container (Lifecycle Management)
+Command	Meaning
+docker run [image]	Create and start container
+docker run -d [image]	Run container in background
+docker create [image]	Create container only
+docker start [container_id]	Start container
+docker stop [container_id]	Stop container
+docker restart [container_id]	Restart container
+docker pause [container_id]	Pause container
+docker unpause [container_id]	Resume container
+docker rm [container_id]	Remove stopped container
+docker rm -f [container_id]	Force remove container
+3️⃣ Container Listing & Bulk Operations
+Command	Meaning
+docker ps	List running containers
+docker ps -a	List all containers
+docker ps -q	Show running container IDs
+docker ps -a -q	Show all container IDs
+docker stop $(docker ps -q)	Stop all running containers
+docker rm $(docker ps -a -q)	Remove all stopped containers
+docker rm -f $(docker ps -a -q)	Remove all containers
+4️⃣ Images
+Command	Meaning
+docker images	List local images
+docker images -q	Show image IDs
+docker pull [image]	Download image
+docker rmi [image_id]	Remove image
+docker rmi -f [image_id]	Force remove image
+docker tag [image] [new_tag]	Tag image
+docker push [image]	Push image to registry
+docker history [image]	Show image layers
+docker inspect [image]	Inspect image metadata
+5️⃣ Cleanup & Disk Management
+Command	Meaning
+docker image prune	Remove dangling images
+docker image prune -a	Remove unused images
+docker container prune	Remove stopped containers
+docker network prune	Remove unused networks
+docker volume prune	Remove unused volumes
+docker system prune	Clean unused Docker objects
+docker system prune -a	Aggressive cleanup
+docker system df	Docker disk usage
+6️⃣ Logs & Monitoring
+Command	Meaning
+docker logs [container_id]	View container logs
+docker logs -f [container_id]	Stream logs
+docker stats	Live resource usage
+docker top [container_id]	Processes inside container
+docker events	Docker event stream
+7️⃣ Access & Execution
+Command	Meaning
+docker exec -it [container_id] bash	Shell inside container
+docker attach [container_id]	Attach to container output
+docker cp src dest	Copy files host ↔ container
+8️⃣ Networking
+Command	Meaning
+docker network ls	List networks
+docker network inspect [network]	Inspect network
+docker run -p host:container [image]	Port mapping
+docker run -P [image]	Random port mapping
+9️⃣ Volumes (Persistence)
+Command	Meaning
+docker volume ls	List volumes
+docker volume inspect [volume]	Inspect volume
+docker run -v host:container [image]	Mount volume
 
 
 
