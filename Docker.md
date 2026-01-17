@@ -141,22 +141,20 @@ Docker and containerization are foundational enablers of microservices architect
 > Containers are lighter than VMs because they **do not need a separate OS**.
 ---
 
-**🐧 Docker Installation (Ubuntu)**
+## 🐳 Docker Installation (Ubuntu)
 
-| **Command**                                                                                    | **Meaning / What It Does**                                                                                          |
-| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
-| `sudo apt update`                                                                              | Refreshes the local APT package index so the system is aware of the latest available packages.                      |
-| `sudo apt install ca-certificates curl`                                                        | Installs security certificates for HTTPS validation and `curl` for secure data transfer from Docker servers.        |
-| `sudo install -m 0755 -d /etc/apt/keyrings`                                                    | Creates a secure directory for storing trusted GPG keys with controlled permissions.                                |
-| `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc` | Downloads Docker’s official GPG key to verify package authenticity and prevent tampering.                           |
-| `sudo chmod a+r /etc/apt/keyrings/docker.asc`                                                  | Grants read access to the GPG key so APT can validate Docker packages system-wide.                                  |
-| `sudo tee /etc/apt/sources.list.d/docker.sources <<EOF ... EOF`                                | Registers Docker’s official repository, dynamically matching the Ubuntu version and enforcing signed packages only. |
-| `sudo apt update`                                                                              | Re-syncs the package index to include Docker packages from the newly added repository.                              |
-| `sudo apt install docker-ce docker-ce-cli containerd.io`                                       | Installs Docker Engine, Docker CLI, and the container runtime required to run containers.                           |
-| `docker --version`                                                                             | Confirms Docker is installed and accessible from the command line.                                                  |
-| `sudo docker run hello-world`                                                                  | Runs a test container to validate that Docker Engine is operational and correctly configured.                       |
-
-
+| **Command**                                                                                    | **Simple Meaning**                                                       |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
+| `sudo apt update`                                                                              | Updates the package list so Ubuntu knows about the latest software.      |
+| `sudo apt install ca-certificates curl`                                                        | Installs tools needed to securely download Docker files.                 |
+| `sudo install -m 0755 -d /etc/apt/keyrings`                                                    | Creates a safe folder to store Docker’s security key.                    |
+| `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc` | Downloads Docker’s official security key to ensure trusted installation. |
+| `sudo chmod a+r /etc/apt/keyrings/docker.asc`                                                  | Allows the system to read Docker’s security key.                         |
+| `sudo tee /etc/apt/sources.list.d/docker.sources <<EOF ... EOF`                                | Adds Docker’s official repository to Ubuntu.                             |
+| `sudo apt update`                                                                              | Updates the package list again to include Docker packages.               |
+| `sudo apt install docker-ce docker-ce-cli containerd.io`                                       | Installs Docker Engine, command-line tools, and container runtime.       |
+| `docker --version`                                                                             | Checks if Docker is installed successfully.                              |
+| `sudo docker run hello-world`                                                                  | Runs a test container to confirm Docker is working correctly.            |
 
 
 ---
