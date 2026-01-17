@@ -1,6 +1,6 @@
 ---
 
-# 🐳 Docker Fundamentals
+# 🐳 Docker
 
 ---
 
