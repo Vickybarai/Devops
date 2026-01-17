@@ -5,9 +5,13 @@
 ## 📌 What You Will Learn
 
 ✅ Docker & Containerization concepts
+
 ✅ Monolithic vs Microservices
+
 ✅ Virtualization vs Containerization
+
 ✅ Docker installation on Ubuntu (official method)
+
 ✅ Essential Docker commands (with meaning)
 ---
 
@@ -42,7 +46,6 @@ Containers **share the host OS kernel**, making them faster than virtual machine
 ---
 
 ## 🏗️ Architecture Comparison (Very Important)
-
 
 ### 🔸 Monolithic Architecture
 
@@ -87,140 +90,27 @@ Auth service, payment service, product service (all separate)
 
 -----------------------------------------------------------------------
 
-## 🐧 Docker Installation on Ubuntu (Official Method)
-
-> Source: Docker Official Ubuntu Installation Guide
-
----
-
-### 🔹 Step 1: Update Package Index
-
-```bash
-sudo apt update
-```
-
-📌 **Meaning**:
-Refreshes the local package list from Ubuntu repositories.
-
----
-
-### 🔹 Step 2: Install Required Packages
-
-```bash
-sudo apt install ca-certificates curl
-```
-
-📌 **Why needed?**
-
-* `ca-certificates` → verifies HTTPS certificates
-* `curl` → downloads Docker GPG key securely
-
----
-
-### 🔹 Step 3: Create Keyrings Directory
-
-```bash
-sudo install -m 0755 -d /etc/apt/keyrings
-```
-
-📌 **Meaning**:
-
-* Creates a secure directory to store trusted GPG keys
-* `0755` → read & execute permissions
-
----
-
-### 🔹 Step 4: Download Docker GPG Key
-
-```bash
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-```
-
-📌 **Why?**
-
-* Verifies Docker packages are authentic
-* Prevents malicious or tampered packages
-
----
-
-### 🔹 Step 5: Set Key Permissions
-
-```bash
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-```
-
-📌 **Meaning**:
-
-* Allows all users to read the key
-* Required for APT package verification
-
----
-
-### 🔹 Step 6: Add Docker Repository
-
-```bash
-sudo tee /etc/apt/sources.list.d/docker.sources <<EOF
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-Components: stable
-Signed-By: /etc/apt/keyrings/docker.asc
-EOF
-```
-
-📌 **Explanation (Interview Depth)**:
-
-* Adds Docker’s official repository
-* Uses Ubuntu version dynamically
-* Ensures only signed Docker packages are installed
-
----
-
-### 🔹 Step 7: Update Package Index Again
-
-```bash
-sudo apt update
-```
-
-📌 **Why again?**
-
-* Ubuntu now fetches packages from Docker’s repo
-
----
-
-## 📦 Install Docker Engine
-
-```bash
-sudo apt install docker-ce docker-ce-cli containerd.io
-```
-
-📌 Components:
-
-* `docker-ce` → Docker Engine
-* `docker-ce-cli` → Docker CLI
-* `containerd.io` → Container runtime
-
----
-
-## 🧪 Verify Installation
-
-```bash
-docker --version
-```
-
-```bash
-sudo docker run hello-world
-```
-
-✔ Confirms Docker is installed and running correctly.
+| **Command**                                                                                    | **Meaning / What It Does**                                                                                          |
+| ---------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| `sudo apt update`                                                                              | Refreshes the local APT package index so the system is aware of the latest available packages.                      |
+| `sudo apt install ca-certificates curl`                                                        | Installs security certificates for HTTPS validation and `curl` for secure data transfer from Docker servers.        |
+| `sudo install -m 0755 -d /etc/apt/keyrings`                                                    | Creates a secure directory for storing trusted GPG keys with controlled permissions.                                |
+| `sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc` | Downloads Docker’s official GPG key to verify package authenticity and prevent tampering.                           |
+| `sudo chmod a+r /etc/apt/keyrings/docker.asc`                                                  | Grants read access to the GPG key so APT can validate Docker packages system-wide.                                  |
+| `sudo tee /etc/apt/sources.list.d/docker.sources <<EOF ... EOF`                                | Registers Docker’s official repository, dynamically matching the Ubuntu version and enforcing signed packages only. |
+| `sudo apt update`                                                                              | Re-syncs the package index to include Docker packages from the newly added repository.                              |
+| `sudo apt install docker-ce docker-ce-cli containerd.io`                                       | Installs Docker Engine, Docker CLI, and the container runtime required to run containers.                           |
+| `docker --version`                                                                             | Confirms Docker is installed and accessible from the command line.                                                  |
+| `sudo docker run hello-world`                                                                  | Runs a test container to validate that Docker Engine is operational and correctly configured.                       |
 
 
 
 
-----------------------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------
 
-## 🧰 Docker Commands Cheat Sheet (Interview Favorite)
 
+
+## 🧰 <h1>Docker Commands Cheat Sheet </h1>
 ---
 
 ### ▶ Run a Container
@@ -347,12 +237,189 @@ docker stats [ContainerID]
 
 ---
 
-## 🎯 Quick Answers 
 
-* **Docker vs VM**: Containers share OS kernel, VMs don’t
-* **Why Docker?**: Faster deployments, consistency, scalability
-* **Detached mode?**: Runs container in background
-* **docker run vs docker start?**: `run` creates + starts, `start` only starts
-* **Port mapping?**: Exposes container services to host
+
+
+## 📌 Docker Images Commands (Must-Know)
+---
+
+### ▶ List Docker Images
+
+```bash
+docker images
+```
+
+📘 Meaning:
+
+* Displays all locally available Docker images
+* Shows repository, tag, image ID, size
+
+> Used to verify whether an image already exists locally.
+
+---
+
+### ▶ Pull Image from Docker Hub
+
+```bash
+docker pull nginx
+```
+
+```bash
+docker pull nginx:latest
+```
+
+📘 Meaning:
+
+* Downloads image from Docker Hub
+* `latest` is the default tag
+
+> Pulling does not run the container, it only downloads the image.
+
+---
+
+### ▶ Remove Docker Image
+
+```bash
+docker rmi [IMAGE_ID]
+```
+
+📘 Meaning:
+
+* Deletes image from local system
+* Container using the image must be stopped first
+
+---
+
+### ▶ Force Remove Image
+
+```bash
+docker rmi -f [IMAGE_ID]
+```
+
+📘 Meaning:
+
+* Removes image even if containers depend on it
+
+⚠️ Use carefully in production.
+
+---
+
+### ▶ Inspect Image (Very Important)
+
+```bash
+docker inspect [IMAGE_NAME]
+```
+
+📘 Meaning:
+
+* Shows metadata of image
+* Layers, environment variables, architecture
+
+📌 Interview favorite:
+
+> Helps in debugging and understanding image internals.
+
+---
+
+### ▶ Image History (Layers)
+
+```bash
+docker history [IMAGE_NAME]
+```
+
+📘 Meaning:
+
+* Displays image layers
+* Shows how image was built step-by-step
+
+📌 Interview line:
+
+> Docker images are built in layers to optimize caching.
+
+---
+
+### ▶ Tag an Image
+
+```bash
+docker tag nginx mynginx:v1
+```
+
+📘 Meaning:
+
+* Creates a new tag for an existing image
+* Commonly used before pushing to registry
+
+---
+
+### ▶ Push Image to Docker Hub
+
+```bash
+docker push mynginx:v1
+```
+
+📘 Meaning:
+
+* Uploads image to Docker registry
+* Requires `docker login`
+
+---
+
+### ▶ Remove Unused Images
+
+```bash
+docker image prune
+```
+
+📘 Meaning:
+
+* Deletes dangling (unused) images
+* Helps free disk space
+
+---
+
+### ▶ Remove All Unused Images
+
+```bash
+docker image prune -a
+```
+
+📘 Meaning:
+
+* Removes all images not associated with containers
+
+---
+
+
+
+
+
+
+## 🎯 Quick Answers 
+**Q. Docker vs VM**
+👉 Containers share OS kernel, VMs don’t
+
+**Q. Why Docker?**
+👉 Faster deployments, consistency, scalability
+
+**Q. Detached mode?**
+👉 Runs container in background
+
+**Q. docker run vs docker start?**
+👉  `run` creates + starts, `start` only starts
+
+**Q. Port mapping?**
+👉 Exposes container services to host
+
+**Q. Difference between image and container?**
+👉 Image is static, container is running instance.
+
+**Q. What is a dangling image?**
+👉 An image with no tag and not used by any container.
+
+**Q. Where are Docker images stored?**
+👉 In Docker’s local storage (`/var/lib/docker`).
+
+**Q. Why images are layered?**
+👉 For caching, reuse, and faster builds.
 
 ---
