@@ -1,2 +1,2 @@
 # Devops
-providing interview question and steps to setup services
+providing documentation , commands and steps to setup
