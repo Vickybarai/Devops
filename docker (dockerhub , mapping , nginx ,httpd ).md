@@ -68,8 +68,7 @@ docker run -d --name demonginx -p 80:80 nginx
 * `-p 80:80` → Host port 80 → Container port 80
 * `nginx` → Image name
 
-📌 Interview line
-
+📌 
 > Port mapping allows external traffic to reach services running inside containers.
 
 ---
@@ -85,7 +84,7 @@ docker run -d --name demohttp -P httpd
 * `-P` → Automatically maps container ports to random host ports
 * Random ports range: **32768–61000**
 
-📌 Interview line
+📌 
 
 > `-P` is useful when you don’t care about a fixed port and want Docker to auto-assign.
 
@@ -116,7 +115,7 @@ Hello World from NGINX
 
 Press **CTRL + D** to save and exit.
 
-📌 Interview line
+📌 
 
 > `docker exec` lets you access a running container without restarting it.
 
@@ -198,7 +197,7 @@ curl http://localhost:<random_port>
 curl http://<container_ip>:80
 ```
 
-📌 Interview line
+📌 
 
 > Without port mapping, containers are accessible only inside Docker’s private network.
 
@@ -218,105 +217,245 @@ Remove all containers forcefully:
 docker rm -f $(docker ps -aq)
 ```
 
-📌 Interview tip
+📌 
 
 > Commonly used during lab cleanup and CI test environments.
 
 ---
 
-## 📥 STEP 9: Pull Images Explicitly
+9.1 Docker Login (Correct & Secure Way)
 
-```bash
+> Docker no longer recommends password-based login.
+Personal Access Tokens (PAT) are the industry standard in real-world DevOps.
+
+
+
+✅ Prerequisites
+
+Docker Hub account
+
+Personal Access Token (Read/Write recommended)
+
+Docker installed on EC2 / local machine
+
+
+
+---
+
+🔑 Login Using Token (Recommended & Secure)
+
+docker login -u <dockerhub_username>
+
+When prompted:
+
+Username → Docker Hub username
+
+Password → Paste your Personal Access Token (NOT account password)
+
+
+✅ Expected output:
+
+Login Succeeded
+
+📌 :
+
+> “Docker login uses token-based authentication instead of passwords for improved security.”
+
+
+
+
+---
+
+🧹 (Optional) Clean Login Fix – If Login Fails
+
+docker logout
+rm -f ~/.docker/config.json
+docker login -u <dockerhub_username>
+
+Used when:
+
+Wrong credentials cached
+
+Switching Docker Hub accounts
+
+Token expired or rotated
+
+
+
+---
+
+9.2 Docker Images – Core Commands
+
+📦 List Images
+
+docker images
+
+Lists all images available locally.
+
+
+---
+
+⬇️ Pull Images from Docker Hub
+
 docker pull nginx
 docker pull httpd
-```
 
-📌 Meaning
+Downloads official images from Docker Hub registry.
 
-* Downloads images
-* Does **not** start containers
+📌 :
 
----
+> Official images are maintained and security-scanned by Docker.
 
-## 📦 STEP 10: Commit Container as New Image
 
-```bash
-docker commit demonginx mydockerhubuser/demonginx:v1
-```
 
-📌 Meaning
-
-* Saves container state as image
-* Includes modified `index.html`
-
-⚠️ Interview warning
-
-> `docker commit` is not recommended for CI/CD. Dockerfile is preferred.
 
 ---
 
-## 📤 STEP 11: Push Image to Docker Hub
+▶️ Run Container from Image
 
-Login first:
+docker run -d --name demonginx -p 80:80 nginx
+docker run -d --name demohttp -P httpd
 
-```bash
-docker login
-```
+Flags explained:
 
-Push image:
+-d → Detached mode
 
-```bash
-docker push mydockerhubuser/demonginx:v1
-```
+-p → Fixed port mapping
 
----
+-P → Random port mapping
 
-## 📥 STEP 12: Pull Custom Image
 
-```bash
-docker pull mydockerhubuser/demonginx:v1
-```
 
 ---
 
-## ▶ STEP 13: Run Custom Image
+🔍 Inspect Image / Container
 
-```bash
-docker run -d -p 8080:80 mydockerhubuser/demonginx:v1
-```
+docker inspect demonginx
+docker inspect demohttp
 
-Access:
+Used to find:
 
-```text
+Container IP address
+
+Exposed ports
+
+Network & mount details
+
+
+📌
+> “docker inspect helps debug networking and runtime configuration issues.”
+
+
+
+
+---
+
+9.3 Create Custom Image (docker commit)
+
+> ⚠️ Real-world note:
+docker commit is for learning & debugging.
+Dockerfile is used in CI/CD and production.
+
+---
+
+✏️ Modify Running Container (Example)
+
+docker exec -it demonginx bash
+echo "Hello from Custom NGINX" > /usr/share/nginx/html/index.html
+exit
+
+
+---
+
+🧱 Create Image from Container
+
+docker commit demonginx <dockerhub_username>/demonginx:v1
+
+Creates a reusable custom image from a running container.
+
+📌
+
+> “docker commit snapshots container state into an image.”
+
+
+
+
+---
+
+9.4 Push Image to Docker Hub
+
+⬆️ Push Image
+
+docker push <dockerhub_username>/demonginx:v1
+
+Uploads image to your Docker Hub repository.
+
+
+---
+
+9.5 Pull & Run Image from Docker Hub
+
+⬇️ Pull
+
+docker pull <dockerhub_username>/demonginx:v1
+
+▶️ Run
+
+docker run -d -p 8080:80 <dockerhub_username>/demonginx:v1
+
+Access via:
+
 http://localhost:8080
-```
+
 
 ---
 
-## 💾 STEP 14: Save Image to TAR File
+9.6 Image Cleanup Commands
 
-```bash
-docker save -o demonginx.tar mydockerhubuser/demonginx:v1
-```
+🗑️ Remove Image
 
-📌 Use case
+docker rmi <image_id>
 
-* Offline transfer
-* Air-gapped environments
+🧹 Remove All Unused Images
+
+docker image prune
+
+Used to:
+
+Free disk space
+
+Clean unused layers
+
+Optimize servers
+
+
 
 ---
 
-## 📂 STEP 15: Load Image from TAR File
+9.7 Save & Load Images (Offline / Air-Gapped)
 
-```bash
+💾 Save Image to File
+
+docker save -o demonginx.tar <dockerhub_username>/demonginx:v1
+
+📂 Load Image from File
+
 docker load -i demonginx.tar
-```
 
-📌 Interview line
+Used when:
 
-> `docker save/load` is used when Docker Hub or internet is unavailable.
+No internet access
+
+Air-gapped servers
+
+Backup & migration
+
+
 
 ---
+---
+
+
 
 ## ⚡ Quick Interview Q&A (High-Frequency)
 
