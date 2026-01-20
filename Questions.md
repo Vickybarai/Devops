@@ -506,3 +506,37 @@ Devops question
 328. How do you prepare for MNC interviews?
 329. What is your biggest technical challenge?
 330. Why should we hire you as a DevOps engineer?
+
+---
+Core Network Questions (Beginner → Mid-Level)
+Your application is running, but users cannot access it from the browser. How do you debug?
+The application works on the server but not from outside. What could be wrong?
+The same service works in dev but fails in production. What do you compare first?
+Traffic suddenly drops to zero, but servers are healthy. How do you investigate?
+The website works sometimes and fails randomly. What network issues come to mind?
+The load balancer is healthy, but backend servers are not receiving traffic. Why?
+DNS is resolving correctly, but users still can’t access the application. What do you check next?
+The application works on HTTP but not on HTTPS. What could be the reason?
+The service is accessible internally but not publicly. Where do you check?
+One specific region cannot access the application, while others can. Why?
+After deployment, the application becomes unreachable. How do you decide whether it’s a network or application issue?
+Firewall rules were updated and the application went down. How do you debug?
+A new port was opened, but traffic is still blocked. What could be missing?
+Latency suddenly increases, but CPU and memory are normal. What do you investigate?
+Users report slow responses only during peak traffic. What network causes are possible?
+The application cannot connect to the database. Where do you start debugging?
+Multiple services communicate internally, but one service stops responding. Why?
+How do you trace a request from user → load balancer → application → database?
+Network changes were made manually in production. What risks does this introduce?
+How do you confirm whether an issue is network-related or application-related?
+🔥 Advanced / Senior-Level Network Questions
+How would you design a highly available network architecture for production?
+One Availability Zone goes down. How does traffic continue flowing?
+How do you debug intermittent packet loss issues?
+What network metrics are most important for production monitoring?
+How do you perform zero-downtime network changes?
+Your cloud bill spikes due to data transfer. How do you investigate?
+How do you secure service-to-service communication in production?
+How do you debug networking issues in Kubernetes?
+What common networking mistakes have you seen in real projects?
+How do you balance security vs performance in network design?
