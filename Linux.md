@@ -395,14 +395,21 @@ Open: vi filename.txt or vim filename.txt
 
 Modes in vim:
 
-Mode	Enter with	Description
-
-Command	Default	Navigate, delete, search
-Insert	i, I, a, A, o, O	Type text, Esc to exit
-Ex/Execute	: (colon)	Save/Quit/Commands: :w, :q, :wq, :q!
-Visual	v, V, Ctrl+v	Select chars, lines, blocks
-
-
+Mode
+Enter with
+Description
+Command
+Default
+Navigate, delete, search
+Insert
+i, I, a, A, o, O
+Type text, Esc to exit
+Ex/Execute
+: (colon)
+Save/Quit/Commands: :w, :q, :wq, :q!
+Visual
+v, V, Ctrl+v
+Select chars, lines, blocks
 
 ---
 
@@ -496,26 +503,6 @@ Show first N lines	head -n 20 file.txt
 Show last N lines	tail -n 20 file.txt
 Show with line numbers	nl file.txt or cat -n
 Show current directory	pwd
-
-
-
----
-
-✅ 8. Summary Table (Ready for Viva or Interviews)
-
-Operation	Command	Use Case
-
-View file	cat filename	Show entire file
-Scroll file	less filename	Paginate + scroll
-View start/end	head, tail, -n	Show top/bottom N lines
-Copy file	cp file newfile	Backup or duplicate
-Move/Rename	mv old new	Shift file or rename
-Delete file	rm file.txt	Remove file
-Delete folder	rm -r folder/	Remove directory
-Edit (easy)	nano file.txt	Use friendly editor
-Edit (advanced)	vim file.txt	Use powerful modal editor
-Save/Quit (vim)	:w, :q, :wq, :q!	Save/exit vim editor
-Replace Text	:%s/old/new/g	Search and replace in vim
 
 
 
