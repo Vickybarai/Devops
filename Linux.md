@@ -185,6 +185,13 @@ Meaning: Deletes the folder project/ and everything inside it forcefully.
 
 
 ---
+
+
+---
+
+✅ Linux File Operations: Move, Rename, Delete, and Editors
+
+
 Linux Commands – Directory Management
 
 1. Create directory in current path:
@@ -241,4 +248,122 @@ rmdir: Remove empty directories.
 -f: Force delete.
 
 -r: Recursive delete (for folders).
+
+---
+
+🔁 1. Move & Rename Operation – mv
+
+➤ Syntax:
+
+mv [source] [destination]
+
+📌 Use Cases:
+
+Purpose	Command Example	Meaning
+
+Move file to another location	mv /home/user/file.txt /tmp/	Moves file.txt to /tmp directory
+Rename a file	mv file1.txt file2.txt	Renames file1.txt to file2.txt
+Move multiple files	mv *.txt /home/user/docs/	Moves all .txt files to the target folder
+Move & rename	mv oldname.txt /home/user/newname.txt	Moves and renames the file in one step
+
+
+
+---
+
+🗑️ 2. Delete Operation – rm
+
+➤ Syntax:
+
+rm [options] file_or_directory
+
+➤ Common Options:
+
+-r: Recursive (used for directories)
+
+-v: Verbose (shows progress)
+
+-f: Force deletion (no confirmation)
+
+
+📌 Use Cases:
+
+Purpose	Command Example	Meaning
+
+Delete a file	rm audio.mp3	Deletes a single file
+Delete a folder & contents	rm -rvf myfolder/	Recursively deletes myfolder and its content without prompt
+Verbose delete (show steps)	rm -v file1.txt	Shows what file is being deleted
+
+
+
+---
+
+📁 3. Change Directory – cd
+
+➤ Use Cases:
+
+Command	Meaning
+
+cd /home/user/docs	Go to specified directory
+cd ..	Go back one step (parent directory)
+cd ../../	Go back two levels
+cd	Go to home directory
+cd -	Switch to previous directory
+
+
+
+---
+
+📝 4. Text Editors in Linux
+
+🔹 Types of Editors:
+
+Type	Examples	Notes
+
+Graphical Editors	gedit, kedit	Like Notepad (easy to use but memory heavy)
+CLI Editors	nano, pico, vi, vim	Lightweight and ideal for servers
+
+
+
+---
+
+✍️ 5. Editor Commands (CLI-Based)
+
+▶️ nano or pico:
+
+nano file.txt
+
+Action	Shortcut
+
+Save file	Ctrl + O
+Exit editor	Ctrl + X
+Read file	cat file.txt
+
+
+
+---
+
+▶️ vim Editor – Contains 4 Modes:
+
+Mode No.	Mode Name	Purpose
+
+1	Command Line Mode	Default, navigate or delete
+2	Insert Mode	To write or insert new text
+3	Extension Mode	Advanced features/plugins
+4	Visual Mode	Used to visually select and edit text
+
+
+⚙️ VIM Shortcuts (Command Mode):
+
+Action	Command
+
+Delete line	dd
+Copy line	yy
+Paste line	p
+Move to end of file	G
+Move to top of file	gg
+Exit vim	:q
+Save and quit	:wq or ZZ
+Search in file	/word
+
+
 
