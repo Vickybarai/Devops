@@ -311,59 +311,211 @@ cd -	Switch to previous directory
 
 
 
----
-
-📝 4. Text Editors in Linux
-
-🔹 Types of Editors:
-
-Type	Examples	Notes
-
-Graphical Editors	gedit, kedit	Like Notepad (easy to use but memory heavy)
-CLI Editors	nano, pico, vi, vim	Lightweight and ideal for servers
-
-
 
 ---
 
-✍️ 5. Editor Commands (CLI-Based)
+✅ LINUX PATHS, FILE VIEWING, EDITORS, & VIM – FULL PRACTICAL NOTES
 
-▶️ nano or pico:
+1. Linux Path Basics
 
-nano file.txt
+Type	Description	Example
 
-Action	Shortcut
-
-Save file	Ctrl + O
-Exit editor	Ctrl + X
-Read file	cat file.txt
+Absolute	Starts with /, full from root	/home/ss/
+Full Path	Complete path from / to file/dir	ls /home/ss/
+Relative	Based on current location, no /	ls ../, ./file
+Shortcuts	~ (home), . (current), .. (parent)	cd ~, cd ..
 
 
 
 ---
 
-▶️ vim Editor – Contains 4 Modes:
+2. File Reading Commands in Linux
 
-Mode No.	Mode Name	Purpose
+Command	Use	Example
 
-1	Command Line Mode	Default, navigate or delete
-2	Insert Mode	To write or insert new text
-3	Extension Mode	Advanced features/plugins
-4	Visual Mode	Used to visually select and edit text
+cat filename	Show entire file in one go	cat notes.txt
+less filename	Page-by-page viewing; scroll with arrows, q to quit	less big.txt
+more filename	Like less, but limited	more doc.txt
+head filename	First 10 lines (default)	head log.txt
+head -n 20	First 20 lines	head -n 20 data.txt
+tail filename	Last 10 lines	tail log.txt
+tail -f	Real-time updates (logs)	tail -f /var/log/syslog
 
 
-⚙️ VIM Shortcuts (Command Mode):
 
-Action	Command
+---
 
-Delete line	dd
-Copy line	yy
-Paste line	p
-Move to end of file	G
-Move to top of file	gg
-Exit vim	:q
-Save and quit	:wq or ZZ
-Search in file	/word
+3. Move, Rename, Copy, Delete Files & Folders
+
+Command	Syntax	Purpose
+
+mv	mv old.txt new.txt	Rename a file
+	mv file.txt /path/dir/	Move file to another folder
+cp	cp file.txt backup.txt	Copy file
+cp -r	cp -r dir1 dir2	Copy directory recursively
+rm	rm file.txt	Delete file
+rm -r	rm -r folder/	Remove directory and contents
+rm -rf	rm -rf folder/	Force delete everything (⚠️ Caution!)
+
+
+
+---
+
+4. Graphical Editors (Linux Desktop)
+
+Editor	Description	Example
+
+gedit	GUI Notepad-style editor	gedit file.txt
+kedit	KDE version of gedit	kedit hello.cpp
+
+
+
+---
+
+5. Command-Line Editors
+
+nano
+
+Easy to use; shows shortcuts below.
+
+Open: nano file.txt
+
+
+pico
+
+Similar to nano.
+
+Open: pico file.txt
+
+
+vi / vim (Modal Editor – Very Powerful)
+
+Open: vi filename.txt or vim filename.txt
+
+
+Modes in vim:
+
+Mode	Enter with	Description
+
+Command	Default	Navigate, delete, search
+Insert	i, I, a, A, o, O	Type text, Esc to exit
+Ex/Execute	: (colon)	Save/Quit/Commands: :w, :q, :wq, :q!
+Visual	v, V, Ctrl+v	Select chars, lines, blocks
+
+
+
+---
+
+6. Common vim Commands
+
+Navigation
+
+gg : Start of file
+
+G  : End of file
+
+/word : Search for "word"
+
+
+Insert Mode
+
+i : Insert at cursor
+
+I : Insert at beginning of line
+
+a : Append after cursor
+
+A : Append at end of line
+
+o : New line below
+
+O : New line above
+
+Esc : Exit insert mode
+
+
+Copy-Paste-Delete
+
+yy : Copy line
+
+dd : Delete line
+
+yw : Copy word
+
+p  : Paste below
+
+P  : Paste above
+
+
+Visual Mode
+
+v : Visual (char-by-char)
+
+V : Visual (line-by-line)
+
+Ctrl+v : Visual block (column/rectangular)
+
+After selection:
+
+y : Copy
+
+d : Delete
+
+c : Change
+
+
+
+Ex/Command Mode (after :)
+
+:w  : Save
+
+:q  : Quit
+
+:q! : Force quit without saving
+
+:wq / :x : Save and quit
+
+:set nu : Show line numbers
+
+
+Search & Replace
+
+:s/old/new/g    : Replace in current line
+
+:%s/old/new/g   : Replace in entire file
+
+
+
+---
+
+7. Bonus – Viewing, Line Count & Navigation
+
+Task	Command
+
+Show first N lines	head -n 20 file.txt
+Show last N lines	tail -n 20 file.txt
+Show with line numbers	nl file.txt or cat -n
+Show current directory	pwd
+
+
+
+---
+
+✅ 8. Summary Table (Ready for Viva or Interviews)
+
+Operation	Command	Use Case
+
+View file	cat filename	Show entire file
+Scroll file	less filename	Paginate + scroll
+View start/end	head, tail, -n	Show top/bottom N lines
+Copy file	cp file newfile	Backup or duplicate
+Move/Rename	mv old new	Shift file or rename
+Delete file	rm file.txt	Remove file
+Delete folder	rm -r folder/	Remove directory
+Edit (easy)	nano file.txt	Use friendly editor
+Edit (advanced)	vim file.txt	Use powerful modal editor
+Save/Quit (vim)	:w, :q, :wq, :q!	Save/exit vim editor
+Replace Text	:%s/old/new/g	Search and replace in vim
 
 
 
