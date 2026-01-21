@@ -44,3 +44,201 @@ hostname   Machine name
 :          Separator
 ~          Home directory of user
 $          Prompt symbol for normal user (# for root)
+
+
+---
+
+Linux Commands and Directory Paths 
+
+Basic Directories:
+
+1. /media
+Definition: Mount point for removable devices.
+Use: Auto-mount for CD/DVDs, USB drives, SD cards.
+
+
+2. /run
+Definition: Stores runtime information.
+Use: Holds data for currently running processes; deleted after reboot.
+
+
+3. /lib
+Definition: Shared library files required by system.
+Use: Supports essential binary execution.
+
+
+4. /lib64
+Definition: 64-bit system libraries.
+Use: Contains 64-bit shared object files.
+
+
+5. /bin
+Definition: Essential binaries.
+Use: Contains commands used by all users, e.g., ls, cp.
+
+
+6. /sbin
+Definition: System binaries.
+Use: Only root user can run commands from here, e.g., shutdown.
+
+
+7. /usr
+Definition: User programs, docs, libraries.
+Use: Stores user commands, docs, and app data.
+
+
+8. /opt
+Definition: Optional software.
+Use: For third-party and vendor software packages.
+
+
+9. /tmp
+Definition: Temporary files directory.
+Use: Files are auto-deleted after 12 days or reboot.
+
+
+10. /srv
+Definition: Service data directory.
+Use: Contains service-specific data (e.g., web, FTP).
+
+
+11. /sys
+Definition: Virtual filesystem for kernel data.
+Use: Displays device and system kernel info.
+
+
+12. /mnt
+Definition: Temporary mount point for storage.
+Use: Used for mounting USBs, hard disks manually.
+
+
+13. /proc
+Definition: Virtual process info directory.
+Use: Displays running processes and kernel info (e.g., /proc/cpuinfo)
+
+
+---
+
+✅ Linux Move, Rename & Remove Commands – Easy Points
+
+🔄 Basic Move / Rename Operations
+
+1. Move a file from one location to another
+Command: mv [options] source target_location
+Example: mv file1.txt /tmp/
+Meaning: Moves file1.txt from current location to /tmp/.
+
+
+2. Rename a file
+Command: mv old_name new_name
+Example: mv report.txt final_report.txt
+Meaning: Renames the file report.txt to final_report.txt.
+
+
+3. Move and Rename together
+Command: mv old_file /new/location/new_file
+Example: mv data.txt /home/user/data_backup.txt
+Meaning: Moves data.txt and renames it in the new folder.
+
+
+4. Move a directory to another location
+Command: mv folder1/ /backup/
+Meaning: Moves folder folder1 into /backup/ directory.
+
+
+
+
+---
+
+🗑️ Basic Remove (Delete) Operations
+
+1. Delete a file
+Command: rm filename
+Example: rm test.txt
+Meaning: Permanently deletes test.txt.
+
+
+2. Delete multiple files
+Command: rm file1 file2 file3
+Example: rm a.txt b.txt c.txt
+Meaning: Deletes all listed files.
+
+
+3. Force delete a file (no warning)
+Command: rm -f filename
+Example: rm -f unsafe.log
+Meaning: Deletes the file even if it’s write-protected (no prompt).
+
+
+4. Delete an empty directory
+Command: rmdir dirname
+Example: rmdir emptyfolder
+Meaning: Deletes an empty folder.
+
+
+5. Delete a folder and all its content (recursive)
+Command: rm -r foldername
+Example: rm -rf project/
+Meaning: Deletes the folder project/ and everything inside it forcefully.
+
+
+
+
+---
+Linux Commands – Directory Management
+
+1. Create directory in current path:
+~# mkdir dirname
+
+
+2. Create multiple directories with different names:
+~# mkdir dir1 dir2 dir3
+
+
+3. Create directories in different locations:
+~# mkdir /mnt/dir1 /home/user/dir2 /tmp/dir3
+
+
+
+
+---
+
+Linux Commands – File Management
+
+4. Create file in current directory:
+~# touch file1.txt
+
+
+5. Create file in specified location:
+~# touch /home/user/file2.txt
+
+
+6. Create files in multiple directories:
+~# touch /mnt/file1.txt /tmp/file2.txt /home/file3.txt
+
+
+7. Create multiple files with same directory:
+~# touch {a.txt,b.mp3,c.txt}
+
+
+8. Create multiple files in multiple directories:
+~# touch /mnt/{a1.txt,a2.txt}
+~# touch /tmp/{1.txt,2.txt}
+
+
+
+
+---
+
+📌 Definitions
+
+mv: Move or rename files/directories.
+
+rm: Remove files.
+
+rmdir: Remove empty directories.
+
+-f: Force delete.
+
+-r: Recursive delete (for folders).
+
