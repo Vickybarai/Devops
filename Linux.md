@@ -1,241 +1,46 @@
 
 
+📘 DevOps Linux Notes
 
-# Linux File System – Tree Structure (Quick Reference)
+1. What is Linux?
 
-Understanding the Linux filesystem hierarchy is critical for system administration,
-DevOps troubleshooting, and interview preparation.  
-If you understand this tree, Linux debugging becomes **10x easier**.
+Definition:
+Linux is a free and open-source operating system based on Unix. It is widely used in servers, DevOps, cloud systems, and automation.
 
----
+Key Features:
 
-## 📁 Linux File System Tree
+Open Source
 
-/
-├── bin/        # Essential user commands (ls, cp, mv, cat)
-├── sbin/       # System administration commands (reboot, fsck, ip)
-├── etc/        # System and application configuration files
-├── home/       # Home directories for normal users
-│   └── user/   # Example: /home/ubuntu
-├── root/       # Home directory of root user
-├── var/        # Variable data (logs, cache, mail, spool)
-│   └── log/    # System and application logs
-├── usr/        # User programs, binaries, libraries, docs
-│   ├── bin/    # Non-essential user commands
-│   ├── sbin/   # Admin commands
-│   └── lib/    # Libraries for /usr binaries
-├── lib/        # Shared libraries for /bin and /sbin
-├── tmp/        # Temporary files (auto-cleaned)
-├── opt/        # Optional / third-party software
-├── run/        # Runtime data (PID files, sockets)
-├── proc/       # Virtual filesystem (process & system info)
-├── sys/        # Kernel and hardware information
-├── dev/        # Device files (disk, USB, memory)
-├── mnt/        # Temporary mount point
-├── media/      # Auto-mounted removable devices
-└── boot/       # Bootloader and kernel files
+Command-line based
 
----
+Secure and stable
 
-## 📌 Directory Purpose Explained (Simple)
+Used in cloud & containers
 
-### `/`
-Root of the filesystem. Everything starts here.
 
-### `/bin`
-Essential commands required for system operation and recovery.
 
-### `/sbin`
-System-level commands used by administrators.
+2. Why Linux in DevOps?
 
-### `/etc`
-Configuration files for OS, services, and applications.
+Definition:
+Linux is essential in DevOps because most tools (like Docker, Kubernetes, Jenkins) run on Linux servers. It supports automation, scripting, and remote management.
 
-### `/home`
-User personal directories and files.
+Use Case:
 
-### `/root`
-Root user's private home directory.
+Run CI/CD pipelines
 
-### `/var`
-Frequently changing data like logs and cache.
+Automate deployment
 
-### `/var/log`
-Critical system and application logs (debugging hotspot).
+Manage server infrastructure
 
-### `/usr`
-Installed programs and libraries.
 
-### `/lib`
-Libraries needed by essential system commands.
+___
 
-### `/tmp`
-Temporary files; safe to clean.
+login_name@hostname:~$
 
-### `/opt`
-External or custom software installations.
 
-### `/run`
-Runtime state information created after boot.
-
-### `/proc`
-Live system and process information (virtual filesystem).
-
-### `/sys`
-Kernel and hardware control interface.
-
-### `/dev`
-Device representation as files.
-
-### `/mnt`
-Manual mount point.
-
-### `/media`
-Auto-mounted removable devices.
-
-### `/boot`
-Kernel and bootloader required to start Linux.
-
----
-
-## 🧠 Interview Quick Logic
-
-- `/bin` → critical commands
-- `/usr/bin` → non-critical user tools
-- `/var/log` → first place to check errors
-- `/proc` → live system data, not stored on disk
-
----
-
-## 🚀 DevOps Insight
-
-Mastering this filesystem tree helps you:
-- debug production issues faster
-- locate logs instantly
-- manage permissions correctly
-- clear Linux interviews confidently
-
----
-
-📌 **Tip:** This tree alone covers ~70% of Linux filesystem interview questions.
-
-Linux File System – Quick Map 
-
-Root Level
-
-/
-Root of the filesystem. Every file and directory starts here.
-
-
-
----
-
-Essential System Directories
-
-/bin
-Essential user commands like ls, cp, mv, cat.
-Needed even if system is in rescue mode.
-
-/sbin
-System administration commands like reboot, fsck, ip.
-Mostly used by root or sudo users.
-
-/lib
-Shared libraries required by /bin and /sbin commands.
-Without this, basic commands will not run.
-
-
-
----
-
-Configuration & User Data
-
-/etc
-Configuration files for system, services, and applications.
-Example: passwd, sshd_config, fstab.
-
-/home
-Home directories for normal users.
-Example: /home/ubuntu, /home/ram.
-
-/root
-Home directory of root user.
-Separate from /home for security reasons.
-
-
-
----
-
-Logs & Variable Data
-
-/var
-Variable data that changes frequently.
-Includes logs, cache, mail, spool files.
-
-/var/log
-System and application logs.
-Example: auth.log, syslog, nginx logs.
-
-
-
----
-
-Programs & Software
-
-/usr
-User programs, binaries, libraries, documentation.
-Contains /usr/bin, /usr/lib, /usr/sbin.
-
-/opt
-Optional or third-party software installations.
-Example: custom apps, vendor software.
-
-
-
----
-
-Temporary & Runtime
-
-/tmp
-Temporary files.
-Often auto-cleaned on reboot.
-
-/run
-Runtime data like PID files and sockets.
-Exists only while system is running.
-
-
-
----
-
-Virtual & Hardware Interfaces
-
-/proc
-Virtual filesystem showing process and system information.
-Data comes from memory, not disk.
-
-/sys
-Kernel and hardware information.
-Used for device and kernel tuning.
-
-/dev
-Device files like disks, USB, memory.
-Example: /dev/sda, /dev/null.
-
-
-
----
-
-Mount & Boot
-
-/mnt
-Temporary mount point for filesystems.
-
-/media
-Auto-mounted removable devices like USB, CD.
-
-/boot
-Bootloader and kernel files.
-Required for system startup
-
----
+login_name Current user
+@          Separator
+hostname   Machine name
+:          Separator
+~          Home directory of user
+$          Prompt symbol for normal user (# for root)
