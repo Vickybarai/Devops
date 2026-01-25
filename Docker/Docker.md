@@ -163,110 +163,169 @@ Docker and containerization are foundational enablers of microservices architect
 # 🧾 Docker Commands — 
 ---
 
-## 1️⃣ Info & Version
+Perfect — you want a proper command hierarchy, starting from Docker base → Images → Containers → Exec → Network → Volume → Registry → Build → System.
 
-| **Command**        | **Meaning**                      |
-| ------------------ | -------------------------------- |
-| `docker --version` | Check installed Docker version   |
-| `docker version`   | Client vs Server version details |
-| `docker info`      | Docker engine configuration      |
+1️⃣ Docker Engine & System (Foundation Layer)
 
+Command	Purpose
 
-## 2️⃣ Container (Lifecycle Management)
-
-| **Command**                     | **Meaning**                 |
-| ------------------------------- | --------------------------- |
-| `docker run [image]`            | Create and start container  |
-| `docker run -d [image]`         | Run container in background |
-| `docker create [image]`         | Create container only       |
-| `docker start [container_id]`   | Start container             |
-| `docker stop [container_id]`    | Stop container              |
-| `docker restart [container_id]` | Restart container           |
-| `docker pause [container_id]`   | Pause container             |
-| `docker unpause [container_id]` | Resume container            |
-| `docker rm [container_id]`      | Remove stopped container    |
-| `docker rm -f [container_id]`   | Force remove container      |
+docker --version	Docker version check
+docker version	Client & Server details
+docker info	Engine configuration info
+docker system df	Disk usage
+docker system prune	Remove unused data
+docker system prune -a --volumes	Deep clean
+docker events	Real-time Docker events
 
 
-## 3️⃣ Container Listing & Bulk Operations
+Linux Service Control (Docker Daemon)
 
-| **Command**                       | **Meaning**                   |
-| --------------------------------- | ----------------------------- |
-| `docker ps`                       | List running containers       |
-| `docker ps -a`                    | List all containers           |
-| `docker ps -q`                    | Show running container IDs    |
-| `docker ps -a -q`                 | Show all container IDs        |
-| `docker stop $(docker ps -q)`     | Stop all running containers   |
-| `docker rm $(docker ps -a -q)`    | Remove all stopped containers |
-| `docker rm -f $(docker ps -a -q)` | Remove all containers         |
+Command	Purpose
+
+systemctl start docker	Start Docker service
+systemctl stop docker	Stop Docker
+systemctl restart docker	Restart Docker
+systemctl status docker	Service status
 
 
-## 4️⃣ Images
-
-| **Command**                    | **Meaning**            |
-| ------------------------------ | ---------------------- |
-| `docker images`                | List local images      |
-| `docker images -q`             | Show image IDs         |
-| `docker pull [image]`          | Download image         |
-| `docker rmi [image_id]`        | Remove image           |
-| `docker rmi -f [image_id]`     | Force remove image     |
-| `docker tag [image] [new_tag]` | Tag image              |
-| `docker push [image]`          | Push image to registry |
-| `docker history [image]`       | Show image layers      |
-| `docker inspect [image]`       | Inspect image metadata |
-
-
-## 5️⃣ Cleanup & Disk Management
-
-| **Command**              | **Meaning**                 |
-| ------------------------ | --------------------------- |
-| `docker image prune`     | Remove dangling images      |
-| `docker image prune -a`  | Remove unused images        |
-| `docker container prune` | Remove stopped containers   |
-| `docker network prune`   | Remove unused networks      |
-| `docker volume prune`    | Remove unused volumes       |
-| `docker system prune`    | Clean unused Docker objects |
-| `docker system prune -a` | Aggressive cleanup          |
-| `docker system df`       | Docker disk usage           |
-
-
-## 6️⃣ Logs & Monitoring
-
-| **Command**                     | **Meaning**                |
-| ------------------------------- | -------------------------- |
-| `docker logs [container_id]`    | View container logs        |
-| `docker logs -f [container_id]` | Stream logs                |
-| `docker stats`                  | Live resource usage        |
-| `docker top [container_id]`     | Processes inside container |
-| `docker events`                 | Docker event stream        |
-
-
-## 7️⃣ Access & Execution
-
-| **Command**                           | **Meaning**                 |
-| ------------------------------------- | --------------------------- |
-| `docker exec -it [container_id] bash` | Shell inside container      |
-| `docker attach [container_id]`        | Attach to container output  |
-| `docker cp src dest`                  | Copy files host ↔ container |
-
-
-## 8️⃣ Networking
-
-| **Command**                            | **Meaning**         |
-| -------------------------------------- | ------------------- |
-| `docker network ls`                    | List networks       |
-| `docker network inspect [network]`     | Inspect network     |
-| `docker run -p host:container [image]` | Port mapping        |
-| `docker run -P [image]`                | Random port mapping |
-
-
-## 9️⃣ Volumes (Persistence)
-
-| **Command**                            | **Meaning**    |
-| -------------------------------------- | -------------- |
-| `docker volume ls`                     | List volumes   |
-| `docker volume inspect [volume]`       | Inspect volume |
-| `docker run -v host:container [image]` | Mount volume   |
 
 ---
 
+2️⃣ Images (Image Management Layer)
+
+Command	Purpose
+
+docker images	List local images
+docker pull [image]	Download image
+docker push [image]	Upload image
+docker rmi [image]	Remove image
+docker tag img newimg	Tag image
+docker history [image]	Show layers
+docker inspect [image]	Image details
+docker save img > img.tar	Save image
+docker load < img.tar	Load image
+
+
+
+---
+
+3️⃣ Containers (Lifecycle Layer)
+
+Command	Purpose
+
+docker run [image]	Create + start container
+docker create [image]	Create only
+docker start [container]	Start
+docker stop [container]	Stop
+docker restart [container]	Restart
+docker pause [container]	Pause
+docker unpause [container]	Resume
+docker rm [container]	Remove
+docker rm -f [container]	Force remove
+
+
+
+---
+
+4️⃣ Container Listing & Monitoring
+
+Command	Purpose
+
+docker ps	Running containers
+docker ps -a	All containers
+docker logs [container]	Logs
+docker logs -f [container]	Live logs
+docker stats	CPU/RAM usage
+docker top [container]	Processes
+docker inspect [container]	Container details
+docker diff [container]	File changes
+
+
+
+---
+
+5️⃣ Command Execution Inside Container
+
+Command	Purpose
+
+docker exec -it cont bash	Interactive shell
+docker exec cont ls /app	Run command
+docker attach [container]	Attach terminal
+docker cp file cont:/path	Copy host → container
+docker cp cont:/path file	Copy container → host
+
+
+
+---
+
+6️⃣ Networking
+
+Command	Purpose
+
+docker network ls	List networks
+docker network create net1	Create network
+docker network inspect net1	Inspect network
+docker network connect net1 cont	Connect container
+docker network disconnect net1 cont	Disconnect
+docker network rm net1	Remove network
+docker run -p 8080:80 nginx	Port mapping
+
+
+
+---
+
+7️⃣ Volumes (Storage Layer)
+
+Command	Purpose
+
+docker volume ls	List volumes
+docker volume create vol1	Create volume
+docker volume inspect vol1	Inspect volume
+docker volume rm vol1	Remove volume
+docker run -v vol1:/data nginx	Attach volume
+docker volume prune	Cleanup unused
+
+
+
+---
+
+8️⃣ Build & Dockerfile
+
+Command	Purpose
+
+docker build .	Build image
+docker build -t app:1.0 .	Build with tag
+docker build --no-cache .	No cache build
+docker builder prune	Clear build cache
+docker commit cont img	Image from container
+
+
+
+---
+
+9️⃣ Registry / Docker Hub
+
+Command	Purpose
+
+docker login	Login
+docker logout	Logout
+docker search nginx	Search images
+docker tag img user/img:tag	Prepare for push
+docker push user/img:tag	Push to Hub
+
+
+
+---
+
+🔟 Backup / Migration
+
+Command	Purpose
+
+docker save img > img.tar	Backup image
+docker load < img.tar	Restore image
+docker export cont > cont.tar	Export container
+docker import cont.tar img	Create image
+
+
+
+---
