@@ -302,3 +302,321 @@ grep "error" logfile.txt
 locate nginx.conf
 ```
 ----
+
+
+# 🧩 MODULE 7 — Basic Commands & Utilities (New Beginner Questions)
+
+---
+
+## 1️⃣ Check Current User
+
+```bash
+whoami
+```
+
+**Similar:**
+
+```bash
+echo $USER
+id -un
+```
+
+**Interview Tip:** Often asked as “How do you know which user is logged in?”
+
+---
+
+## 2️⃣ Check Hostname / Computer Name
+
+```bash
+hostname
+```
+
+**Similar:**
+
+```bash
+uname -n
+cat /etc/hostname
+```
+
+---
+
+## 3️⃣ Show Date & Time
+
+```bash
+date
+```
+
+**Similar:**
+
+```bash
+timedatectl
+hwclock
+```
+
+**Tip:** Useful in logs and cron scheduling questions.
+
+---
+
+## 4️⃣ Check System Info
+
+```bash
+uname -a
+```
+
+**Similar:**
+
+```bash
+cat /etc/os-release
+lsb_release -a
+```
+
+**Tip:** Can show kernel version, architecture, and OS name.
+
+---
+
+## 5️⃣ View Last Logged In Users
+
+```bash
+last
+```
+
+**Similar:**
+
+```bash
+who
+w
+```
+
+---
+
+## 6️⃣ Check Current Logged-In Sessions
+
+```bash
+who
+```
+
+**Similar:**
+
+```bash
+w
+users
+```
+
+---
+
+## 7️⃣ Disk Free Space
+
+```bash
+df -h
+```
+
+**Similar:**
+
+```bash
+lsblk
+du -sh *
+```
+
+---
+
+## 8️⃣ File Search by Name
+
+```bash
+find /home -name "*.txt"
+```
+
+**Similar:**
+
+```bash
+locate "*.txt"
+fd "*.txt"
+```
+
+---
+
+## 9️⃣ Search Text Inside Files
+
+```bash
+grep "hello" file.txt
+```
+
+**Similar:**
+
+```bash
+grep -i "hello" file.txt   # Case insensitive
+grep -r "hello" /home      # Recursive
+ripgrep "hello"
+```
+
+---
+
+## 🔟 Count Words, Lines, Characters
+
+```bash
+wc file.txt
+wc -l file.txt   # Only lines
+```
+
+**Similar:**
+
+```bash
+awk '{print NF}' file.txt  # Count words per line
+```
+
+---
+
+## 1️⃣1️⃣ Display First / Last Lines of File
+
+```bash
+head -5 file.txt
+tail -5 file.txt
+```
+
+**Similar:**
+
+```bash
+sed -n 1,5p file.txt    # First 5 lines
+sed -n -5,$p file.txt   # Last 5 lines
+```
+
+---
+
+## 1️⃣2️⃣ Sort File Content
+
+```bash
+sort file.txt
+sort -r file.txt    # Reverse order
+```
+
+**Similar:**
+
+```bash
+uniq file.txt       # Remove duplicates (sort needed)
+sort -u file.txt    # Sort & remove duplicates
+```
+
+---
+
+## 1️⃣3️⃣ Count Specific Pattern in File
+
+```bash
+grep -c "error" logfile.txt
+```
+
+**Similar:**
+
+```bash
+grep -i "error" logfile.txt | wc -l
+awk '/error/ {count++} END {print count}' logfile.txt
+```
+
+---
+
+## 1️⃣4️⃣ Display Disk Usage per Folder
+
+```bash
+du -sh *
+```
+
+**Similar:**
+
+```bash
+ncdu
+tree -h
+```
+
+---
+
+## 1️⃣5️⃣ Check Environment Variables
+
+```bash
+env
+printenv
+echo $HOME
+```
+
+**Similar:**
+
+```bash
+set
+```
+
+---
+
+## 1️⃣6️⃣ Display Calendar
+
+```bash
+cal
+```
+
+**Similar:**
+
+```bash
+ncal
+date "+%Y-%m-%d"
+```
+
+---
+
+## 1️⃣7️⃣ Create & Extract Compressed Files
+
+```bash
+tar -cvf archive.tar file1 file2
+tar -xvf archive.tar
+gzip file.txt
+gunzip file.txt.gz
+```
+
+**Similar:**
+
+```bash
+zip archive.zip file1 file2
+unzip archive.zip
+```
+
+---
+
+## 1️⃣8️⃣ Monitor System Logs
+
+```bash
+tail -f /var/log/syslog
+```
+
+**Similar:**
+
+```bash
+less /var/log/syslog
+journalctl -f
+```
+
+---
+
+## 1️⃣9️⃣ Check Listening Ports
+
+```bash
+netstat -tuln
+```
+
+**Similar:**
+
+```bash
+ss -tuln
+lsof -i -P -n
+```
+
+---
+
+## 2️⃣0️⃣ Check Uptime & System Load
+
+```bash
+uptime
+```
+
+**Similar:**
+
+```bash
+top
+w
+```
+
+---
