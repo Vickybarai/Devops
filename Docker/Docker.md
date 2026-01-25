@@ -161,59 +161,158 @@ Docker and containerization are foundational enablers of microservices architect
 ---
 
 # 🧾 Docker Commands — 
----
-
-Perfect — you want a proper command hierarchy, starting from Docker base → Images → Containers → Exec → Network → Volume → Registry → Build → System.
-
-1️⃣ Docker Engine & System (Foundation Layer)
-
-Command	Purpose
-
-docker --version	Docker version check
-docker version	Client & Server details
-docker info	Engine configuration info
-docker system df	Disk usage
-docker system prune	Remove unused data
-docker system prune -a --volumes	Deep clean
-docker events	Real-time Docker events
-
-
-Linux Service Control (Docker Daemon)
-
-Command	Purpose
-
-systemctl start docker	Start Docker service
-systemctl stop docker	Stop Docker
-systemctl restart docker	Restart Docker
-systemctl status docker	Service status
-
 
 
 ---
 
-2️⃣ Images (Image Management Layer)
+## 1. Docker Engine & System
+| Command | Description |
+|------|------------|
+| docker --version | Check Docker version |
+| docker version | Client & Server version info |
+| docker info | Docker engine configuration |
+| docker system df | Disk usage by Docker |
+| docker system prune | Remove unused objects |
+| docker system prune -a --volumes | Full cleanup |
+| docker events | Real-time Docker events |
 
-Command	Purpose
+### Docker Service (Linux)
 
-docker images	List local images
-docker pull [image]	Download image
-docker push [image]	Upload image
-docker rmi [image]	Remove image
-docker tag img newimg	Tag image
-docker history [image]	Show layers
-docker inspect [image]	Image details
-docker save img > img.tar	Save image
-docker load < img.tar	Load image
-
-
+| Command | Description |
+|------|------------|
+| systemctl start docker | Start Docker service |
+| systemctl stop docker | Stop Docker service |
+| systemctl restart docker | Restart Docker |
+| systemctl status docker | Check Docker status |
 
 ---
 
-3️⃣ Containers (Lifecycle Layer)
+## 2. Images (Image Management)
 
-Command	Purpose
+| Command | Description |
+|------|------------|
+| docker images | List local images |
+| docker pull image | Download image |
+| docker push image | Push image to registry |
+| docker rmi image | Remove image |
+| docker rmi -f image | Force remove image |
+| docker tag img newimg | Tag image |
+| docker history image | Show image layers |
+| docker inspect image | Inspect image |
+| docker save img > img.tar | Save image to file |
+| docker load < img.tar | Load image from file |
 
-docker run [image]	Create + start container
+---
+
+## 3. Containers (Lifecycle Management)
+
+| Command | Description |
+|------|------------|
+| docker run image | Create & start container |
+| docker run -d image | Run in background |
+| docker create image | Create container only |
+| docker start container | Start container |
+| docker stop container | Stop container |
+| docker restart container | Restart container |
+| docker pause container | Pause container |
+| docker unpause container | Resume container |
+| docker rm container | Remove container |
+| docker rm -f container | Force remove |
+
+---
+
+## 4. Container Listing & Monitoring
+
+| Command | Description |
+|------|------------|
+| docker ps | List running containers |
+| docker ps -a | List all containers |
+| docker ps -q | Show container IDs |
+| docker logs container | View logs |
+| docker logs -f container | Live logs |
+| docker stats | Resource usage |
+| docker top container | Running processes |
+| docker inspect container | Container details |
+| docker diff container | File system changes |
+
+---
+
+## 5. Execute Commands Inside Container
+
+| Command | Description |
+|------|------------|
+| docker exec -it container bash | Shell access |
+| docker exec container command | Run command |
+| docker attach container | Attach terminal |
+| docker cp src dest | Copy files |
+| docker rename old new | Rename container |
+
+---
+
+## 6. Networking
+
+| Command | Description |
+|------|------------|
+| docker network ls | List networks |
+| docker network create net | Create network |
+| docker network inspect net | Inspect network |
+| docker network connect net cont | Connect container |
+| docker network disconnect net cont | Disconnect container |
+| docker network rm net | Remove network |
+| docker run -p 8080:80 image | Port mapping |
+| docker run -P image | Random port mapping |
+
+---
+
+## 7. Volumes (Persistent Storage)
+
+| Command | Description |
+|------|------------|
+| docker volume ls | List volumes |
+| docker volume create vol | Create volume |
+| docker volume inspect vol | Inspect volume |
+| docker volume rm vol | Remove volume |
+| docker run -v vol:/path image | Mount volume |
+| docker volume prune | Cleanup volumes |
+
+---
+
+## 8. Build & Dockerfile
+
+| Command | Description |
+|------|------------|
+| docker build . | Build image |
+| docker build -t app:1.0 . | Build with tag |
+| docker build -f Dockerfile.dev . | Custom Dockerfile |
+| docker build --no-cache . | Disable cache |
+| docker builder prune | Remove build cache |
+| docker commit cont img | Create image from container |
+
+---
+
+## 9. Registry / Docker Hub
+
+| Command | Description |
+|------|------------|
+| docker login | Login to Docker Hub |
+| docker logout | Logout |
+| docker search image | Search images |
+| docker tag img user/img:tag | Prepare for push |
+| docker push user/img:tag | Push image |
+
+---
+
+## 10. Backup & Migration
+
+| Command | Description |
+|------|------------|
+| docker save img > img.tar | Backup image |
+| docker load < img.tar | Restore image |
+| docker export cont > cont.tar | Export container |
+| docker import cont.tar img | Import container |
+
+---
+
 docker create [image]	Create only
 docker start [container]	Start
 docker stop [container]	Stop
