@@ -344,7 +344,6 @@ Best Practice
 - Keep services, volumes, and networks organized  
 - Version control your docker-compose.yml
 
-```
 
 ___
 
