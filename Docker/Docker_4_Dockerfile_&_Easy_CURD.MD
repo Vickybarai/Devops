@@ -11,268 +11,208 @@ This project runs a **full-stack CRUD application** using Docker:
 | Backend  | Java Spring Boot | Business logic & API |
 | Frontend | HTML/JS App      | User interface       |
 
-We run everything using **containers**, in the correct order.
+---
+
+## 📦 Project Structure
+
+Structure
+
+```
+EasyCRUD/
+├── backend/   # Spring Boot API
+├── frontend/  # React UI
+└── README.md
+```
 
 ---
 
-# 🧱 PHASE 1 — Database Setup (Foundation)
+✅ Prerequisites
 
-Backend cannot start without database. So DB comes first.
+- Linux server (Ubuntu / EC2)  
+- Docker  
+- Git  
+- Java 17  
+- Maven  
+- Node.js + npm  
 
 ---
 
-## Step 1: Create Volume (Data Safety)
+🐳 METHOD 1 — Docker Deployment
 
-**Why?**
-Containers can be deleted. We don’t want database data to disappear.
+Step 1 — Install Docker
 
-MariaDB stores data in:
-
+```bash
+sudo apt update
+sudo apt install docker.io -y
+sudo systemctl start docker
+sudo systemctl enable docker
+docker --version
 ```
-/var/lib/mysql
-```
 
-Create persistent volume:
+Step 2 — Start Database (MariaDB)
 
 ```bash
 docker volume create student-db-vol
-```
 
-✔ Now database files are stored outside container.
-
----
-
-## Step 2: Start MariaDB Container
-
-```bash
 docker run -d \
- --name mariadb-container \
- -e MARIADB_ROOT_PASSWORD=redhat \
- -e MARIADB_DATABASE=studentdb \
- -v student-db-vol:/var/lib/mysql \
- mariadb:latest
+  --name mariadb-container \
+  -e MARIADB_ROOT_PASSWORD=redhat \
+  -e MARIADB_DATABASE=studentdb \
+  -v student-db-vol:/var/lib/mysql \
+  mariadb:latest
 ```
 
-What happens here:
-
-| Setting          | Meaning          |
-| ---------------- | ---------------- |
-| Root password    | `redhat`         |
-| Database created | `studentdb`      |
-| Data stored in   | `student-db-vol` |
-
----
-
-## Step 3: Get Database Container IP
-
-Backend needs DB IP.
+Step 3 — Get Database IP
 
 ```bash
 docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' mariadb-container
 ```
 
-Example:
+Save this IP for the backend config.
 
-```
-172.17.0.2
-```
-
-📌 Save this IP — used in backend config.
-
----
-
-# ⚙️ PHASE 2 — Backend (Spring Boot API)
-
-Backend connects frontend ↔ database.
-
----
-
-## Step 4: Clone Code
+Step 4 — Backend Setup
 
 ```bash
 git clone https://github.com/shubhamkalsait/EasyCRUD.git
-cd EasyCRUD
-git checkout -b deploy-fix
-cd backend
+cd EasyCRUD/backend
 ```
 
----
-
-## Step 5: Configure Database Connection
-
-File:
+Edit `backend/src/main/resources/application.properties`:
 
 ```
-src/main/resources/application.properties
-```
-
-```properties
 server.port=8080
-spring.datasource.url=jdbc:mariadb://172.17.0.2:3306/studentdb
+spring.datasource.url=jdbc:mariadb://<DB_IP>:3306/studentdb
 spring.datasource.username=root
 spring.datasource.password=redhat
 spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
 ```
 
-✔ Backend now knows where DB is.
+Create `backend/Dockerfile`:
 
----
-
-## Step 6: Backend Dockerfile (Multi-Stage)
-
-```dockerfile
-FROM maven:3.8.3-openjdk-17 AS build
-WORKDIR /app
+```
+FROM maven:3.8.3-openjdk-17
+WORKDIR /opt/app
 COPY . .
 RUN mvn clean package -DskipTests
-
-FROM openjdk:17-jdk-slim
-WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
 EXPOSE 8080
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java","-jar","target/student-registration-backend-0.0.1-SNAPSHOT.jar"]
 ```
 
-🧠 Stage 1 builds JAR
-🧠 Stage 2 runs only JAR → smaller image
-
----
-
-## Step 7: Build & Push Backend Image
+Build & push:
 
 ```bash
-docker build -t shubhamkalsait1/easycrud-backend:v1 .
-docker push shubhamkalsait1/easycrud-backend:v1
+docker build -t yourdockerhub/curd_app:backend-v1 .
+docker push yourdockerhub/curd_app:backend-v1
 ```
 
----
+Run:
 
-# 🎨 PHASE 3 — Frontend
-
-Frontend talks to backend API.
-
----
-
-## Step 8: Set API URL
-
-```text
-API_BASE_URL=http://<SERVER_PUBLIC_IP>:8080
+```bash
+docker run -d \
+  --name backend-container \
+  -p 8080:8080 \
+  yourdockerhub/curd_app:backend-v1
 ```
 
-Examples:
+Step 5 — Frontend Setup
 
-* Local → `http://localhost:8080`
-* Cloud → `http://your-ip:8080`
+```bash
+cd ../frontend
+```
 
----
+Edit `frontend/.env`:
 
-## Step 9: Frontend Dockerfile
+```
+VITE_API_URL="http://<BACKEND_PUBLIC_IP>:8080/api"
+```
 
-```dockerfile
-FROM node:18 AS build
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
+Create `frontend/Dockerfile`:
+
+```
+FROM node:22-alpine
+WORKDIR /opt/app
 COPY . .
-RUN npm run build
-
-FROM nginx:alpine
-COPY --from=build /app/dist/frontend /usr/share/nginx/html
+RUN npm install && npm run build
+RUN apk add --no-cache apache2
+RUN cp -rf dist/* /var/www/localhost/htdocs/
 EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["httpd","-D","FOREGROUND"]
 ```
 
----
-
-## Step 10: Build & Push Frontend
+Build & push:
 
 ```bash
-docker build -t shubhamkalsait1/easycrud-frontend:v1 .
-docker push shubhamkalsait1/easycrud-frontend:v1
+docker build -t yourdockerhub/curd_app:frontend-v1 .
+docker push yourdockerhub/curd_app:frontend-v1
 ```
 
----
-
-# 🚀 PHASE 4 — Run the Application
-
-Order matters:
-
-### 1️⃣ Database → already running
-
-### 2️⃣ Backend
+Run:
 
 ```bash
 docker run -d \
- --name backend-container \
- -p 8080:8080 \
- shubhamkalsait1/easycrud-backend:v1
+  --name frontend-container \
+  -p 80:80 \
+  yourdockerhub/curd_app:frontend-v1
 ```
 
-Check:
+Access:  
+
+```
+http://YOUR_SERVER_IP
+```
+
+---
+
+🖥 METHOD 2 — Manual Deployment
+
+Backend
 
 ```bash
-docker logs backend-container
+apt install openjdk-17-jdk maven -y
+cd backend
+# edit src/main/resources/application.properties
+mvn clean package
+java -jar target/spring-backend-v1.jar
 ```
 
-You should see:
-
-```
-Started EasyCrudApplication
-```
-
----
-
-### 3️⃣ Frontend
+Frontend
 
 ```bash
-docker run -d \
- --name frontend-container \
- -p 80:80 \
- shubhamkalsait1/easycrud-frontend:v1
+apt install nodejs npm apache2 -y
+cd frontend
+# edit .env
+npm install
+npm run build
+cp -rf dist/* /var/www/html/
+systemctl restart apache2
 ```
 
 ---
 
-# 🌍 Access Application
+❌ Common Errors
 
-Open browser:
-
-```
-http://localhost
-```
-
-or
-
-```
-http://<SERVER_PUBLIC_IP>
-```
-
-✔ UI loads
-✔ CRUD operations work
-✔ Backend ↔ DB connected
+Symptom	Fix	
+Backend can't connect DB	Check DB IP in `application.properties`	
+React API error	Check `VITE_API_URL` in `.env`	
+Port already used	Change host port or stop conflicting service	
+Container exits	`docker logs <container>`	
 
 ---
 
-# 🧠 Architecture (Simple View)
+🔧 Files You Must Edit
 
-```
-Browser
-   ↓
-Frontend (Nginx Container)
-   ↓ API Calls
-Backend (Spring Boot Container)
-   ↓ JDBC
-MariaDB (Database Container)
-```
+File	Purpose	
+`backend/src/main/resources/application.properties`	DB IP, user, password	
+`frontend/.env`	Backend public IP	
+Docker image tags	Your Docker Hub username	
 
 ---
 
-# ⚠ Important Notes
+🏁 Architecture
 
-* DB must start **before** backend
-* Use correct DB IP
-* Only one of `CMD` or `ENTRYPOINT` in Dockerfile
-* If DB IP changes → update backend config
-* while creating EC2 S.G will be All TCP - IPV4
----
+```
+Browser → Frontend (80) → Backend (8080) → MariaDB
+```
+
+
+[EasyCRUD Repository](https://github.com/shubhamkalsait/EasyCRUD.git)
