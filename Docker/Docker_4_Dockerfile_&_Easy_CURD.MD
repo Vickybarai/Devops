@@ -180,7 +180,14 @@ Frontend
 ```bash
 apt install nodejs npm apache2 -y
 cd frontend
+
 # edit .env
+Create file `.env`:
+
+```
+VITE_API_URL="http://your-server-ip:8080/api"
+```
+
 npm install
 npm run build
 cp -rf dist/* /var/www/html/
@@ -193,7 +200,10 @@ systemctl restart apache2
 
 Symptom	Fix	
 Backend can't connect DB	Check DB IP in `application.properties`	
+
 React API error	Check `VITE_API_URL` in `.env`	
+
+
 Port already used	Change host port or stop conflicting service	
 Container exits	`docker logs <container>`	
 
