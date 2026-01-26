@@ -11,9 +11,11 @@ Purpose
 Standardizes application runtime
 Packages dependencies and libraries
 Provides consistent environments across development, testing, and production
-Command Example
+**Command Example**
+```bash
 docker --version
-Best Practice
+```
+
 Use Docker for consistent, portable application deployments
 ___
 
@@ -85,285 +87,220 @@ Docker and containerization are foundational enablers of microservices architect
 
 > Containers are lighter than VMs because they **do not need a separate OS**.
 
+	
+
 ---
-
-
 
 🔹 What is a Container?
 
 Definition
+
 A container is a lightweight, isolated process running on a shared host OS kernel, containing application binaries, dependencies, and configuration.
 
 Purpose
-
-Isolates applications
-
-Reduces resource usage
-
-Enables high-density deployments
-
+- Isolates applications  
+- Reduces resource usage  
+- Enables high-density deployments  
 
 Command Example
 
+```bash
 docker run -d --name my-container nginx:latest
+```
 
-Best Practice
-
-Use containers for consistent runtime environments
-
-Avoid running multiple applications in a single container
-
-
+Best Practice  
+- Use containers for consistent runtime environments  
+- Avoid running multiple applications in a single container  
 
 ---
 
 🔹 What is Containerization?
 
 Definition
+
 Containerization packages an application with all its dependencies into a single deployable unit.
 
 Purpose
-
-Ensures environment consistency
-
-Enables predictable deployments
-
-Reduces configuration drift
-
+- Ensures environment consistency  
+- Enables predictable deployments  
+- Reduces configuration drift  
 
 Key Advantages
-
-Fast startup
-
-Efficient resource usage
-
-High portability
-
-
+- Fast startup  
+- Efficient resource usage  
+- High portability  
 
 ---
 
 🔹 What is a Docker Image?
 
 Definition
+
 A Docker image is a read-only template used to create containers. It contains filesystem, application code, dependencies, and configuration.
 
 Purpose
-
-Blueprint for containers
-
-Enables reproducible deployments
-
+- Blueprint for containers  
+- Enables reproducible deployments  
 
 Command Examples
 
+```bash
 docker build -t myapp:1.0 .
 docker images
+```
 
 Best Practice
-
-Tag images with versions
-
-Keep images minimal
-
-
+- Tag images with versions  
+- Keep images minimal  
 
 ---
 
 🔹 What is a Dockerfile?
 
 Definition
+
 A Dockerfile is a script containing instructions to build a Docker image.
 
 Purpose
+- Automates image creation  
+- Defines base image, dependencies, configuration, and startup commands  
 
-Automates image creation
+Example
 
-Defines base image, dependencies, configuration, and startup commands
-
-
-Command Example
-
+```dockerfile
 FROM ubuntu:22.04
 WORKDIR /app
 COPY . .
 RUN apt update && apt install -y python3
 CMD ["python3", "app.py"]
+```
 
 Best Practice
-
-Use multi-stage builds for optimized images
-
-Keep instructions clear and minimal
-
-
+- Use multi-stage builds for optimized images  
+- Keep instructions clear and minimal  
 
 ---
 
 🔹 What is a Volume?
 
 Definition
+
 A volume is a persistent storage area managed by Docker, independent of container lifecycle.
 
 Purpose
-
-Stores database or application data persistently
-
-Shares data between containers
-
+- Stores database or application data persistently  
+- Shares data between containers  
 
 Command Examples
 
+```bash
 docker volume create my-volume
 docker run -d -v my-volume:/data mysql:latest
+```
 
 Best Practice
-
-Use named volumes
-
-Avoid storing persistent data inside container filesystem
-
-
+- Use named volumes  
+- Avoid storing persistent data inside container filesystem  
 
 ---
-
-___
 
 🔹 Docker Network
 
 Definition
+
 A Docker network is a logical isolation layer that allows containers to communicate securely with each other and the host.
 
 Purpose
+- Enables container-to-container communication  
+- Provides network isolation  
+- Supports service discovery using container names  
 
-Enables container-to-container communication
+Types of Docker Networks
 
-Provides network isolation for applications
+1. Bridge Network  
+   
+```bash
+   docker network create my-bridge-network
+   docker run -d --name db --network my-bridge-network mysql
+   docker run -d --name app --network my-bridge-network myapp
+   ```  
 
-Supports service discovery using container names
+   Best Practice: Use for isolated apps on a single host.
 
+2. Host Network  
+   
+```bash
+   docker run --network host -d myapp
+   ```  
 
+   Best Practice: Use only when low latency is critical and port conflicts are managed.
 
----
+3. Overlay Network  
+   
+```bash
+   docker network create -d overlay my-overlay-network
+   ```  
 
-🔹 Types of Docker Networks
+   Best Practice: Use for multi-host clusters or Swarm services.
 
-1. Bridge Network
-Definition: Default network for standalone containers on a single Docker host.
-Purpose: Allows containers on the same host to communicate.
-Command Example:
+4. Macvlan Network  
+   
+```bash
+   docker network create -d macvlan \
+     --subnet=192.168.1.0/24 \
+     --gateway=192.168.1.1 \
+     -o parent=eth0 my-macvlan
+   ```  
 
-docker network create my-bridge-network
-docker run -d --name db --network my-bridge-network mysql
-docker run -d --name app --network my-bridge-network myapp
+   Best Practice: Use only when direct LAN-level access is required.
 
-Best Practice: Use for isolated apps on a single host.
+5. None Network  
+   
+```bash
+   docker run --network none -d myapp
+   ```  
 
-
-
-
----
-
-2. Host Network
-Definition: Container shares the host’s network stack directly.
-Purpose: Provides maximum performance by using the host’s IP and ports.
-Command Example:
-
-docker run --network host -d myapp
-
-Best Practice: Use only when low latency is critical and port conflicts are managed.
-
-
-
-
----
-
-3. Overlay Network
-Definition: Multi-host network that allows containers across different Docker hosts to communicate securely.
-Purpose: Enables distributed applications in Docker Swarm or multi-node setups.
-Command Example:
-
-docker network create -d overlay my-overlay-network
-
-Best Practice: Use for Swarm services or multi-host clusters.
-
-
-
-
----
-
-4. Macvlan Network
-Definition: Assigns a MAC address to a container, making it appear as a physical device on the network.
-Purpose: Useful for legacy applications that require direct Layer 2 access.
-Command Example:
-
-docker network create -d macvlan \
-  --subnet=192.168.1.0/24 \
-  --gateway=192.168.1.1 \
-  -o parent=eth0 my-macvlan
-
-Best Practice: Use only when direct LAN-level access is required.
-
-
-
-
----
-
-5. None Network
-Definition: Disables networking for the container.
-Purpose: For containers that do not need external communication.
-Command Example:
-
-docker run --network none -d myapp
-
-Best Practice: Use for highly isolated or security-sensitive containers.
-___
-
+   Best Practice: Use for highly isolated or security-sensitive containers.
 
 ---
 
 🔹 What is Docker Hub?
 
 Definition
+
 Docker Hub is a public registry to store, share, and pull Docker images.
 
 Purpose
-
-Centralized image distribution
-
-Supports CI/CD workflows
-
+- Centralized image distribution  
+- Supports CI/CD workflows  
 
 Command Examples
 
+```bash
 docker login
 docker push username/myapp:1.0
 docker pull username/myapp:1.0
+```
 
 Best Practice
-
-Use official images as base
-
-Use private repositories for sensitive apps
-
-
+- Use official images as base  
+- Use private repositories for sensitive apps  
 
 ---
 
-🔹 What is Docker Compose (YAML)?
+🔹 What is Docker Compose?
 
 Definition
+
 Docker Compose is a tool to define and run multi-container applications using a YAML file.
 
 Purpose
-
-Orchestrates multiple services
-
-Defines networks, volumes, and environment variables
-
+- Orchestrates multiple services  
+- Defines networks, volumes, and environment variables  
 
 docker-compose.yml Example
 
+```yaml
 version: '3.8'
 
 services:
@@ -391,20 +328,21 @@ volumes:
 
 networks:
   app-network:
+```
 
 Command Examples
 
+```bash
 docker-compose up -d
 docker-compose down
+```
 
 Best Practice
+- Use environment variables for configuration  
+- Keep services, volumes, and networks organized  
+- Version control your docker-compose.yml
 
-Use environment variables for configuration
-
-Keep services, volumes, and networks organized
-
-Version control your docker-compose.yml
-
+```
 
 ___
 
