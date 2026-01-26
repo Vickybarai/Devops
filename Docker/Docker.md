@@ -5,7 +5,9 @@
 ---
 
 🔹 What is Docker?
+
 Definition
+
 Docker is an open-source containerization platform that allows applications to be built, packaged, shipped, and run in isolated containers.
 Purpose
 Standardizes application runtime
