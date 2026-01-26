@@ -4,7 +4,17 @@
 
 ---
 
-
+🔹 What is Docker?
+Definition
+Docker is an open-source containerization platform that allows applications to be built, packaged, shipped, and run in isolated containers.
+Purpose
+Standardizes application runtime
+Packages dependencies and libraries
+Provides consistent environments across development, testing, and production
+Command Example
+docker --version
+Best Practice
+Use Docker for consistent, portable application deployments
 ___
 
 ## 🏗️ Architecture Comparison
@@ -74,14 +84,6 @@ Docker and containerization are foundational enablers of microservices architect
 | Isolation      | Low         | Strong         | Process-level    |
 
 > Containers are lighter than VMs because they **do not need a separate OS**.
----
-
-
-
-Here’s a clean, structured, beginner-to-intermediate Docker guide with definitions, explanations, and commands, ready for README or notes. I’ve included all the Docker topics you mentioned: Docker, Container, Image, Dockerfile, Volume, Network, Docker Hub, and Docker Compose (YAML).
-
-No extra commentary, no comparisons unless structural, just definition → purpose → command → best practice.
-
 
 ---
 
@@ -225,30 +227,97 @@ Avoid storing persistent data inside container filesystem
 
 ---
 
-🔹 What is a Network?
+___
+
+🔹 Docker Network
 
 Definition
-A Docker network enables containers to communicate securely with each other and the host.
+A Docker network is a logical isolation layer that allows containers to communicate securely with each other and the host.
 
 Purpose
 
-Isolates container traffic
+Enables container-to-container communication
 
-Allows service discovery using container names
+Provides network isolation for applications
+
+Supports service discovery using container names
 
 
-Command Examples
 
-docker network create my-network
-docker run -d --name db --network my-network mysql
-docker run -d --name app --network my-network myapp
+---
 
-Best Practice
+🔹 Types of Docker Networks
 
-Use bridge networks for isolated apps
+1. Bridge Network
+Definition: Default network for standalone containers on a single Docker host.
+Purpose: Allows containers on the same host to communicate.
+Command Example:
 
-Use overlay networks for multi-host environments
+docker network create my-bridge-network
+docker run -d --name db --network my-bridge-network mysql
+docker run -d --name app --network my-bridge-network myapp
 
+Best Practice: Use for isolated apps on a single host.
+
+
+
+
+---
+
+2. Host Network
+Definition: Container shares the host’s network stack directly.
+Purpose: Provides maximum performance by using the host’s IP and ports.
+Command Example:
+
+docker run --network host -d myapp
+
+Best Practice: Use only when low latency is critical and port conflicts are managed.
+
+
+
+
+---
+
+3. Overlay Network
+Definition: Multi-host network that allows containers across different Docker hosts to communicate securely.
+Purpose: Enables distributed applications in Docker Swarm or multi-node setups.
+Command Example:
+
+docker network create -d overlay my-overlay-network
+
+Best Practice: Use for Swarm services or multi-host clusters.
+
+
+
+
+---
+
+4. Macvlan Network
+Definition: Assigns a MAC address to a container, making it appear as a physical device on the network.
+Purpose: Useful for legacy applications that require direct Layer 2 access.
+Command Example:
+
+docker network create -d macvlan \
+  --subnet=192.168.1.0/24 \
+  --gateway=192.168.1.1 \
+  -o parent=eth0 my-macvlan
+
+Best Practice: Use only when direct LAN-level access is required.
+
+
+
+
+---
+
+5. None Network
+Definition: Disables networking for the container.
+Purpose: For containers that do not need external communication.
+Command Example:
+
+docker run --network none -d myapp
+
+Best Practice: Use for highly isolated or security-sensitive containers.
+___
 
 
 ---
