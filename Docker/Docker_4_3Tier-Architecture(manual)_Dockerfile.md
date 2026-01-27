@@ -56,21 +56,20 @@ EXIT;
 ---
 
 4️⃣ Import Tables
-
+```bash
 mysql -h <RDS-ENDPOINT> -u admin -p springdatabase < springbackend.sql
-
-
+```
 ---
 
 5️⃣ Verify Database
-
+```bash
 mysql -h <RDS-ENDPOINT> -u admin -p
 SHOW DATABASES;
 USE springdatabase;
 SHOW TABLES;
 DESC tbl_workers;
 EXIT;
-
+```
 ✔ RDS setup completed
 
 
@@ -79,68 +78,67 @@ EXIT;
 🔹 PART 2: EC2 SERVER SETUP
 
 1️⃣ Update Server
-
+```bash
 sudo apt update -y
 sudo apt upgrade -y
-
-
+```
 ---
 
 2️⃣ Install Docker
-
+```bash
 sudo apt install docker.io -y
 sudo usermod -aG docker ubuntu
-
+```
 🔁 Logout & login again
 
 
 ---
 
 3️⃣ Install Required Tools
-
+```bash
 sudo apt install git mariadb-client ca-certificates curl -y
 
-
+```
 ---
 
 4️⃣ Clone Project Repository
-
+```bash
 git clone https://github.com/cloud-blitz/angular-java.git
 cd angular-java
-
+```
 
 ---
 
 🔹 PART 3: BACKEND (Spring Boot)
 
 1️⃣ Configure Backend Database
-
+```bash
 cd spring-backend/src/main/resources/
 vim application.properties
-
+```
 Update:
-
+```bash
 spring.datasource.url=jdbc:mysql://<RDS-ENDPOINT>:3306/springdatabase
 spring.datasource.username=admin
 spring.datasource.password=<RDS-PASSWORD>
-
+```
 Save and exit (ESC :wq)
 
 
 ---
 
 2️⃣ Build Backend Docker Image
-
+```bash
 cd ../../
 docker build -t backend-image:v1 .
-
+```
 
 ---
 
 3️⃣ Run Backend Container
-
+```bash
 docker run -d -p 8080:8080 --name backend backend-image:v1
-
+```
 
 ---
 
@@ -158,10 +156,10 @@ http://<EC2_PUBLIC_IP>:8080/
 🔹 PART 4: FRONTEND (Angular)
 
 1️⃣ Configure Frontend API URL
-
+```bash
 cd angular-frontend/src/app/services/
 vim worker.service.ts
-
+```
 Update:
 
 private baseUrl = "http://<EC2_PUBLIC_IP>:8080/api/workers";
@@ -172,17 +170,17 @@ Save and exit.
 ---
 
 2️⃣ Build Frontend Docker Image
-
+```bash
 cd ../../../
 docker build -t frontend-image:v1 .
-
+```
 
 ---
 
 3️⃣ Run Frontend Container
-
+```bash
 docker run -d -p 80:80 --name frontend frontend-image:v1
-
+```
 
 ---
 
