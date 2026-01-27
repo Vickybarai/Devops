@@ -42,15 +42,16 @@ Browser | |  HTTP (80) v Angular Frontend (Docker) | |  REST API (8080) v Spring
 ### 2️⃣ Connect to RDS from EC2
 ```bash
 mysql -h <RDS-ENDPOINT> -u admin -p
-
+```
 
 ---
 
 3️⃣ Create Application Database
-
+```
+bash
 CREATE DATABASE springdatabase;
 EXIT;
-
+```
 
 ---
 
