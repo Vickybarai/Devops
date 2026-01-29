@@ -1,430 +1,302 @@
 
+# Linux Interview & DevOps Deep-Dive Guide
 
+This guide is structured for **freshers to intermediate DevOps candidates**, giving **definition, explanation, commands, and practical use** in a clear, structured manner.  
 
-1️⃣ File System
+---
 
-Know where logs, configs, and binaries live
+## 1️⃣ File System: Where everything lives
 
-Linux is predictable. Once you understand the filesystem, 50% debugging becomes easy.
+Linux stores files in a **hierarchical structure**. Knowing this is key for debugging, backups, and automation.
 
-🔹 Core Rule
+| Directory | Purpose | Example Files |
+|-----------|---------|---------------|
+| `/`       | Root of all filesystems | /bin, /etc, /home, /var |
+| `/bin`   | Essential binaries for all users | ls, cp, mv, cat |
+| `/sbin`  | System binaries (root only) | ifconfig, fdisk, ip |
+| `/etc`   | Configuration files | passwd, ssh/sshd_config |
+| `/var`   | Variable data like logs, caches | /var/log/syslog, /var/log/messages |
+| `/home`  | User home directories | /home/bhai, /home/user1 |
+| `/tmp`   | Temporary files | tmp uploads, script temp files |
+| `/usr`   | User-installed programs | /usr/bin, /usr/lib |
+| `/opt`   | Optional software packages | /opt/java, /opt/docker |
 
-> Linux separates configuration, binaries, logs, and data clearly.
+**Commands to explore:**
+```bash
+ls -l /etc        # List configs
+ls -l /var/log    # Check logs
+file /bin/ls      # Identify file type
 
+Explanation:
 
+Logs → /var/log (syslog, auth.log, kernel logs)
 
-📂 Critical Directories (Interview MUST)
+Configs → /etc (service configs, user settings)
 
-Directory	Purpose	Why it matters
-
-/etc	Configuration files	Service not working? Config issue = here
-/var/log	Logs	First place to debug failures
-/bin, /usr/bin	User commands	Where core commands live
-/sbin, /usr/sbin	Admin commands	Root-only binaries
-/lib, /usr/lib	Libraries	Missing libs = app crash
-/home	User data	User access issues
-/root	Root home	Admin environment
-/tmp	Temporary files	Auto-cleaned
-/opt	Optional software	Third-party apps
-/var	Variable data	Logs, cache, spool
-
-
-🧠 Interview Insight
-
-> “If a service fails, I check /etc for config, /var/log for errors, and binary path for existence.”
-
+Binaries → /bin, /sbin, /usr/bin (who runs what, system or user)
 
 
 
 ---
 
-2️⃣ Permissions & Ownership
+2️⃣ Permissions & Ownership: Fix 80% of access issues
 
-Fix 80% of access issues
+Linux permissions control who can read/write/execute files. Most access problems come from misconfigured ownership or permissions.
 
-Most Linux problems are NOT bugs, they’re permission problems.
+Permissions structure: rwxr-xr--
 
-🔹 Permission Model
+Owner → first 3 chars
 
-r = read
-w = write
-x = execute
+Group → next 3 chars
 
-Applied to:
-
-Owner
-
-Group
-
-Others
+Others → last 3 chars
 
 
-Example:
+Commands:
 
--rwxr-xr--
+ls -l filename                  # View permissions and owner
+chmod 755 filename              # Owner rwx, group rx, others rx
+chown user:group filename       # Change file owner & group
+getfacl filename                # View detailed ACLs
 
-Owner: full access
+Soft vs Hard Links:
 
-Group: read + execute
+ln -s /path/to/file linkname    # Soft link (can cross filesystems)
+ln /path/to/file hardlink       # Hard link (same inode, same filesystem)
 
-Others: read only
+Explanation:
 
+Most permission issues: wrong owner/group or missing execute (x) for scripts
 
-🔹 Ownership
+Sticky bit: /tmp → prevents deletion of files by non-owners
 
-chown user:group file
-
-🔹 Why apps fail
-
-Script not executable
-
-Service user doesn’t own file
-
-Wrong directory permissions
-
-
-🔐 Special Permissions
-
-Type	Use case
-
-setuid	Run as owner (passwd)
-setgid	Shared group dirs
-sticky bit	/tmp safety
-
-
-🧠 Interview Insight
-
-> “When I see ‘Permission denied’, I immediately check ownership, chmod, and SELinux.”
-
+setuid/setgid → run a program as the file owner/group
 
 
 
 ---
 
-3️⃣ Processes & Services
+3️⃣ Processes & Services: Understand what’s running
 
-Understand what’s actually running
+Processes are running programs, and services/daemons run in the background.
 
-Linux runs processes, systemd manages services.
+Commands to monitor processes:
 
-🔹 Process Basics
+ps -ef                         # List all processes with PID & owner
+top                             # Dynamic CPU/memory monitor
+htop                            # Interactive process viewer
+kill PID                        # Terminate process gracefully
+kill -9 PID                      # Force kill
 
-Every process has a PID
+Services (systemd):
 
-Parent → Child hierarchy
+systemctl status sshd           # Check service status
+systemctl start httpd           # Start service
+systemctl stop httpd            # Stop service
+systemctl enable sshd           # Auto-start at boot
+systemctl disable sshd          # Disable at boot
+journalctl -u sshd              # View logs for service
 
-Resources: CPU, memory, files
+Explanation:
 
+Use ps/top/htop to identify resource-hogging processes
 
-Key Commands:
-
-ps -ef
-top
-htop
-
-🔹 Kill Logic
-
-kill → graceful
-
-kill -9 → force (last option)
-
-
-🔹 Zombie Process
-
-Finished execution
-
-Parent didn’t collect status
-
-Fix = restart parent
-
-
-🧠 Interview Insight
-
-> “High load? I first check running processes, not restart blindly.”
-
+Services controlled by systemd run in background → understanding targets helps debug startup
 
 
 
 ---
 
-4️⃣ Logs & Debugging
+4️⃣ Logs & Debugging: Find the real cause
 
-Find the real cause, not guesses
+Logs reveal issues in system, kernel, apps, and users.
 
-Admins read logs, juniors restart services.
+Important log files:
 
-🔹 Where logs live
+/var/log/syslog        # System messages
+/var/log/messages      # Kernel & system
+/var/log/auth.log      # Authentication and sudo logs
+/var/log/boot.log      # Boot messages
+/var/log/httpd/        # Webserver logs
 
-/var/log/
+Commands:
 
-Common logs:
+tail -f /var/log/syslog       # Real-time log viewing
+grep "error" /var/log/syslog  # Filter logs for issues
+less /var/log/auth.log         # Navigate large logs
+journalctl -xe                # systemd errors
 
-syslog
+Explanation:
 
-messages
+Logs are first place to debug failures
 
-auth.log
+journalctl → systemd logs, centralized
 
-secure
-
-App-specific folders
-
-
-🔹 systemd logs
-
-journalctl
-journalctl -u nginx
-journalctl -xe
-
-🔹 Debug mindset
-
-1. What failed?
-
-
-2. When?
-
-
-3. What changed?
-
-
-4. What error exactly?
-
-
-
-🧠 Interview Insight
-
-> “I never assume. Logs always tell the truth.”
-
+grep + tail -f → monitor for live errors
 
 
 
 ---
 
-5️⃣ Networking Basics
+5️⃣ Networking Basics: Ports, DNS, IPs, Firewalls
 
-Ports, DNS, IPs, firewalls
+Networking is key for server connectivity and troubleshooting.
 
-Most production outages = network issues.
+Commands:
 
-🔹 IP & Interfaces
+ip addr                       # Check IP addresses
+ping 8.8.8.8                   # Test connectivity
+netstat -tuln                  # Listening ports
+ss -tulnp                      # Advanced port info
+telnet host port               # Test port connectivity
+curl -I http://example.com     # Test HTTP connectivity
 
-ip addr
-ifconfig
+DNS & Hosts:
 
-🔹 Connectivity
+cat /etc/resolv.conf            # Check DNS servers
+cat /etc/hosts                  # Static hostname resolution
 
-ping
-curl
-telnet
-nc
+Firewall (iptables / firewalld):
 
-🔹 Ports
+sudo iptables -L                # List firewall rules
+sudo firewall-cmd --list-all    # List firewalld rules
 
-ss -tuln
-netstat -putan
+Explanation:
 
-🔹 DNS
+Know which ports are open and services bound
 
-Files:
+Test connectivity before blaming applications
 
-/etc/hosts → local override
-
-/etc/resolv.conf → DNS servers
-
-
-🔹 Firewall
-
-iptables
-firewalld
-ufw
-
-🧠 Interview Insight
-
-> “Service running but not reachable usually means port or firewall issue.”
-
+Understand routing & DNS resolution
 
 
 
 ---
 
-6️⃣ Disk & Memory
+6️⃣ Disk & Memory: Why systems slow down or crash
 
-Why systems slow down or crash
+Check disk usage:
 
-🔹 Disk
+df -h                          # Disk usage by filesystem
+du -sh /var/log/*               # Directory size
+lsblk                           # Partition info
+fdisk -l                        # Disk partition layout
 
-df -h
-du -sh
+Check memory:
 
-🔹 Inodes
+free -h                        # RAM usage
+vmstat 1 5                      # Memory & CPU stats
+top                             # See top memory processes
 
-Disk may have space but no inodes left.
+Explanation:
 
-df -i
+Disk full vs inode full → “No space left on device”
 
-🔹 Memory
-
-free -h
-top
-
-🔹 Swap
-
-Used when RAM full → performance drops.
-
-🧠 Interview Insight
-
-> “Before scaling, I check disk I/O, memory pressure, and swap usage.”
-
+Memory leaks → top + ps to locate culprit process
 
 
 
 ---
 
-7️⃣ Package Management
+7️⃣ Package Management: How software is installed
 
-How software is installed
+Debian/Ubuntu (APT):
 
-Linux uses repositories + package managers.
+sudo apt update                 # Update repo info
+sudo apt install nginx          # Install software
+dpkg -l                         # List installed packages
 
-Common managers:
+RHEL/CentOS (YUM/DNF):
 
-OS	Tool
+sudo yum install httpd
+rpm -qa                         # List installed packages
 
-Ubuntu	apt
-RHEL/CentOS	yum / dnf
+Explanation:
 
+Know how packages install binaries, configs, and dependencies
 
-Flow:
-
-1. Repo configured
-
-
-2. Metadata fetched
-
-
-3. Package installed
-
-
-4. Config in /etc
-
-
-5. Binary in /usr/bin
-
-
-6. Service created
-
-
-
-🧠 Interview Insight
-
-> “Package manager ensures dependency resolution and clean upgrades.”
-
+Always check service after installation
 
 
 
 ---
 
-8️⃣ System Startup (systemd)
+8️⃣ System Startup (systemd): How services run
 
-How services actually run
+Boot sequence: BIOS → GRUB → Kernel → init/systemd → targets → services
 
-Boot Flow:
+Common commands:
 
-BIOS → GRUB → Kernel → systemd → services
+systemctl list-units --type=target
+systemctl list-unit-files       # All services
+systemctl reboot                 # Reboot system
+systemctl isolate multi-user.target # Change runlevel
 
-systemd basics:
+Explanation:
 
-systemctl status nginx
-systemctl start nginx
-systemctl enable nginx
+Targets = runlevels → define which services start
 
-Service files:
+Custom services: /etc/systemd/system/myservice.service
 
-/usr/lib/systemd/system
-/etc/systemd/system
-
-🧠 Interview Insight
-
-> “If a service fails at boot, I check unit file and journalctl.”
-
+Debug logs: journalctl -u myservice
 
 
 
 ---
 
-9️⃣ Users & SSH
-
-Secure access to servers
+9️⃣ Users & SSH: Secure access to servers
 
 User management:
 
-useradd
-usermod
-userdel
+sudo adduser bhai
+sudo passwd bhai
+sudo usermod -aG sudo bhai     # Add to sudo
+sudo deluser bhai
 
-SSH
+SSH access:
 
-Encrypted
+ssh bhai@server-ip
+ssh-keygen -t rsa -b 4096
+ssh-copy-id bhai@server-ip
+sudo nano /etc/ssh/sshd_config   # Disable root login, set port
+systemctl restart sshd
 
-Port 22
+Explanation:
 
-Key-based auth preferred
+SSH keys → passwordless & secure login
 
+Always check /etc/ssh/sshd_config for security settings
 
-Secure SSH:
-
-Disable root login
-
-Use keys
-
-Limit users
-
-
-🧠 Interview Insight
-
-> “SSH security is first line of defense in Linux.”
-
+Limit root & use sudo
 
 
 
 ---
 
-🔟 Automation (Bash)
+🔟 Automation (Bash): Make Linux work for you
 
-Make Linux work for you
+Cron jobs:
 
-Admins automate, not repeat.
+crontab -l                        # List cron jobs
+crontab -e                        # Edit cron jobs
+# Format: min hour day month day_of_week command
+0 2 * * * /usr/bin/backup.sh      # Daily backup at 2 AM
 
-Bash used for:
+Basic scripting:
 
-Backups
+#!/bin/bash
+# Monitor disk usage
+THRESHOLD=80
+USAGE=$(df / | tail -1 | awk '{print $5}' | sed 's/%//')
+if [ $USAGE -gt $THRESHOLD ]; then
+  echo "Disk usage above threshold" | mail -s "Alert" admin@example.com
+fi
 
-Monitoring
+Explanation:
 
-Cleanup
+Automate backups, monitoring, and alerts
 
-Deployments
-
-
-Automation tools:
-
-bash
-
-cron
-
-systemd timers
-
-
-Key concept:
-
-> “If you run a command twice, script it.”
-
-
-
-🧠 Interview Insight
-
-> “Automation reduces human error and saves time.”
-
+Use cron + bash scripts → prevent manual errors
 
 
 
