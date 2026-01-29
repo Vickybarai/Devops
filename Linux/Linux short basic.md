@@ -1,10 +1,3 @@
-
-# Linux Interview & DevOps Deep-Dive Guide
-
-This guide is structured for **freshers to intermediate DevOps candidates**, giving **definition, explanation, commands, and practical use** in a clear, structured manner.  
-
----
-
 ## 1️⃣ File System: Where everything lives
 
 Linux stores files in a **hierarchical structure**. Knowing this is key for debugging, backups, and automation.
@@ -297,6 +290,4 @@ Explanation:
 Automate backups, monitoring, and alerts
 
 Use cron + bash scripts → prevent manual errors
-
-
 
