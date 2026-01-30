@@ -1,89 +1,102 @@
-# EC2 Deep-Dive Notes (Notebook Format)
-Covering:
-- Instance Types
-- Instance Tenancy
-- Placement Groups
-- Network Interfaces (NIC / ENI)
-- Elastic IP
-- Security Groups vs NACLs
-
----
 
 ## Topic: EC2 Instance Types
 
+### Interview Keyword (IQ):
+- **Type**
+- **Series**
+- **Load Balancer**
+- **EC2 Instance Type & Tenancy**
+
 ### Definition
-**EC2 Instance Types** define the hardware configuration of an EC2 instance, including CPU, memory, storage, and networking capacity. They are grouped based on workload use cases.
-
----
-
-### Instance Type Families (IQ – Type, Series)
-
-> Format Example: `t3.micro`
-- **Family**: t (General purpose)
-- **Generation**: 3
-- **Size**: micro
+**EC2 Instance Types** define the **hardware configuration** of an EC2 instance.  
+They are grouped based on **use cases** and provide different combinations of:
+- CPU
+- Memory
+- Storage
+- Networking capacity
 
 ---
 
 ### Categories of EC2 Instance Types
 
-- **General Purpose**
-  - Balanced CPU, memory, and networking
-  - Examples: `t2`, `t3`, `t4g`, `m5`
-  - Use case: Web servers, dev/test, small databases
+#### 1. General Purpose
+- Balanced compute, memory, and networking
+- Suitable for most workloads
+- Examples:
+  - `t2`, `t3`, `t3a`
 
-- **Compute Optimized**
-  - High CPU performance
-  - Examples: `c5`, `c6`
-  - Use case: Scientific modeling, batch processing, high-performance servers
+#### 2. Compute Optimized
+- High-performance processors
+- Best for compute-intensive tasks
+- Use cases:
+  - Scientific modeling
+  - Batch processing
+  - High-performance web servers
 
-- **Memory Optimized**
-  - High memory capacity
-  - Examples: `r5`, `x1`
-  - Use case: In-memory databases, real-time big data analytics
+#### 3. Memory Optimized
+- High memory-to-CPU ratio
+- Designed for large in-memory datasets
+- Use cases:
+  - Databases
+  - In-memory caching
+  - Real-time analytics
 
-- **Accelerated Computing**
-  - Uses GPUs / FPGAs
-  - Examples: `p`, `g`, `inf`
-  - Use case: Machine learning, AI, video rendering
+#### 4. Accelerated Computing
+- Uses hardware accelerators (GPU, FPGA)
+- Use cases:
+  - Machine Learning
+  - AI
+  - Video processing
 
-- **Storage Optimized**
-  - High IOPS and throughput using local storage
-  - Examples: `i3`, `d2`
-  - Use case: Data warehousing, log processing
+#### 5. Storage Optimized
+- High I/O performance
+- Local instance storage
+- Use cases:
+  - Big data
+  - Data warehousing
+  - Log processing
 
 ---
 
 ## Topic: Instance Tenancy
 
 ### Definition
-**Instance Tenancy** defines how your EC2 instance is placed on the underlying physical hardware.
-
----
-
-### Instance Tenancy Types (3 Types)
-
-- **Shared (Default)**
-  - Instances may share hardware with other AWS customers
-  - Lowest cost
-  - Most commonly used
-
-- **Dedicated Instance**
-  - Hardware dedicated to **a single AWS customer**
-  - May run multiple instances from the same customer
-  - No control over the physical host
-
-- **Dedicated Host**
-  - A **physical server fully dedicated** to your use
-  - Full visibility and control over sockets, cores
-  - Required for compliance & licensing (e.g., Oracle, Windows BYOL)
+**Instance Tenancy** defines **how your EC2 instances are placed on physical hardware**.
 
 ---
 
 ### Diagram Notes (From Notebook)
 
 - Rack → Placement Group
-- Cluster: EC2 EC2 EC2 close together
-- Spread: EC2s on separate hardware
-- Partition: Hardware isolation in sections
+- Placement Group Types:
+  1. **Cluster** – EC2, EC2, EC2 close together (same rack)
+  2. **Spread** – Separate hardware (rent by same organization)
+  3. **Partition** – Hardware divided into isolated partitions
 
+---
+
+### Types of Instance Tenancy
+
+#### 1. Shared (Default)
+- Instances share hardware with other AWS customers
+- Cost-effective
+- Default option
+
+#### 2. Dedicated Instance
+- Hardware dedicated to **one AWS customer**
+- Multiple instances of the same customer can run
+- Less control than Dedicated Host
+
+#### 3. Dedicated Host
+- A **physical server** dedicated only to you
+- Full visibility & control over hardware
+- Required for:
+  - License compliance
+  - Regulatory requirements
+
+---
+
+
+
+
+.
