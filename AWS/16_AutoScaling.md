@@ -1,15 +1,15 @@
-Scaling & Storage Performance – Concepts Deep Dive
 
-This section explains how systems scale and how storage performance is measured, both of which are core AWS + DevOps interview topics and critical for real-world architecture decisions.
+
+Scaling & Storage Performance (AWS – Interview Notes)
 
 
 ---
 
-Topic: Scaling (Concepts & Types)
+📌 Topic: Scaling (Concepts & Types)
 
-1. What is Scaling?
+1️⃣ What is Scaling?
 
-Scaling is the ability of a system to increase or decrease resources in response to workload demand while maintaining:
+Scaling is the ability of a system to increase or decrease its capacity based on demand while maintaining:
 
 Performance
 
@@ -18,43 +18,41 @@ Availability
 Cost efficiency
 
 
-A well-designed system scales smoothly under load and shrinks during low usage to avoid waste.
-
 
 ---
 
-2. Types of Scaling
+2️⃣ Types of Scaling
 
-A. Manual Scaling vs Auto Scaling
+🔹 Manual Scaling vs Auto Scaling
 
 Manual Scaling
 
-Capacity changes are performed by a human.
+Capacity is increased or decreased manually by a human
 
-Engineer manually adds or removes servers/resources.
+Requires operational intervention
 
 
 Pros
 
-Full control
+Simple
 
-Simple to understand
+Full manual control
 
 
 Cons
 
-Slow reaction to traffic spikes
+Slow response
 
 Error-prone
 
-Not suitable for production-scale systems
+Not suitable for production
 
 
-Use Case
+Use Cases
 
-Testing environments
+Dev / Test environments
 
-Small or non-critical workloads
+Small workloads
 
 
 
@@ -62,9 +60,11 @@ Small or non-critical workloads
 
 Auto Scaling
 
-Capacity adjusts automatically based on:
+Capacity adjusts automatically
 
-Metrics (CPU, memory, requests)
+Based on:
+
+Metrics
 
 Schedules
 
@@ -74,51 +74,49 @@ Forecasts
 
 Pros
 
-Faster response to load
-
-Cost-efficient
-
 High availability
+
+Cost-optimized
+
+Fast reaction to traffic spikes
 
 
 Cons
 
-Requires correct policy tuning
+Requires correct policy configuration
 
 
-Use Case
+Use Cases
 
-Production systems
+Production workloads
 
-Web apps, APIs, microservices
+Web apps & APIs
 
 
 
 ---
 
-B. Horizontal vs Vertical Scaling
+🔹 Horizontal vs Vertical Scaling
 
-Horizontal Scaling (Scale Out / Scale In)
+Horizontal Scaling (Scale Out / In)
 
-Add or remove instances/nodes
+Adds or removes instances
 
-Example: 2 EC2 → 6 EC2 during traffic spike
+Example: 2 EC2 → 6 EC2
 
 
 Advantages
 
-Improves fault tolerance
+Fault tolerance
 
-Enables parallel processing
+High availability
 
-Supports long-term growth
-
-No single point of failure
+Long-term scalability
 
 
 Requirements
 
-Stateless application design
+Stateless design
 
 Load balancer
 
@@ -127,19 +125,17 @@ Shared or distributed storage
 
 Best For
 
-Cloud-native applications
-
 Microservices
 
-High availability systems
+Cloud-native apps
 
 
 
 ---
 
-Vertical Scaling (Scale Up / Scale Down)
+Vertical Scaling (Scale Up / Down)
 
-Increase resources of one machine
+Increase resources of a single instance
 
 Example: t3.medium → t3.large
 
@@ -148,64 +144,62 @@ Advantages
 
 Simple to implement
 
-No architecture changes needed
+No architecture changes
 
 
 Limitations
 
-Hardware ceiling
+Hardware limits
 
-Downtime may be required
+Possible downtime
 
 Single point of failure
 
 
 Best For
 
-Monolithic apps
+Monolithic applications
 
-Databases needing short-term boosts
+Short-term performance boost
 
 
 
 ---
 
-Topic: Auto Scaling Methods
+📌 Topic: Auto Scaling Methods
 
-1. Static Scaling (Baseline Capacity)
+1️⃣ Static Scaling (Baseline)
 
-Define min / desired / max capacity
+Fixed min / desired / max capacity
 
-Capacity rarely changes
+Rarely changes
 
-Ensures a minimum availability floor
+Ensures minimum availability
 
 
 Use Case
 
-Always-on baseline traffic
-
-Core services that must stay running
+Always-on workloads
 
 
 
 ---
 
-2. Dynamic Scaling
+2️⃣ Dynamic Scaling
 
 Reactive scaling
 
-Responds to real-time metrics such as:
+Responds to live metrics:
 
-CPU utilization
+CPU
 
-Request count
+Requests
 
 Queue depth
 
 
 
-Common Policies
+Policies
 
 Target Tracking
 
@@ -214,21 +208,14 @@ Step Scaling
 Simple Scaling
 
 
-Use Case
-
-Unpredictable traffic
-
-Event-driven workloads
-
-
 
 ---
 
-3. Predictive Scaling
+3️⃣ Predictive Scaling
 
 Proactive scaling
 
-Uses historical data + ML
+Uses historical data & ML
 
 Scales before traffic arrives
 
@@ -237,23 +224,21 @@ Best For
 
 Seasonal traffic
 
-Cyclical workloads
-
-Business-hour peaks
+Predictable demand
 
 
 
 ---
 
-4. Scheduled Scaling
+4️⃣ Scheduled Scaling
 
-Time-based scaling using a clock or calendar
+Time-based scaling
 
 Example:
 
 Scale out: Weekdays 9–11 AM
 
-Scale in: Nights / weekends
+Scale in: Night hours
 
 
 
@@ -261,134 +246,115 @@ Best For
 
 Predictable workloads
 
-Batch jobs
-
-Office-hour applications
-
 
 
 ---
 
-Topic: Dynamic Scaling Policy Types
+📌 Topic: Dynamic Scaling Policy Types
 
-1. Target Tracking Scaling
+🔹 Target Tracking Scaling
 
-Maintains a metric at a fixed target
-
-Example: Keep CPU at 50%
-
-
-Behavior
-
-Automatically adds/removes capacity
-
-Simplest and most recommended approach
-
-
-
----
-
-2. Step Scaling
-
-Multiple thresholds with graduated actions
-
+Maintains a target metric
 
 Example:
 
-CPU 70% → +1 instance
 
-CPU 85% → +2 instances
+CPU Utilization = 50%
 
-
-Use Case
-
-Fine-grained control over scaling behavior
+AWS adds/removes capacity automatically
 
 
 
 ---
 
-3. Simple Scaling
+🔹 Step Scaling
 
-One alarm triggers one fixed action
-
-Older approach (mostly legacy)
+Multiple thresholds with graded actions
 
 
-Limitation
+Example
+
+CPU ≥ 70% → +1 instance
+
+CPU ≥ 85% → +2 instances
+
+
+
+---
+
+🔹 Simple Scaling
+
+One alarm → one scaling action
+
+Legacy approach
 
 Less flexible
 
-Cooldown delays
-
-
-
----
-
-Topic: Storage Performance Terminology
-
-Understanding storage performance is critical for databases, analytics, and high-traffic applications.
 
 
 ---
 
-1. IOPS (Input/Output Operations Per Second)
+📌 Topic: Storage Performance Terminology
+
+
+---
+
+1️⃣ IOPS (Input/Output Operations Per Second)
 
 Number of read/write operations per second
 
 Focuses on operation count, not data size
 
 
-Key Insight
+Best For
 
-High IOPS = good for small, random I/O
+Databases
 
-Example: Databases, OLTP systems
+Small random I/O workloads
 
 
 
 ---
 
-2. Latency
+2️⃣ Latency
 
-Time taken to complete one I/O request
+Time taken to complete a single I/O request
 
 Measured in milliseconds (ms)
 
 
-Key Insight
+Key Point
 
-Lower latency = faster response
-
-Even with same IOPS, lower latency improves user experience
+Lower latency = faster application response
 
 
 
 ---
 
-3. Throughput
+3️⃣ Throughput
 
 Amount of data transferred per second
 
 Measured in MB/s or GB/s
 
 
-Relationship Formula
+Formula
 
 Throughput ≈ IOPS × Block Size
 
-Key Insight
+Best For
 
-Large data transfers benefit more from throughput than IOPS
+Large file transfers
+
+Streaming
+
+Analytics
 
 
 
 ---
 
-4. Block Size & Data Chunks
-
-Block Size = data per I/O operation
-
+4️⃣ Block Size & Data Chunks
 
 Small Block Size
 
@@ -401,9 +367,7 @@ Lower latency per operation
 
 Use Case
 
-Databases
-
-Transactional systems
+Transactional databases
 
 
 
@@ -411,36 +375,464 @@ Transactional systems
 
 Large Block Size
 
-Fewer I/O operations
+Fewer operations
 
-Higher throughput (MB/s)
+Higher throughput
 
-Each I/O takes longer
+Longer I/O duration
 
 
 Use Case
 
-File transfers
+Backup
 
-Media streaming
+Media files
 
-Analytics
+Big data workloads
 
 
 
 ---
 
-Architectural Decision Tip (Interview Gold)
+🎯 Interview Mapping (Quick Recall)
 
-High IOPS + Low Latency → Databases
+Requirement	Choose
 
-High Throughput → Big data & backups
+High availability	Horizontal Scaling
+Quick performance boost	Vertical Scaling
+Unpredictable traffic	Auto Scaling
+Predictable traffic	Scheduled Scaling
+Databases	High IOPS + Low Latency
+Analytics	High Throughput
 
-Horizontal Scaling → Cloud-native apps
 
-Vertical Scaling → Quick fixes & monoliths
 
-Auto Scaling + ALB → Production-ready architecture
+---
+
+✅ Key Interview Takeaways
+
+Auto Scaling enables self-healing architecture
+
+Horizontal scaling is cloud-native best practice
+
+IOPS ≠ Throughput
+
+Latency impacts user experience directly
+
+Scaling + Load Balancer = production readiness
+
+___
+
+
+###Auto Scaling Configuration (Scale Out / Scale In) – AWS Hands-On
+
+
+---
+
+📌 Overview
+
+This guide demonstrates how to configure Auto Scaling with an Application Load Balancer (ALB) to automatically:
+
+Scale Out (add instances) when load increases
+
+Scale In (remove instances) when load decreases
+
+
+It uses:
+
+Launch Templates
+
+Auto Scaling Groups (ASG)
+
+CloudWatch Alarms
+
+ALB with Path-Based Routing
+
+
+
+---
+
+🧭 Architecture Flow
+
+User Traffic
+     ↓
+Application Load Balancer (ALB)
+     ↓
+Target Groups (Home / Mobile / Laptop)
+     ↓
+Auto Scaling Groups (ASG)
+     ↓
+EC2 Instances (Auto Scale In / Out)
+
+
+---
+
+Step 1: Change AWS Region
+
+Ensure you are working in the correct AWS Region
+
+All resources (ALB, ASG, EC2, Target Groups) must be in the same region
+
+
+
+---
+
+Step 2: Create Security Group
+
+Configuration
+
+Name & Description: As per your project
+
+Inbound Rules
+
+HTTP (80) → Anywhere IPv4
+
+SSH (22) → Anywhere IPv4
+
+
+Outbound Rules
+
+All traffic → Anywhere
+
+
+
+
+---
+
+Step 3: Create Launch Template
+
+Launch Template Configuration
+
+AMI: Amazon Linux
+
+Instance Type: t2.micro
+
+Key Pair: Select existing key
+
+Security Group: Select SG created in Step 2
+
+Subnet: ❌ Leave blank (ASG will decide)
+
+Advanced Details
+
+Paste User Data script (web server setup)
+
+
+
+#!/bin/bash
+yum update -y
+yum install httpd -y
+systemctl start httpd
+systemctl enable httpd
+echo "<h1>Home Page - $HOSTNAME</h1>" > /var/www/html/index.html
+
+Click Create Launch Template
+
+
+> 🔁 Repeat Launch Template creation for Laptop and Mobile if separate scripts are required
+
+
+
+
+---
+
+Step 4: Create Target Groups
+
+Create three target groups:
+
+Target Group	Protocol	Port	Health Check Path
+
+tg-home	HTTP	80	/
+tg-laptop	HTTP	80	/laptop
+tg-mobile	HTTP	80	/mobile
+
+
+Steps
+
+EC2 → Target Groups → Create
+
+Target Type: Instance
+
+Protocol: HTTP
+
+Port: 80
+
+Register instances later via ASG
+
+
+
+---
+
+Step 5: Create Application Load Balancer (ALB)
+
+ALB Configuration
+
+Name: AppLB
+
+Type: Application Load Balancer
+
+Scheme: Internet-facing
+
+VPC: Default
+
+Subnets: Select at least 2 (recommended: all)
+
+Security Group: Select SG from Step 2
+
+Listener
+
+HTTP : 80
+
+Default Action → Forward to tg-home
+
+
+
+Click Create Load Balancer
+
+
+---
+
+Step 6: Configure Path-Based Routing Rules
+
+Listener Rules (HTTP : 80)
+
+Rule 1: Laptop
+
+Condition: Path → /laptop/*
+
+Action: Forward → tg-laptop
+
+Priority: 2
+
+
+Rule 2: Mobile
+
+Condition: Path → /mobile/*
+
+Action: Forward → tg-mobile
+
+Priority: 3
+
+
+
+---
+
+Step 7: Create Auto Scaling Groups (ASG)
+
+Step 7.1: Home ASG
+
+Name: home-ASG
+
+Launch Template: Home template
+
+VPC: Default
+
+Availability Zones: Select Any / All
+
+Load Balancer
+
+Attach to existing ALB
+
+Select Target Group → tg-home
+
+
+Capacity
+
+Desired: 2
+
+Minimum: 1
+
+Maximum: 3
+
+
+Monitoring: Enable
+
+
+
+---
+
+Step 7.2 & 7.3: Laptop & Mobile ASGs
+
+Repeat the same steps:
+
+ASG Name	Target Group
+
+laptop-ASG	tg-laptop
+mobile-ASG	tg-mobile
+
+
+
+---
+
+Step 8: CloudWatch Alarm (Scale Out)
+
+Create High CPU Alarm
+
+CloudWatch → Alarms → Create Alarm
+
+Metric:
+
+EC2 → By Auto Scaling Group
+
+Metric: CPU Utilization
+
+
+Condition:
+
+Static
+
+≥ 20%
+
+
+Notification:
+
+Create new SNS Topic
+
+Enter email & confirm subscription
+
+
+Alarm Name: cpu-high-alarm
+
+
+
+---
+
+Step 9: Scaling Policy (Scale Out)
+
+EC2 → Auto Scaling Groups → home-ASG
+
+Automatic Scaling → Create Policy
+
+Policy Type: Simple Scaling
+
+Policy Name: policy-home-scale-out
+
+Alarm: cpu-high-alarm
+
+Action: Add +1 instance
+
+Cooldown: 100 seconds
+
+
+
+---
+
+📉 Auto Scaling (Scale In)
+
+
+---
+
+Step 10: CloudWatch Alarm (Scale In)
+
+Metric: CPU Utilization
+
+Condition:
+
+Static
+
+≤ 10%
+
+
+Period: 1 minute
+
+Datapoints: 2
+
+SNS Topic: Existing topic
+
+Alarm Name: cpu-low-alarm
+
+
+
+---
+
+Step 11: Scaling Policy (Scale In)
+
+Auto Scaling Group → home-ASG
+
+Policy Type: Simple Scaling
+
+Policy Name: policy-home-scale-in
+
+Alarm: cpu-low-alarm
+
+Action: Remove -1 instance
+
+Cooldown: 100 seconds
+
+
+
+---
+
+🧪 Testing Auto Scaling
+
+Connect to EC2 Instance
+
+sudo -i
+yum update -y
+yum install stress -y
+
+> Enable EPEL if required
+
+
+
+Generate CPU Load
+
+stress --cpu 2 --timeout 300
+
+Expected Behavior
+
+CPU > 20% → Scale Out
+
+New EC2 instance added
+
+CPU < 10% → Scale In
+
+Extra instance terminated
+
+
+
+---
+
+🧹 Cleanup (Very Important)
+
+Delete resources in this exact order:
+
+1. Auto Scaling Groups (ASG)
+
+
+2. Launch Templates
+
+
+3. Application Load Balancer (ALB)
+
+
+4. Target Groups
+
+
+5. Security Groups
+
+
+6. CloudWatch Alarms
+
+
+7. SNS Topics
+
+
+
+
+---
+
+🎯 Interview Takeaways
+
+Auto Scaling provides self-healing
+
+ALB + ASG is a production-grade architecture
+
+Scale Out = High CPU
+
+Scale In = Low CPU
+
+CloudWatch + SNS = Monitoring & Alerting
 
 
 
