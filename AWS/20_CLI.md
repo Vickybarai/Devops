@@ -20,17 +20,17 @@
 sudo -i
 apt update -y
 apt install unzip -y
-
+```
 3. Install AWS CLI (v2)
-
+```bash
 curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
 unzip awscliv2.zip
 ./aws/install
-
+```
 4. Verify Installation
-
+```bash
 aws --version
-
+```
 ✅ Output confirms AWS CLI is installed.
 
 
@@ -65,9 +65,9 @@ Secret Access Key
 
 
 2. Configure CLI
-
+```bash
 aws configure
-
+```
 Enter:
 
 Access Key ID
@@ -136,9 +136,9 @@ Update IAM role
 ---
 
 3. Verify Role Access
-
+```bash
 aws s3 ls
-
+```
 ✅ Lists S3 buckets → confirms role is working
 🔐 No access keys used
 
@@ -163,25 +163,25 @@ Set output format: table
 ---
 
 2. Create IAM User
-
+```bash
 aws iam create-user --user-name demo-user
-
+```
 
 ---
 
 3. Create IAM Group
-
+```bash
 aws iam create-group --group-name devops-group
-
+```
 
 ---
 
 4. Add User to Group
-
+```bash
 aws iam add-user-to-group \
 --user-name demo-user \
 --group-name devops-group
-
+```
 
 ---
 
@@ -191,7 +191,7 @@ aws iam add-user-to-group \
 ---
 
 1. Create Policy JSON File
-
+```bash
 vim policy.json
 
 Example policy (Full S3 access):
@@ -206,6 +206,7 @@ Example policy (Full S3 access):
     }
   ]
 }
+```
 
 Save & exit:
 
@@ -215,22 +216,22 @@ Save & exit:
 ---
 
 2. Create Policy Using CLI
-
+```bash
 aws iam create-policy \
 --policy-name S3FullAccessCustom \
 --policy-document file://policy.json
-
+```
 📌 Note the Policy ARN from output.
 
 
 ---
 
 3. Attach Policy to User
-
+```bash
 aws iam attach-user-policy \
 --user-name demo-user \
 --policy-arn arn:aws:iam::<account-id>:policy/S3FullAccessCustom
-
+```
 
 ---
 
@@ -240,29 +241,29 @@ aws iam attach-user-policy \
 ---
 
 1. List All Buckets
-
+```bash
 aws s3 ls
-
+```
 ✔ Verifies S3 access and permissions
 
 
 ---
 
 2. Move / Rename Object
-
+```bash
 aws s3 mv \
 s3://my-bucket/old-file.txt \
 s3://my-bucket/new-file.txt
-
+```
 📌 Same command works for rename + move
 
 
 ---
 
 3. Delete Object
-
+```bash
 aws s3 rm s3://my-bucket/file.txt
-
+```
 > ⚠ Objects must be deleted before deleting bucket
 
 
@@ -271,13 +272,13 @@ aws s3 rm s3://my-bucket/file.txt
 ---
 
 4. Delete Bucket
-
+```bash
 aws s3 rb s3://my-bucket
-
+```
 To force delete (bucket + all objects):
-
+```bash
 aws s3 rb s3://my-bucket --force
-
+```
 
 ---
 
