@@ -76,13 +76,13 @@ Amazon **EFS** is a **scalable, fully managed, shared file storage** service for
 sudo -i
 apt update
 apt install nfs-common -y
-
+```
 2. Configure fstab for auto-mount:
 
 
-
+```bash
 vim /etc/fstab
-
+```
 Entry Syntax:
 
 
@@ -107,13 +107,13 @@ Pass: 0 (disable fsck check)
 3. Apply Changes:
 
 
-
+```bash
 systemctl daemon-reload
 mount -a
 df -h
 cd /mnt/
 touch testfile.txt
-
+```
 Verify testfile.txt is created in /mnt/.
 
 
