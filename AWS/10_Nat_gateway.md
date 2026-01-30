@@ -47,10 +47,10 @@ A **NAT Gateway** enables EC2 instances in **Private Subnets** to initiate outbo
 
 **Illustration (Conceptual):**
 
-```text
+```bash
 Private EC2 → NAT Gateway (Public Subnet) → Internet
 Internet → NAT Gateway → Private EC2
-
+```
 
 ---
 
