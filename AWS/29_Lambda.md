@@ -1,214 +1,250 @@
 
-
-AWS Lambda & EventBridge: Serverless Automation
-
-Automate AWS tasks using Lambda and EventBridge, such as stopping EC2 instances on a schedule.
-
-
----
+AWS Lambda: Serverless EC2 Automation
 
 📌 Overview
 
-AWS Lambda: Serverless compute service that runs code without provisioning or managing servers.
+AWS Lambda is a serverless compute service that lets you run code without managing servers. Lambda automatically scales and executes your code in response to events.
 
-Amazon EventBridge: Event-driven orchestration service that can trigger Lambda functions based on schedules or events.
+This guide demonstrates automating EC2 Stop/Start operations using Lambda and EventBridge.
 
-Use Case: Automatically stop EC2 instances at a specific time to save costs.
+
+---
+
+🎯 Goal
+
+Stop and start EC2 instances automatically
+
+Avoid manual intervention
+
+Reduce AWS cost by scheduling instance downtime
 
 
 
 ---
 
-1. AWS Lambda – Key Concepts
+⚡ Key Concepts & Limits
 
-Feature	Details
+Serverless: No server provisioning or OS maintenance
 
-Serverless	No servers to manage; AWS handles OS, patching, scaling.
-Supported Languages	Python, Node.js, Java, and more.
-Execution Duration	Maximum 15 minutes (900 seconds).
-Memory Allocation	128 MB – 10 GB (adjustable per function).
-Event Payload Limit	6 MB.
-Triggers	EventBridge, S3, DynamoDB, API Gateway, etc.
-Cost Model	Pay per request and execution duration.
+Languages Supported: Python, Node.js, Java, etc.
+
+Execution Duration: Max 15 minutes per invocation
+
+Memory Allocation: 128 MB – 10 GB
+
+Payload/Event Size: Max 6 MB
+
+Triggers: EventBridge, S3, DynamoDB, API Gateway
+
+Cost: Pay per request and execution duration
 
 
 
 ---
 
-2. Project: Automate Stopping EC2 Instances
+🔁 Architecture Workflow
+
+EventBridge Schedule
+       ↓
+AWS Lambda Function
+       ↓
+EC2 Instance (Stop/Start)
+       ↓
+CloudWatch Logs (Execution Logs)
+
+
+---
 
 Part 1: Create IAM Role for Lambda
 
-1. Navigate to IAM → Roles → Create role.
+Lambda requires permissions to control EC2 and write logs to CloudWatch.
+
+1. Navigate to IAM → Roles → Create Role
 
 
-2. Trusted Entity Type: AWS Service → Lambda
+2. Trusted entity: AWS Service → Lambda
 
 
-3. Attach Permissions:
+3. Attach Policies:
 
-AmazonEC2FullAccess (to stop/start instances)
+AmazonEC2FullAccess → To start/stop instances
 
-AWSLambdaBasicExecutionRole (to write logs to CloudWatch)
+AWSLambdaBasicExecutionRole → To write logs to CloudWatch
 
 
 
-4. Role Name: Lambda-Stop-EC2 → Create role.
+4. Role name: lambda-Stop-EC2
+
+
+5. Click Create Role
 
 
 
 
 ---
 
-Part 2: Create Lambda Function
+Part 2: Create the Lambda Function
 
-1. Go to AWS Lambda → Functions → Create function.
-
-
-2. Author from scratch
+1. Navigate to AWS Lambda → Functions → Create Function
 
 
-3. Basic Information:
+2. Select Author from scratch
 
-Function Name: StopMyEc2
+
+3. Configure:
+
+Function Name: StopMyEC2
 
 Runtime: Python 3.12
 
 Architecture: x86_64
 
-
-
-4. Permissions:
-
-Use an existing role → Lambda-Stop-EC2
+Permissions: Use existing role → lambda-Stop-EC2
 
 
 
-5. Click Create function
+4. Click Create Function
 
 
 
 
 ---
 
-Part 3: Deploy Code & Configure
+Part 3: Deploy and Configure Code
 
-1. Scroll to Code editor → Paste Python boto3 code to stop EC2 instances (replace Instance ID and Region).
-
-
-2. Click Deploy.
-
-
-3. Configure Timeout:
-
-Configuration → General configuration → Edit
-
-Timeout: 2 min 30 sec → Save
-
-
-
-
-Example Python Code:
+1. Stop EC2 Instance
 
 import boto3
 
-ec2 = boto3.client('ec2', region_name='us-east-1')
+def lambda_handler(event, context):
+    region = 'us-west-2'  # Replace with your region
+    instance_id = 'i-08cb8b3a4af41c6bf'  # Replace with your instance ID
+
+    ec2 = boto3.client('ec2', region_name=region)
+    
+    try:
+        ec2.stop_instances(InstanceIds=[instance_id])
+        print(f"Stopping instance {instance_id} in region {region}")
+        return {
+            'statusCode': 200,
+            'body': f"Successfully initiated stop for instance {instance_id}"
+        }
+    except Exception as e:
+        print(f"Error stopping instance {instance_id}: {str(e)}")
+        return {
+            'statusCode': 500,
+            'body': f"Failed to stop instance {instance_id}: {str(e)}"
+        }
+
+2. Start EC2 Instance
+
+import boto3
 
 def lambda_handler(event, context):
-    instance_id = 'i-0123456789abcdef0'  # Replace with your instance ID
-    ec2.stop_instances(InstanceIds=[instance_id])
-    return f"Stopped EC2 instance: {instance_id}"
+    region = 'us-west-2'  # Replace with your region
+    instance_id = 'i-08cb8b3a4af41c6bf'  # Replace with your instance ID
+
+    ec2 = boto3.client('ec2', region_name=region)
+    response = ec2.start_instances(InstanceIds=[instance_id])
+    current_state = response['StartingInstances'][0]['CurrentState']['Name']
+    
+    return {
+        'statusCode': 200,
+        'body': f'Instance {instance_id} is now {current_state}'
+    }
 
 
 ---
 
-Part 4: Test Lambda Function
+3. Configure Timeout
 
-1. Select Test tab → Create test event
+Lambda → Configuration → General Configuration → Edit
+
+Set Timeout: 2–3 minutes (to avoid execution errors)
+
+Click Save
+
+
+
+---
+
+Part 4: Testing the Function
+
+1. Click Test tab
 
 
 2. Event Name: StopTestEvent
 
 
-3. Event JSON: {}
+3. Event JSON: {} (default)
 
 
 4. Click Save → Test
 
 
-5. Verify: EC2 instance should now be in Stopped state.
+5. Verify EC2 Dashboard → instance should be Stopped
 
 
 
 
 ---
 
-3. Automate with Amazon EventBridge
+Part 5: Automate with Amazon EventBridge
 
-Step 1: Create Schedule
+1. Create Schedule
 
-1. Go to EventBridge Console → Schedules → Create Schedule
-
-
-2. Schedule Pattern: One-time or Recurring
+1. Open EventBridge → Schedules → Create schedule
 
 
-3. Date/Time Example: 2026-02-01 12:00 PM
+2. Schedule Pattern: Daily / Recurring / One-time
 
 
-4. Schedule Name: Stop-EC2-daily
+3. Name: Stop-EC2-daily
 
 
-5. State: Enabled
+4. State: Enabled
 
 
 
+2. Set Target
 
----
+Target Type: AWS Service → Lambda Invoke
 
-Step 2: Configure Target
+Function: StopMyEC2
 
-1. Target Type: AWS Service
+Permissions: Use existing role or allow EventBridge to create a new one
 
-
-2. Target: Lambda Invoke
-
-
-3. Function: StopMyEc2
+Input: {} (empty JSON)
 
 
-4. Permission: Use existing role or create automatically
+3. Save Schedule
 
+Click Next → Create schedule
 
-5. Input: {} (empty JSON)
+Lambda will now automatically stop the EC2 instance as per schedule
 
-
-
-Click Next → Create Schedule
 
 
 ---
 
 ✅ Verification
 
-Check the EventBridge next invocation time
+Check EventBridge schedule and Lambda invocation logs
 
-Ensure Lambda runs at scheduled time and stops the EC2 instance
-
-Logs available in CloudWatch Logs under Lambda function
+Confirm EC2 instance status changes automatically
 
 
 
 ---
 
-🚀 Benefits
+⚡ Benefits
 
-Cost-saving automation by stopping unused EC2 instances
+Zero server management
 
-Fully serverless → No infrastructure management required
+Automated cost savings
 
-Easy schedule management via EventBridge
+Full integration with AWS ecosystem
 
-Logs and execution history automatically tracked in CloudWatch
+Easy to extend for multiple instances or start/stop workflows
 
 
