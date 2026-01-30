@@ -85,9 +85,9 @@ vim /etc/fstab
 ```
 Entry Syntax:
 
-
+```bash
 <efs-ip-address>:/  /mnt/  nfs  defaults  0  0
-
+```
 Field Breakdown:
 
 Source Mount: EFS IP
