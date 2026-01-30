@@ -7,6 +7,7 @@
 - Commonly used in **DevOps pipelines, EC2 management, S3 operations, IAM automation**.
 
 ---
+command copy paste from AWS CLI documentation.
 
 ## 🧱 Step 1: AWS CLI Installation on EC2 (Ubuntu)
 
