@@ -136,13 +136,7 @@ Part 8: Advanced User & Custom Key Management
 
 (Method 2 – Industry-Style Access Control)
 
-Got it.
-Below is Method 2: Custom User & Custom SSH Key Management, rewritten in full depth, GitHub README.md format, no tables, interview-grade, and production-correct.
-This is the version you can directly show to a recruiter.
-
-
 ---
-
 Method 2: Advanced User & Custom SSH Key Management
 
 Default users (ubuntu, ec2-user) are not ideal for production
