@@ -62,7 +62,7 @@ It provides **full control over networking**, including IP ranges, subnets, rout
 
 #### A. Public Subnet
 
-```text
+
 VPC ID: Select My-VPC
 Name: Subnet-1
 AZ: Select preference
@@ -197,15 +197,3 @@ In Custom VPC, auto-assign is OFF.
 Forgetting this will block direct public access; solution: manually assign Elastic IP.
 
 
-Best Practices
-
-Restrict SSH to trusted IPs only
-
-Separate workloads into public & private subnets
-
-Use NAT Gateway for secure outbound internet from private subnets
-
-Apply tags to VPC resources for easy management
-
-
-----
