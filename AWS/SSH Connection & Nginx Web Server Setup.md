@@ -1,8 +1,6 @@
 
 SSH Connection & Nginx Web Server Setup
 
-(Hands-on + Interview-Ready Guide)
-
 This section covers secure SSH access, Nginx web server setup, custom user & key management, and real-world static website deployment on AWS EC2.
 
 
@@ -138,267 +136,334 @@ Part 8: Advanced User & Custom Key Management
 
 (Method 2 – Industry-Style Access Control)
 
-This approach reflects real DevOps practices, where root or default users are avoided.
+Got it.
+Below is Method 2: Custom User & Custom SSH Key Management, rewritten in full depth, GitHub README.md format, no tables, interview-grade, and production-correct.
+This is the version you can directly show to a recruiter.
 
 
 ---
 
-Step 1: Create a New User
+Method 2: Advanced User & Custom SSH Key Management
+
+Default users (ubuntu, ec2-user) are not ideal for production
+
+Custom users improve:
+
+Accountability
+
+Security
+
+Access auditing
+
+
+SSH key-based authentication is mandatory in modern DevOps
+
+
+Interviewers ask this to test:
+
+Linux permissions
+
+SSH internals
+
+Security maturity
+
+
+
+---
+
+Architecture Overview (Conceptual)
+
+EC2 Instance
+
+Custom Linux User (vicky)
+
+Custom SSH Key Pair (User-managed)
+
+SSH Authentication via authorized_keys
+
+Strict permission enforcement
+
+
+
+---
+
+Step 1: Switch to Root User
+
+Root access is required to create users and manage system files.
 
 sudo -i
+
+
+---
+
+Step 2: Create a New User
+
 adduser vicky
-cd .ssh/
-ls
 
-Checks for existing authorized_keys
+Creates:
 
+Home directory: /home/vicky
+
+User entry in /etc/passwd
+
+
+Sets password (not used for SSH, but required by system)
+
+
+
+---
+
+Step 3: Switch to the New User
 
 su - vicky
 
-Switch to the new user
+Loads user environment
 
+Ensures correct home directory context
+
+
+Verify location:
+
+pwd
+
+Expected output:
+
+/home/vicky
 
 
 ---
 
-Step 2: Generate a Custom SSH Key
+Step 4: Generate a Custom SSH Key (Server-Side)
+
+Generate a user-specific key pair.
 
 ssh-keygen
 
-Cryptographic algorithm selected automatically
+During prompts:
 
-Location:
-
+File location:
 
 /home/vicky/vicky-key
 
-Passphrase: press Enter for none (lab usage)
+Passphrase:
+
+Press Enter (lab)
+
+In production, passphrase is recommended
+
+
+
+This creates:
+
+vicky-key → Private Key
+
+vicky-key.pub → Public Key
 
 
 
 ---
 
-Step 3: Configure SSH Directory and Keys
+Step 5: Create SSH Configuration Directory
+
+SSH expects keys in a very specific structure.
 
 mkdir .ssh
 cd .ssh
 touch authorized_keys
+
+Verify:
+
 pwd
+ls
 
-Copy the public key into authorized_keys:
+Expected:
 
-cp ../vicky-key.pub authorized_keys
-cat authorized_keys
-
-
----
-
-Extract the Private Key (Client Side)
-
-cat vicky-key
-
-Copy full key content
-
-Paste into Notepad on your local PC
-
-Save as file
-
-File type: All files
-
-Example name: vicky-key
-
-
-
-
----
-
-🔴 Critical Fix: SSH Permission Requirements (MUST DO)
-
-SSH will reject connections silently if permissions are wrong.
-
-Run these commands without fail:
-
-chmod 700 .ssh
-chmod 600 .ssh/authorized_keys
-
-Why this matters (Interview Gold)
-
-SSH refuses access if:
-
-.ssh is writable by others
-
-authorized_keys has loose permissions
-
-
-
----
-
-Step 4: Connect Using Custom User
-
-Use MobaXterm
-
-Username: vicky
-
-Select private key: vicky-key
-
-Connect → Login successful
-
-
-
----
-
-Part 9: Deploying a Theme (Project Workflow)
-
-Objective
-
-Deploy a static website template from Themewagon.com using Nginx.
-
-
----
-
-1. Preparation
-
-Copy theme download link from Themewagon
-
-Connect via SSH:
-
-
-ssh -i vicky-key vicky@<public-ip>
-
-(or use MobaXterm)
-
-
----
-
-2. Install Required Packages
-
-sudo apt update -y
-sudo apt install nginx -y
-
-
----
-
-3. Deployment Steps
-
-Navigate to Web Root
-
-cd /var/www/html/
-
-
----
-
-Remove Default Files
-
-sudo rm -rvf *
-
-
----
-
-Download Theme
-
-wget <theme-link>
-
-
----
-
-🔴 Critical Fix: ZIP Extraction (Hidden Failure)
-
-Themewagon downloads ZIP files, not raw HTML.
-
-You MUST extract it.
-
-sudo apt install unzip -y
-unzip <downloaded-file.zip>
-
-
----
-
-Copy Extracted Files
-
-cp -rvf <extracted-folder>/* /var/www/html/
-
-
----
-
-Restart and Enable Nginx
-
-sudo systemctl restart nginx
-sudo systemctl enable nginx
-
-
----
-
-4. Final Verification
-
-Open browser
-
-Paste:
-
-
-http://<public-ip>
-
-Your theme should now load successfully.
-
-
----
-
-🥊 Sparring Partner Analysis (Why Deployments Fail)
-
-
----
-
-1. The chmod Trap (Very Common Interview Question)
-
-Symptom
-
-SSH key is correct
-
-Connection still fails
-
-
-Root Cause
-
-Incorrect permissions on:
-
-.ssh
-
+/home/vicky/.ssh
 authorized_keys
 
 
+---
 
-Correct Answer (Interview)
+Step 6: Register the Public Key
 
-> “SSH is permission-sensitive. If the .ssh directory or authorized_keys file has insecure permissions, SSH blocks the login.”
+Copy the public key into the authorized list.
+
+cp ../vicky-key.pub authorized_keys
+
+Verify contents:
+
+cat authorized_keys
+
+This file tells SSH:
+
+> “This public key is allowed to log in as user vicky.”
 
 
 
 
 ---
 
-2. The wget vs unzip Reality
+🔴 Step 7: FIX PERMISSIONS (MOST COMMON FAILURE)
 
-Symptom
+SSH will refuse login if permissions are incorrect.
+This is non-negotiable.
 
-Website does not load
+Run exactly these commands:
 
-Browser downloads a ZIP file instead
-
-
-Root Cause
-
-ZIP file copied directly to web root
-
-No extraction done
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
 
 
-Correct Fix
+---
 
-Install unzip
+Why These Permissions Are Mandatory
 
-Extract files
+700 .ssh
 
-Copy extracted HTML assets
+Only user can read/write/execute
+
+
+600 authorized_keys
+
+Only user can read/write
+
+
+
+If permissions are looser:
+
+SSH assumes compromise
+
+Login is silently blocked
 
 
 
 ---
+
+🔥 Interview Question (Very Common)
+
+Q:
+
+> “Why does SSH fail even when the key is correct?”
+
+
+
+Answer:
+
+> “Because SSH enforces strict permissions. If .ssh or authorized_keys is writable by others, SSH blocks access.”
+
+
+
+
+---
+
+Step 8: Extract the Private Key (Client Use)
+
+Display the private key:
+
+cat ~/vicky-key
+
+Steps on local machine:
+
+Copy full key content
+
+Open Notepad
+
+Paste key
+
+Save file:
+
+Name: vicky-key
+
+File type: All files
+
+No .txt extension
+
+
+
+⚠️ Never share this file.
+
+
+---
+
+Step 9: Connect Using Custom User
+
+Using Command Line
+
+ssh -i vicky-key vicky@<public-ip>
+
+
+---
+
+Using MobaXterm
+
+Session type: SSH
+
+Remote host: <public-ip>
+
+Username: vicky
+
+Use private key: vicky-key
+
+Connect
+
+
+Login successful → Custom user access achieved.
+
+
+---
+
+Security Best Practices (Production Notes)
+
+Disable password-based SSH login
+
+Restrict Port 22 to:
+
+Your IP
+
+Corporate VPN
+
+
+Rotate keys periodically
+
+One user = one key
+
+
+
+---
+
+Why This Method Is Preferred in DevOps
+
+Least-privilege access
+
+User-level accountability
+
+Easier access revocation
+
+Strong audit posture
+
+
+
+---
+
+Final Interview Takeaway
+
+If asked:
+
+> “How do you provide secure EC2 access to a team member?”
+
+
+
+A strong answer includes:
+
+Create custom Linux user
+
+Generate SSH key
+
+Configure .ssh/authorized_keys
+
+Enforce strict permissions
+
+Restrict SSH at Security Group level
+
+
+
