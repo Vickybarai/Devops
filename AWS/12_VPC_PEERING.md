@@ -98,6 +98,7 @@ chmod 400 key.pem
 # Or path version
 chmod 400 /home/ubuntu/key.pem
 
+```
 
 ---
 
@@ -148,6 +149,8 @@ Target → Select Peering Connection → Save
 
 9. Step 8: Test Connectivity via SSH Jump
 
+
+```bash
 # From Public Instance (VPC3)
 ssh -i key.pem ubuntu@<Private-Instance-IP-of-VPC4>
 # Or full path
@@ -156,7 +159,7 @@ ssh -i /home/ubuntu/key.pem ubuntu@<Private-Instance-IP-of-VPC4>
 # Test ping / connectivity
 ping <Private-IP-of-VPC3-or-VPC4>
 ping www.google.com
-
+```
 > Note: Private VPC instances cannot access Internet directly unless NAT is configured.
 
 
