@@ -46,20 +46,20 @@ CloudWatch Agent requires permissions to push logs.
 
 ```bash
 sudo -i
-
+```
 2.2 Update System & Install Dependencies
-
+```bash
 apt update -y
 apt install -y curl unzip
-
+```
 2.3 Download CloudWatch Agent
-
+```bash
 curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-
+```
 2.4 Install CloudWatch Agent
-
+```bash
 dpkg -i -E ./amazon-cloudwatch-agent.deb
-
+```
 
 ---
 
@@ -69,14 +69,14 @@ dpkg -i -E ./amazon-cloudwatch-agent.deb
 NGINX log files do not exist until NGINX is installed and running.
 
 3.1 Install NGINX
-
+```bash
 apt install -y nginx
-
+```
 3.2 Verify Log Files
-
+```bash
 cd /var/log/nginx/
 ls
-
+```
 Expected output:
 
 access.log
@@ -88,7 +88,7 @@ error.log
 ⚙️ Step 4: Configure CloudWatch Agent for Logs
 
 4.1 Create / Edit Configuration File
-
+```bash
 vim cwagent-config.json
 
 4.2 Paste Log Configuration JSON
@@ -112,7 +112,7 @@ vim cwagent-config.json
     }
   }
 }
-
+```
 Save and exit:
 
 Esc → :wq → Enter
@@ -123,19 +123,19 @@ Esc → :wq → Enter
 ▶️ Step 5: Start Agent & Load Configuration
 
 5.1 Start CloudWatch Agent
-
+```bash
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -a fetch-config \
 -m ec2 \
 -c file:./cwagent-config.json \
 -s
-
+```
 5.2 Verify Agent Status
-
+```bash
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -m ec2 \
 -a status
-
+```
 Expected:
 
 status: running
@@ -175,11 +175,11 @@ You should see NGINX access logs streaming live
 🧹 Step 7: Cleanup (Optional)
 
 7.1 Stop CloudWatch Agent
-
+```bash
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -m ec2 \
 -a stop
-
+```
 7.2 Delete Resources
 
 CloudWatch → Logs → Delete nginx-access-log-group
