@@ -162,7 +162,7 @@ VPC Peering is a networking connection between two VPCs that allows resources in
 chmod 400 key.pem
 # OR
 chmod 400 /home/ubuntu/key.pem
-
+```
 
 ---
 
@@ -215,9 +215,9 @@ Actions → Accept Request
 Step 6: Edit Route Tables (⚠️ MOST CRUCIAL STEP)
 
 Edit VPC3 Route Table
-
+```bash
 Destination: 172.31.0.0/20 (VPC4 Private Subnet)
-
+```
 Target: VPC Peering Connection
 
 Save
@@ -227,9 +227,9 @@ Save
 ---
 
 Edit VPC4 Route Table
-
+```bash
 Destination: 10.0.0.0/20 (VPC3 Public Subnet private IP range)
-
+```
 Target: VPC Peering Connection
 
 Save
@@ -241,11 +241,11 @@ Save
 Step 7: Verification (MobaXterm)
 
 From VPC3 Instance:
-
+```bash
 ssh -i key.pem ubuntu@<PRIVATE-IP-OF-VPC4>
 # OR
 ssh -i /home/ubuntu/key.pem ubuntu@<PRIVATE-IP-OF-VPC4>
-
+```
 Test:
 
 ping <private-ip>
@@ -297,7 +297,7 @@ SG decides who can talk
 
 Deletion Order (Complete Cleanup)
 
-1. EC2 Instances
+```bash1. EC2 Instances
 
 
 2. VPC Peering Connection
@@ -312,7 +312,7 @@ Route Tables
 IGW
 (Automatically removed)
 
-
+```
 
 
 
