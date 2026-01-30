@@ -1,3 +1,34 @@
+
+
+AWS Storage Comparison: EBS vs EFS
+
+> This table highlights the key differences between AWS EBS (Elastic Block Storage) and EFS (Elastic File System) for cloud architecture and storage planning.
+
+
+
+
+---
+
+🔹 Comparison Table
+
+Feature	EBS (Elastic Block Storage)	EFS (Elastic File System)
+
+Definition	Single EC2 → Block storage. Works like a personal hard disk.	Multiple EC2 → Shared file system. Works like a team drive (e.g., Google Drive in Cloud).
+Attachment	Can attach to one EC2 instance at a time.	Multiple EC2 instances can access simultaneously.
+Access	Single instance only.	Many instances, across Availability Zones (AZs).
+Use Case	Databases, OS, or apps requiring low-latency block storage.	Shared file storage, web apps, content management, and team collaboration.
+Scaling	Fixed size chosen at creation (e.g., 100GB, 200GB).	Automatically scales as you add or remove files.
+Pricing	Pay for allocated storage (used or unused).	Pay for actual storage used.
+Availability	Tied to one AZ.	Regional, accessible across multiple AZs.
+Performance	High IOPS (fast read/write, like SSD).	Good for concurrent access, slightly lower IOPS than EBS.
+Backup	Supports Snapshots for backup and restore.	Automatically durable & replicated across AZs.
+Protocol	Block-level storage (like local disk).	Uses NFS (Network File System) Protocol.
+
+
+
+---
+
+🔹 
 Amazon Elastic File System (EFS)
 
 Amazon **EFS** is a **scalable, fully managed, shared file storage** service for use with AWS Cloud services and on-premises resources. It allows multiple EC2 instances to access the same file system **simultaneously**, making it ideal for shared workloads.
