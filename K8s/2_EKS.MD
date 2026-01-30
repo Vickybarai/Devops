@@ -62,7 +62,7 @@ From your laptop, CloudShell, or EC2 instance:
 ```bash
 aws eks update-kubeconfig --name <cluster-name> --region <region>
 kubectl get nodes -o wide
-
+```
 > Configures kubectl to communicate with your EKS cluster.
 
 
@@ -139,14 +139,14 @@ Inter-pod: podIP:port
 
 
 Common Commands:
-
+```bash
 kubectl run my-pod --image=httpd          # Create a pod
 kubectl get pods -o wide                  # View pods with node and IP info
 kubectl exec -it my-pod -- bash           # Enter pod terminal
 kubectl delete pod my-pod                 # Delete a pod
 curl <pod-ip>                             # Test connectivity
 
-
+```
 ---
 
 5. Kubernetes Services & Networking
