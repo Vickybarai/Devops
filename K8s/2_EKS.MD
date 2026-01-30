@@ -1,99 +1,74 @@
-1. Amazon EKS Overview
+## 1. Amazon EKS Overview
 
-Definition: Amazon Elastic Kubernetes Service (EKS) is a fully managed Kubernetes service by AWS that handles all control plane components for you.
+**Definition:**  
+Amazon Elastic Kubernetes Service (EKS) is a fully managed Kubernetes service by AWS that handles all **control plane components** for you.
 
-Control Plane (Managed by AWS):
+**Control Plane (Managed by AWS):**
+- API Server
+- ETCD (Cluster state store)
+- Scheduler
+- Controller Manager
 
-API Server
+**Worker Nodes (User-managed):**
+- EC2 instances
+- Node Groups
+- Fargate
 
-ETCD (Cluster state store)
+**Principle:**  
+> You **never SSH into the control plane**; all interaction is via `kubectl` or API.
 
-Scheduler
-
-Controller Manager
-
-
-Worker Nodes (User-managed):
-
-EC2 instances
-
-Node Groups
-
-Fargate
-
-
-Principle: You never SSH into the control plane; interaction is via kubectl or API.
-
-Learning Tools: Minikube, Killercoda for offline practice.
-
+**Learning Tools:**  
+- Minikube, Killercoda (for offline practice)
 
 ---
 
-2. EKS Cluster Creation Step-by-Step
+## 2. EKS Cluster Creation Step-by-Step
 
-Phase 1: Preparation
+### Phase 1: Preparation
 
-IAM Roles:
+**IAM Roles:**
+- **Cluster Role:** `AmazonEKSClusterPolicy`
+- **Node Role:** 
+  - `AmazonEKSWorkerNodePolicy`
+  - `AmazonEC2ContainerRegistryReadOnly`
+  - `AmazonEKS_CNI_Policy`
 
-Cluster Role: AmazonEKSClusterPolicy
+**Networking Requirements:**
+- VPC with **public & private subnets**
+- Security Groups for cluster & nodes
+- Internet Gateway & proper Route Tables
 
-Node Role:
+> **Tip:** Use default subnets and security groups if unsure; AWS EKS will configure basic networking automatically.
 
-AmazonEKSWorkerNodePolicy
+---
 
-AmazonEC2ContainerRegistryReadOnly
+### Phase 2: Create Control Plane
 
-AmazonEKS_CNI_Policy
-
-
-
-Networking Requirements:
-
-VPC with public & private subnets
-
-Security Groups for cluster & nodes
-
-Internet Gateway & proper Route Tables
-
-
-> Tip: Use default subnets and security groups if unsure; AWS EKS will configure basic networking automatically.
-
-
-
-Phase 2: Create Control Plane
-
-1. Navigate to AWS EKS Console → Create Cluster
-
-
+1. Navigate to AWS EKS Console → **Create Cluster**  
 2. Provide:
+   - **Cluster Name**
+   - **Kubernetes Version** (default recommended)
+   - **IAM Role** (Cluster Role)
+   - **VPC & Subnets** (existing/default)
+3. AWS provisions **control plane components** automatically
+4. **Expected Time:** ~10 minutes
 
-Cluster Name
+---
 
-Kubernetes Version (default recommended)
+### Phase 3: Access Cluster
 
-IAM Role (Cluster Role)
+From your laptop, CloudShell, or EC2 instance:
 
-VPC & Subnets (existing/default)
-
-
-
-3. AWS provisions control plane components automatically
-
-
-4. Expected Time: ~10 minutes
-
-
-
-Phase 3: Access Cluster
-
-From laptop, CloudShell, or EC2 instance:
-
+```bash
 aws eks update-kubeconfig --name <cluster-name> --region <region>
 kubectl get nodes -o wide
 
 > Configures kubectl to communicate with your EKS cluster.
 
 
+
+
+---
 
 Phase 4: Create Node Group (Worker Nodes)
 
@@ -106,7 +81,7 @@ Phase 4: Create Node Group (Worker Nodes)
 3. Enable auto-repair and auto-update
 
 
-4. Nodes automatically join cluster
+4. Nodes automatically join the cluster
 
 
 
@@ -114,7 +89,7 @@ Phase 4: Create Node Group (Worker Nodes)
 
 Node Role must include EC2 Worknode, CNI, and ECR read-only policies
 
-Ensure proper subnets for networking
+Ensure nodes are in proper subnets for networking
 
 kube-proxy is installed automatically for service networking
 
@@ -134,7 +109,7 @@ ReplicaSet	Ensures a specific number of pod replicas
 Service	Provides stable networking & discovery
 Namespace	Logical separation of resources
 StatefulSet	For stateful applications
-DaemonSet	One pod per node
+DaemonSet	Ensures one pod per node
 ConfigMap	Stores configuration data
 Secret	Stores sensitive information/credentials
 PV / PVC	Persistent storage for pods
@@ -147,7 +122,7 @@ PV / PVC	Persistent storage for pods
 
 Characteristics:
 
-Smallest deployable unit
+Smallest deployable unit in Kubernetes
 
 Ephemeral: replaced if deleted
 
@@ -176,7 +151,8 @@ curl <pod-ip>                             # Test connectivity
 
 5. Kubernetes Services & Networking
 
-Definition: Services provide stable IP/DNS to access ephemeral pods.
+Definition:
+Services provide stable IP/DNS to access ephemeral pods.
 
 Type	Purpose	Command
 
@@ -199,7 +175,7 @@ port = service port, targetPort = pod/container port
 
 ---
 
-> ✅ Summary Workflow:
+6. ✅ Summary Workflow
 
 1. Prepare IAM roles & networking
 
@@ -217,6 +193,4 @@ port = service port, targetPort = pod/container port
 
 
 6. Kubernetes automatically handles scaling, networking, and health
-
-
 
