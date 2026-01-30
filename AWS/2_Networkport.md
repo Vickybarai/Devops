@@ -1,16 +1,4 @@
----
-
-Part 6: Critical DevOps Ports & Services
-
-Understanding ports is non-negotiable for DevOps roles.
-Interviewers use ports to test real-world thinking, not memorization.
-
-
----
-
 1. Remote Access & Management
-
-(The “Keys to the Castle”)
 
 These ports provide direct administrative access to servers and must be treated as high-risk entry points.
 
