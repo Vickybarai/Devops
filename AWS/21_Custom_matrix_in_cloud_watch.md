@@ -63,34 +63,34 @@ ssh ubuntu@<EC2-PUBLIC-IP>
 Switch to root (optional but recommended):
 
 sudo -i
-
+```
 
 ---
 
 2.2 Update System & Install Dependencies
-
+```bash
 apt update -y
 apt install -y curl unzip
-
+```
 
 ---
 
 2.3 Download CloudWatch Agent
-
+```bash
 curl -O https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
-
+```
 
 ---
 
 2.4 Install CloudWatch Agent
-
+```bash
 dpkg -i -E ./amazon-cloudwatch-agent.deb
-
+```
 ✅ Agent binaries installed at:
-
+```bash
 /opt/aws/amazon-cloudwatch-agent/
 
-
+```
 ---
 
 ⚙️ Step 3: Configure CloudWatch Agent (Custom JSON)
@@ -101,14 +101,14 @@ We define what metrics to collect.
 ---
 
 3.1 Create Configuration File
-
+```bash
 vim cwagent-config.json
 
-
+```
 ---
 
 3.2 Paste Configuration (Memory + Disk)
-
+```bash
 {
   "agent": {
     "metrics_collection_interval": 60,
@@ -145,7 +145,7 @@ vim cwagent-config.json
     }
   }
 }
-
+```
 Save & exit:
 
 Esc → :wq → Enter
@@ -177,22 +177,22 @@ ignore_file_system_types: Avoid fake/system filesystems
 ---
 
 4.1 Start Agent with Custom Config
-
+```bash
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -a fetch-config \
 -m ec2 \
 -c file:./cwagent-config.json \
 -s
-
+```
 
 ---
 
 4.2 Check Agent Status
-
+```bash
 /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
 -m ec2 \
 -a status
-
+```
 Expected status:
 
 running
