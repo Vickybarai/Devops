@@ -111,7 +111,7 @@ Move an EBS volume from **Instance-1** to **Instance-2**.
 ```bash
 # Console steps
 EC2 → Volumes → Create Volume
-
+```
 Size: 2 GB
 
 Availability Zone must match Instance-1
@@ -125,14 +125,14 @@ Device name: /dev/xvdbb
 ---
 
 Step 3: Format & Mount (Instance-1)
-
+```bash
 lsblk
 sudo mkfs -t ext4 /dev/xvdbb
 sudo mkdir /mnt/data
 sudo mount /dev/xvdbb /mnt/data
 cd /mnt/data
 touch file{1..10}
-
+```
 ⚠️ Important
 Formatting (mkfs) is done only once, on first use.
 
@@ -140,10 +140,10 @@ Formatting (mkfs) is done only once, on first use.
 ---
 
 Step 4: Unmount & Detach
-
+```bash
 cd ..
 sudo umount /dev/xvdbb
-
+```
 Console → Detach Volume
 
 ⚠️ Avoid Force Detach (data corruption risk)
@@ -157,12 +157,12 @@ Step 5: Attach to Instance-2
 Launch Instance-2 in the same AZ
 
 Attach volume as /dev/xvdbc
-
+```bash
 
 lsblk
 sudo mount /dev/xvdbc /mnt
 ls /mnt
-
+```
 ✔️ Data should be visible.
 
 
@@ -233,9 +233,9 @@ Create a 5GB partition on /dev/xvdb.
 ---
 
 Step 1: Preparation
-
+```bash
 lsblk
-
+```
 Root disk: xvda
 
 New disk: xvdb
@@ -245,9 +245,9 @@ New disk: xvdb
 ---
 
 Step 2: Start fdisk
-
+```bash
 sudo fdisk /dev/xvdb
-
+```
 
 ---
 
