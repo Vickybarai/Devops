@@ -234,7 +234,6 @@ Services provide stable IP/DNS to access ephemeral pods.
 | **LoadBalancer** | Public access via cloud LB (AWS ELB/NLB); requires Security Group rules for HTTP/TCP 80 | `kubectl expose pod my-pod --port 80 --type LoadBalancer --name my-lb-svc` |
 
 > **Note:** `port` = service port, `targetPort` = pod/container port
-```
 ---
 
 🟢 5. Networking Basics
