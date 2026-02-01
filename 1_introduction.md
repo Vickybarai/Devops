@@ -1,664 +1,385 @@
-AWS Cloud Computing – Core Concepts (Interview & Study Notes)
-
-
+ AWS Cloud Computing – 
 ---
 
-Part 1: Cloud Service Models
+## Part 1: Cloud Service Models
 
 Cloud service models define who manages what in the cloud stack. AWS offers services across all three models.
 
-
 ---
 
-1. IaaS (Infrastructure as a Service)
+### 1. IaaS (Infrastructure as a Service)
 
-Definition
+#### Definition
 
 Infrastructure as a Service (IaaS) provides virtualized computing resources over the internet.
 It is the foundational building block of Cloud IT, offering maximum control to users.
 
-
 ---
 
-Responsibility Model
+#### Responsibility Model
 
-AWS Responsibility
+**AWS Responsibility**
+- Physical data centers
+- Hardware
+- Virtualization layer
+- Networking infrastructure
 
-Physical data centers
-
-Hardware
-
-Virtualization layer
-
-Networking infrastructure
-
-
-User Responsibility
-
-Operating System (OS)
-
-Runtime
-
-Applications
-
-Data
-
-Security patches and updates
-
-
+**User Responsibility**
+- Operating System (OS)
+- Runtime
+- Applications
+- Data
+- Security patches and updates
 
 This shared responsibility gives users full administrative control over the system.
 
+---
+
+#### AWS IaaS Examples
+
+| Service | Description |
+|---------|-------------|
+| **Amazon EC2** | Virtual servers with scalable compute capacity. User controls instance type, OS, storage, and networking |
+| **Amazon S3** | Object storage service for virtually unlimited data. Used for backups, static websites, logs, and media storage |
+| **Amazon EBS** | Block-level storage attached to EC2 instances. Used for OS disks, databases, and applications requiring low latency |
+| **Amazon VPC** | Virtual Private Cloud for isolated networking. Enables custom IP ranges, subnets, route tables, and gateways |
+| **Amazon Route 53** | Highly available DNS and domain name service. Used for routing traffic to AWS resources globally |
 
 ---
 
-AWS IaaS Examples
+#### Characteristics
 
-Amazon EC2
-
-Virtual servers with scalable compute capacity
-
-User controls instance type, OS, storage, and networking
-
-
-Amazon S3
-
-Object storage service for virtually unlimited data
-
-Used for backups, static websites, logs, and media storage
-
-
-Amazon EBS
-
-Block-level storage attached to EC2 instances
-
-Used for OS disks, databases, and applications requiring low latency
-
-
-Amazon VPC
-
-Virtual Private Cloud for isolated networking
-
-Enables custom IP ranges, subnets, route tables, and gateways
-
-
-Amazon Route 53
-
-Highly available DNS and domain name service
-
-Used for routing traffic to AWS resources globally
-
-
-
+- Full control over OS, runtime, and applications
+- Highly flexible infrastructure
+- Pay-as-you-go pricing model
+- User is responsible for:
+  - OS installation
+  - Security patching
+  - Application deployment
+  - Configuration management
 
 ---
 
-Characteristics
+#### Use Cases
 
-Full control over OS, runtime, and applications
-
-Highly flexible infrastructure
-
-Pay-as-you-go pricing model
-
-User is responsible for:
-
-OS installation
-
-Security patching
-
-Application deployment
-
-Configuration management
-
-
-
+- High-performance computing workloads
+- Website and application hosting
+- Development and testing environments
+- Disaster recovery setups
+- Lift-and-shift migrations from on-premise to cloud
 
 ---
 
-Use Cases
+### 2. PaaS (Platform as a Service)
 
-High-performance computing workloads
-
-Website and application hosting
-
-Development and testing environments
-
-Disaster recovery setups
-
-Lift-and-shift migrations from on-premise to cloud
-
-
-
----
-
-2. PaaS (Platform as a Service)
-
-Definition
+#### Definition
 
 Platform as a Service (PaaS) provides a fully managed platform and runtime environment to develop, run, and manage applications without dealing with infrastructure complexity.
 
+---
+
+#### Responsibility Model
+
+**AWS Responsibility**
+- Infrastructure
+- Networking
+- Servers
+- Operating system
+- Platform management
+- Scaling and availability
+
+**User Responsibility**
+- Application code
+- Application data
 
 ---
 
-Responsibility Model
+#### AWS PaaS Examples
 
-AWS Responsibility
-
-Infrastructure
-
-Networking
-
-Servers
-
-Operating system
-
-Platform management
-
-Scaling and availability
-
-
-User Responsibility
-
-Application code
-
-Application data
-
-
-
+| Service | Description |
+|---------|-------------|
+| **AWS Elastic Beanstalk** | Simplified application deployment platform. Supports Java, Python, Node.js, .NET, PHP, Go, and Docker |
+| **AWS Lambda** | Serverless compute service. Executes code in response to events. No server or OS management required |
+| **Amazon RDS** | Fully managed relational database service. Handles backups, patching, replication, and failover |
+| **AWS App Runner** | Fully managed service for containerized web applications. Ideal for microservices and APIs |
+| **Amazon API Gateway** | Managed service for creating, publishing, and securing APIs |
 
 ---
 
-AWS PaaS Examples
+#### Characteristics
 
-AWS Elastic Beanstalk
-
-Simplified application deployment platform
-
-Supports Java, Python, Node.js, .NET, PHP, Go, and Docker
-
-
-AWS Lambda
-
-Serverless compute service
-
-Executes code in response to events
-
-No server or OS management required
-
-
-Amazon RDS
-
-Fully managed relational database service
-
-Handles backups, patching, replication, and failover
-
-
-AWS App Runner
-
-Fully managed service for containerized web applications
-
-Ideal for microservices and APIs
-
-
-Amazon API Gateway
-
-Managed service for creating, publishing, and securing APIs
-
-
-
+- Developers focus only on writing code
+- Infrastructure and OS managed by AWS
+- Built-in:
+  - Auto-scaling
+  - Monitoring
+  - Security
+- Faster development and deployment cycles
+- User responsible only for application logic and data
 
 ---
 
-Characteristics
+#### Use Cases
 
-Developers focus only on writing code
-
-Infrastructure and OS managed by AWS
-
-Built-in:
-
-Auto-scaling
-
-Monitoring
-
-Security
-
-
-Faster development and deployment cycles
-
-User responsible only for application logic and data
-
-
+- Web application development
+- API development and management
+- Microservices-based architectures
+- Rapid prototyping and MVP creation
+- Event-driven applications
 
 ---
 
-Use Cases
+### 3. SaaS (Software as a Service)
 
-Web application development
-
-API development and management
-
-Microservices-based architectures
-
-Rapid prototyping and MVP creation
-
-Event-driven applications
-
-
-
----
-
-3. SaaS (Software as a Service)
-
-Definition
+#### Definition
 
 Software as a Service (SaaS) delivers a complete, ready-to-use software application over the internet.
 Users simply consume the application, without managing infrastructure or platforms.
 
+---
+
+#### Responsibility Model
+
+**AWS Responsibility**
+- Infrastructure
+- Platform
+- Software
+- Security
+- Maintenance
+- Availability
+
+**User Usage**
+- Data usage and application configuration only
 
 ---
 
-Responsibility Model
+#### AWS SaaS Examples
 
-AWS Responsibility
-
-Infrastructure
-
-Platform
-
-Software
-
-Security
-
-Maintenance
-
-Availability
-
-
-User Usage
-
-Data usage and application configuration only
-
-
-
+| Service | Description |
+|---------|-------------|
+| **Amazon WorkSpaces** | Fully managed virtual desktop service |
+| **Amazon Chime** | Communication and collaboration service |
+| **AWS QuickSight** | Business intelligence and analytics platform |
+| **Amazon Connect** | Cloud-based contact center solution |
+| **AWS WorkDocs** | Secure document storage and collaboration service |
 
 ---
 
-AWS SaaS Examples
+#### Characteristics
 
-Amazon WorkSpaces
-
-Fully managed virtual desktop service
-
-
-Amazon Chime
-
-Communication and collaboration service
-
-
-AWS QuickSight
-
-Business intelligence and analytics platform
-
-
-Amazon Connect
-
-Cloud-based contact center solution
-
-
-AWS WorkDocs
-
-Secure document storage and collaboration service
-
-
-
+- No installation or maintenance required
+- Access via web browser or mobile applications
+- Multi-tenant architecture with shared infrastructure
+- AWS manages everything behind the scenes
+- User only focuses on business usage
 
 ---
 
-Characteristics
+#### Use Cases
 
-No installation or maintenance required
-
-Access via web browser or mobile applications
-
-Multi-tenant architecture with shared infrastructure
-
-AWS manages everything behind the scenes
-
-User only focuses on business usage
-
-
+- Business productivity tools
+- Team collaboration and communication
+- Analytics and reporting
+- Customer relationship management (CRM)
+- End-user software consumption
 
 ---
 
-Use Cases
-
-Business productivity tools
-
-Team collaboration and communication
-
-Analytics and reporting
-
-Customer relationship management (CRM)
-
-End-user software consumption
-
-
+## Part 2: AWS Infrastructure Components
 
 ---
 
-Part 2: AWS Infrastructure Components
+### 1. AWS Data Center
 
+#### What is a Data Center in AWS?
 
----
+- A physical facility that stores computing machines and related hardware
+- Each data center contains tens of thousands of servers (commonly estimated between 50,000 to 80,000)
+- Designed with:
+  - Redundant power
+  - Cooling systems
+  - Networking
+- Protected against:
+  - Cyber threats
+  - Unauthorized physical access
+  - Natural disasters
 
-1. AWS Data Center
-
-What is a Data Center in AWS?
-
-A physical facility that stores computing machines and related hardware
-
-Each data center contains tens of thousands of servers (commonly estimated between 50,000 to 80,000)
-
-Designed with:
-
-Redundant power
-
-Cooling systems
-
-Networking
-
-
-Protected against:
-
-Cyber threats
-
-Unauthorized physical access
-
-Natural disasters
-
-
-
-Data centers are never exposed directly to customers.
-
+> **Data centers are never exposed directly to customers.**
 
 ---
 
-2. Availability Zone (AZ)
+### 2. Availability Zone (AZ)
 
-Definition
+#### Definition
 
-An Availability Zone consists of one or more discrete data centers
-
-Each AZ has:
-
-Independent power
-
-Independent networking
-
-Independent cooling
-
-
-AZs within a region are connected via high-bandwidth, low-latency private fiber networks
-
-Latency between AZs is typically single-digit milliseconds
-
-
+- An Availability Zone consists of one or more discrete data centers
+- Each AZ has:
+  - Independent power
+  - Independent networking
+  - Independent cooling
+- AZs within a region are connected via high-bandwidth, low-latency private fiber networks
+- Latency between AZs is typically single-digit milliseconds
 
 ---
 
-Key Points
+#### Key Points
 
-AWS operates 100+ Availability Zones globally (number increases over time)
-
-AZs are located up to ~60 miles (100 km) apart within a region
-
-Designed to prevent correlated failures
-
-Enables high availability and fault tolerance
-
-
+- AWS operates 100+ Availability Zones globally (number increases over time)
+- AZs are located up to ~60 miles (100 km) apart within a region
+- Designed to prevent correlated failures
+- Enables high availability and fault tolerance
 
 ---
 
-Part 3: AWS Service Scope (Global vs Regional vs AZ)
-
-
----
-
-3. Global Services
-
-Definition
-
-Global services are accessible from any AWS region
-
-The control plane is managed centrally
-
-The data plane is distributed globally
-
-
+## Part 3: AWS Service Scope (Global vs Regional vs AZ)
 
 ---
 
-Examples
+### 3. Global Services
 
-Amazon S3
+#### Definition
 
-Global namespace for buckets
-
-Data resides in regions but service is globally accessible
-
-
-Amazon CloudFront
-
-Global Content Delivery Network (CDN)
-
-
-AWS IAM
-
-Identity and Access Management
-
-Users, roles, and policies are global
-
-
-Amazon Route 53
-
-Global DNS service with worldwide routing
-
-
-
+- Global services are accessible from any AWS region
+- The control plane is managed centrally
+- The data plane is distributed globally
 
 ---
 
-4. Region-Specific Services
+#### Examples
 
-Definition
-
-These services operate within a specific AWS region
-
-Resources are isolated to the region where they are created
-
-
-
----
-
-Core Region Services
-
-Amazon EC2
-
-Amazon RDS
-
-AWS Lambda
-
-Amazon VPC
-
-Amazon CloudWatch
-
-Amazon S3 (data stored regionally)
-
-
+| Service | Description |
+|---------|-------------|
+| **Amazon S3** | Global namespace for buckets. Data resides in regions but service is globally accessible |
+| **Amazon CloudFront** | Global Content Delivery Network (CDN) |
+| **AWS IAM** | Identity and Access Management. Users, roles, and policies are global |
+| **Amazon Route 53** | Global DNS service with worldwide routing |
 
 ---
 
-Region Selection Criteria
+### 4. Region-Specific Services
 
-Latency requirements
+#### Definition
 
-Data residency and compliance laws
-
-Service availability
-
-Cost considerations
-
-Disaster recovery strategy
-
-
+- These services operate within a specific AWS region
+- Resources are isolated to the region where they are created
 
 ---
 
-5. Availability Zone–Specific Services
+#### Core Region Services
 
-Definition
-
-These services are tied to specific Availability Zones
-
-Used for fault isolation and high availability design
-
-
-
----
-
-Examples
-
-Amazon EC2
-
-Instances are launched in a specific AZ
-
-Placement control enables HA architectures
-
-
-Amazon EBS
-
-EBS volumes are AZ-specific
-
-Can only attach to EC2 instances in the same AZ
-
-
-
+- Amazon EC2
+- Amazon RDS
+- AWS Lambda
+- Amazon VPC
+- Amazon CloudWatch
+- Amazon S3 (data stored regionally)
 
 ---
 
-Benefits
+#### Region Selection Criteria
 
-Enables high availability by distributing workloads across AZs
-
-Supports disaster recovery strategies
-
-Prevents single-point-of-failure scenarios
-
-
+- Latency requirements
+- Data residency and compliance laws
+- Service availability
+- Cost considerations
+- Disaster recovery strategy
 
 ---
 
-6. Edge Locations (Cache Servers)
+### 5. Availability Zone–Specific Services
 
-Definition
+#### Definition
 
-Edge locations are AWS data centers optimized for low-latency content delivery
-
-Smaller than full AWS regions
-
-Designed to cache content closer to end users
-
-
+- These services are tied to specific Availability Zones
+- Used for fault isolation and high availability design
 
 ---
 
-Key Characteristics
+#### Examples
 
-Located geographically closer to users
-
-Used primarily by:
-
-Amazon CloudFront
-
-AWS Global Accelerator
-
-
-Reduce latency and improve user experience
-
-
+| Service | Description |
+|---------|-------------|
+| **Amazon EC2** | Instances are launched in a specific AZ. Placement control enables HA architectures |
+| **Amazon EBS** | EBS volumes are AZ-specific. Can only attach to EC2 instances in the same AZ |
 
 ---
 
-Example Locations (India)
+#### Benefits
 
-Mumbai
-
-Delhi
-
-Kolkata
-
-Chennai
-
-Bengaluru
-
-Hyderabad
-
-
+- Enables high availability by distributing workloads across AZs
+- Supports disaster recovery strategies
+- Prevents single-point-of-failure scenarios
 
 ---
 
-Interview Tip (High Value)
+### 6. Edge Locations (Cache Servers)
 
-If asked:
+#### Definition
 
-> “Design a highly available AWS architecture”
-
-
-
-Your answer should explicitly mention:
-
-Multiple Availability Zones
-
-Region-aware service selection
-
-Edge locations for performance
-
-Shared responsibility model understanding
-
-___
+- Edge locations are AWS data centers optimized for low-latency content delivery
+- Smaller than full AWS regions
+- Designed to cache content closer to end users
 
 ---
 
-Amazon EC2 – Deep Dive (Interview & Practical Notes)
+#### Key Characteristics
 
+- Located geographically closer to users
+- Used primarily by:
+  - Amazon CloudFront
+  - AWS Global Accelerator
+- Reduce latency and improve user experience
 
 ---
 
-Part 4: Amazon EC2 Deep Dive
+#### Example Locations (India)
+
+- Mumbai
+- Delhi
+- Kolkata
+- Chennai
+- Bengaluru
+- Hyderabad
+
+---
+
+> **Interview Tip (High Value)**
+> 
+> If asked: *"Design a highly available AWS architecture"*
+> 
+> Your answer should explicitly mention:
+> - Multiple Availability Zones
+> - Region-aware service selection
+> - Edge locations for performance
+> - Shared responsibility model understanding
+
+---
+
+# Amazon EC2 – Deep Dive (Interview & Practical Notes)
+
+---
+
+## Part 4: Amazon EC2 Deep Dive
 
 Amazon EC2 (Elastic Compute Cloud) is the core compute service in AWS. Most AWS architectures either start with EC2 or integrate with it indirectly.
 
-
 ---
 
-1. EC2 Launch Process Overview
+### 1. EC2 Launch Process Overview
 
-Definition
+#### Definition
 
 EC2 = Launch Instance / Server / Virtual Machine
 
 An EC2 instance is a resizable virtual server running inside an AWS data center.
 
-
-
 ---
 
-Launch Workflow (Conceptual Flow)
+#### Launch Workflow (Conceptual Flow)
 
 When you launch an EC2 instance, AWS follows this logical sequence:
+
+```
 
 Launch Instance
 → AMI (Amazon Machine Image – Template)
@@ -667,405 +388,234 @@ Launch Instance
 → Key Pair
 → Security Group
 
+```
 
 Each step directly impacts performance, security, and cost.
 
+---
+
+#### Explanation of Each Step
+
+| Component | Description |
+|-----------|-------------|
+| **AMI (Amazon Machine Image)** | A preconfigured template that defines: Operating System, Preinstalled software, Root volume configuration. Examples: Amazon Linux, Ubuntu, Windows Server |
+| **Instance Type** | Defines: vCPU count, RAM, Network performance. Example: t2.micro (Free Tier eligible) |
+| **Operating System** | Chosen via AMI. Common interview mention: Ubuntu, Amazon Linux, Windows |
+| **Key Pair** | Used for secure login authentication |
+| **Security Group** | Acts as a virtual firewall controlling inbound and outbound traffic |
 
 ---
 
-Explanation of Each Step
-
-AMI (Amazon Machine Image)
-
-A preconfigured template that defines:
-
-Operating System
-
-Preinstalled software
-
-Root volume configuration
-
-
-Examples: Amazon Linux, Ubuntu, Windows Server
-
-
-Instance Type
-
-Defines:
-
-vCPU count
-
-RAM
-
-Network performance
-
-
-Example: t2.micro (Free Tier eligible)
-
-
-Operating System
-
-Chosen via AMI
-
-Common interview mention: Ubuntu, Amazon Linux, Windows
-
-
-Key Pair
-
-Used for secure login authentication
-
-
-Security Group
-
-Acts as a virtual firewall controlling inbound and outbound traffic
-
-
-
+### 2. Key Components in EC2
 
 ---
 
-2. Key Components in EC2
-
-
----
-
-Key Pair
+#### Key Pair
 
 Key pairs enable secure access to EC2 instances using public-key cryptography.
 
-Public Key
+**Public Key**
+- Stored securely in AWS
+- Injected into the instance during launch
 
-Stored securely in AWS
+**Private Key**
+- Downloaded and stored on the user's local machine
+- AWS never stores or recovers this key
+- User is fully responsible for key safety
 
-Injected into the instance during launch
-
-
-Private Key
-
-Downloaded and stored on the user’s local machine
-
-AWS never stores or recovers this key
-
-User is fully responsible for key safety
-
-
-
-If the private key is lost:
-
-You cannot SSH directly
-
-Recovery requires advanced steps (detach root volume, etc.)
-
-
+> **If the private key is lost:**
+> - You cannot SSH directly
+> - Recovery requires advanced steps (detach root volume, etc.)
 
 ---
 
-Interview Question (IQ): Hostname
+#### Interview Question (IQ): Hostname
 
-Hostname
+**Hostname**
+- The internal name used to identify the EC2 instance
+- Helps in:
+  - System identification
+  - Networking
+  - Logs and monitoring
+- Can be customized at OS level
 
-The internal name used to identify the EC2 instance
-
-Helps in:
-
-System identification
-
-Networking
-
-Logs and monitoring
-
-
-Can be customized at OS level
-
-
-
-Interview angle:
-
+> **Interview angle:**
 > Hostname is not the same as Instance ID, but both uniquely identify instances at different layers.
 
-
-
-
 ---
 
-3. Status Checks in EC2
+### 3. Status Checks in EC2
 
-Core Interview Question
+#### Core Interview Question
 
-> “How many types of status checks are there in EC2?”
+> *"How many types of status checks are there in EC2?"*
 
-
-
-Answer: 2 types
+**Answer: 2 types**
 
 The purpose of status checks is to determine where the problem exists:
-
-AWS infrastructure side
-
-OR user-controlled instance side
-
-
+- AWS infrastructure side
+- OR user-controlled instance side
 
 ---
 
-Status Check Result Format
+#### Status Check Result Format
 
-2/2 checks passed → Healthy (Green)
-
-1/2 checks passed → Partial failure
-
-0/2 checks passed → Instance is unhealthy
-
-
+| Result | Meaning |
+|--------|---------|
+| **2/2 checks passed** | Healthy (Green) |
+| **1/2 checks passed** | Partial failure |
+| **0/2 checks passed** | Instance is unhealthy |
 
 ---
 
-A. System Status Checks
+#### A. System Status Checks
 
-Purpose
+**Purpose**
+- Monitors the AWS-managed infrastructure that hosts your EC2 instance
+- These issues are not under user control
 
-Monitors the AWS-managed infrastructure that hosts your EC2 instance
+**Monitors for**
+- Network connectivity problems on AWS side
+- Power failures
+- Physical host failures
+- Hypervisor issues
+- AWS internal hardware or software problems
 
-These issues are not under user control
-
-
-
----
-
-Monitors for
-
-Network connectivity problems on AWS side
-
-Power failures
-
-Physical host failures
-
-Hypervisor issues
-
-AWS internal hardware or software problems
-
-
+> **Key Point (Interview Gold)**
+> 
+> If System Status Check fails:
+> - User usually cannot fix it directly
+> - AWS may:
+>   - Recover the instance
+>   - Migrate it
+>   - Require a stop/start action
 
 ---
 
-Key Point (Interview Gold)
+#### B. Instance Status Checks
 
-If System Status Check fails:
+**Purpose**
+- Monitors the user-controlled software layer
+- Focuses on whether the instance itself is functioning correctly
 
-User usually cannot fix it directly
+**Monitors for**
+- Network interface health (via ARP requests)
+- Operating System boot completion
+- OS-level configuration
+- Kernel functionality
+- Software misconfiguration
 
-AWS may:
-
-Recover the instance
-
-Migrate it
-
-Require a stop/start action
-
-
-
-
----
-
-B. Instance Status Checks
-
-Purpose
-
-Monitors the user-controlled software layer
-
-Focuses on whether the instance itself is functioning correctly
-
-
+> **Key Point**
+> 
+> If Instance Status Check fails:
+> - The issue is usually:
+>   - OS crash
+>   - Kernel panic
+>   - Incorrect firewall rules
+>   - Application misconfiguration
+> - User is responsible for troubleshooting
 
 ---
 
-Monitors for
+#### Interview Summary (Status Checks)
 
-Network interface health (via ARP requests)
+| Check Failed | Problem Location |
+|--------------|------------------|
+| **System Check failed** | AWS-side problem |
+| **Instance Check failed** | User-side problem |
 
-Operating System boot completion
-
-OS-level configuration
-
-Kernel functionality
-
-Software misconfiguration
-
-
+> This distinction is frequently asked in interviews.
 
 ---
 
-Key Point
+## Part 5: AWS Nitro Enclaves
 
-If Instance Status Check fails:
-
-The issue is usually:
-
-OS crash
-
-Kernel panic
-
-Incorrect firewall rules
-
-Application misconfiguration
-
-
-User is responsible for troubleshooting
-
-
+Nitro Enclaves are part of AWS's advanced security architecture.
 
 ---
 
-Interview Summary (Status Checks)
+### 1. Definition
 
-System Check failed → AWS-side problem
-
-Instance Check failed → User-side problem
-
-
-This distinction is frequently asked in interviews.
-
-
----
-
-Part 5: AWS Nitro Enclaves
-
-Nitro Enclaves are part of AWS’s advanced security architecture.
-
-
----
-
-1. Definition
-
-AWS Nitro Enclaves allow you to create isolated execution environments inside an EC2 instance
-
-Designed for security-critical workloads
-
-Ideal for processing highly sensitive data
-
+- AWS Nitro Enclaves allow you to create isolated execution environments inside an EC2 instance
+- Designed for security-critical workloads
+- Ideal for processing highly sensitive data
 
 These enclaves are built on the AWS Nitro System, not traditional virtualization.
 
-
 ---
 
-2. Key Characteristics (Constraints)
+### 2. Key Characteristics (Constraints)
 
 Nitro Enclaves intentionally operate under strict limitations to maximize security.
 
+---
+
+#### i) No Persistent Storage
+
+- Data stored inside an enclave:
+  - Exists only during runtime
+  - Is destroyed after enclave termination
+- Prevents data persistence attacks
 
 ---
 
-i) No Persistent Storage
+#### ii) No Interactive Access
 
-Data stored inside an enclave:
-
-Exists only during runtime
-
-Is destroyed after enclave termination
-
-
-Prevents data persistence attacks
-
-
+- You cannot SSH into an enclave
+- No shell access
+- All interactions happen programmatically
 
 ---
 
-ii) No Interactive Access
+#### iii) No External Networking
 
-You cannot SSH into an enclave
-
-No shell access
-
-All interactions happen programmatically
-
-
+- Enclaves:
+  - Have no internet access
+  - Cannot communicate with external networks
+- Communication allowed only via secure local sockets with the parent instance
 
 ---
 
-iii) No External Networking
+#### iv) CPU and Memory Isolation
 
-Enclaves:
-
-Have no internet access
-
-Cannot communicate with external networks
-
-
-Communication allowed only via secure local sockets with the parent instance
-
-
-
----
-
-iv) CPU and Memory Isolation
-
-Dedicated CPU and memory resources
-
-Parent EC2 instance:
-
-Cannot inspect
-
-Cannot access
-
-Cannot modify enclave memory
-
-
+- Dedicated CPU and memory resources
+- Parent EC2 instance:
+  - Cannot inspect
+  - Cannot access
+  - Cannot modify enclave memory
 
 This enforces strong isolation guarantees.
 
+---
+
+### 3. Summary
+
+- Nitro Enclaves create a super-secure, isolated environment inside an EC2 instance
+- Designed to reduce attack surface
+- Used when data confidentiality is more important than convenience
 
 ---
 
-3. Summary
-
-Nitro Enclaves create a super-secure, isolated environment inside an EC2 instance
-
-Designed to reduce attack surface
-
-Used when data confidentiality is more important than convenience
-
-
-
----
-
-4. Use Cases (Examples)
+### 4. Use Cases (Examples)
 
 Nitro Enclaves are commonly used for processing:
 
-Credit card numbers (PCI-DSS compliance)
-
-Medical records (HIPAA compliance)
-
-Personally Identifiable Information (PII)
-
-Encryption keys and secrets
-
-Secure data signing and verification
-
-
+- Credit card numbers (PCI-DSS compliance)
+- Medical records (HIPAA compliance)
+- Personally Identifiable Information (PII)
+- Encryption keys and secrets
+- Secure data signing and verification
 
 ---
 
-Interview Tip (High Impact)
-
-If asked:
-
-> “How does AWS protect sensitive data inside EC2?”
-
-
-
-A strong answer should include:
-
-Nitro System
-
-Nitro Enclaves
-
-Isolation
-
-No networking
-
-No persistent storage
-
-
-
+> **Interview Tip (High Impact)**
+> 
+> If asked: *"How does AWS protect sensitive data inside EC2?"*
+> 
+> A strong answer should include:
+> - Nitro System
+> - Nitro Enclaves
+> - Isolation
+> - No networking
+> - No persistent storage
+```
