@@ -191,48 +191,50 @@ kubectl delete pod my-pod            # Delete a pod
 
 ---
 
-🟢 4. Kubernetes Objects
+## 🟢 4. Kubernetes Objects
 
-Object	Purpose	
-Pod	Smallest deployable unit; runs one or more containers; ephemeral	
-Deployment	Manages pods and rolling updates; enables rollbacks	
-ReplicaSet	Ensures a specific number of pod replicas are running	
-Service	Provides stable networking & discovery for ephemeral pods	
-Namespace	Logical separation of resources	
-StatefulSet	For stateful applications with stable identity + storage	
-DaemonSet	Ensures one pod per node (logging, monitoring agents)	
-ConfigMap	Stores configuration data (externalize configuration)	
-Secret	Stores sensitive information/credentials	
-PV / PVC	Persistent storage for pods; independent of Pod lifecycle	
+| Object | Purpose |
+|--------|---------|
+| **Pod** | Smallest deployable unit; runs one or more containers; ephemeral |
+| **Deployment** | Manages pods and rolling updates; enables rollbacks |
+| **ReplicaSet** | Ensures a specific number of pod replicas are running |
+| **Service** | Provides stable networking & discovery for ephemeral pods |
+| **Namespace** | Logical separation of resources |
+| **StatefulSet** | For stateful applications with stable identity + storage |
+| **DaemonSet** | Ensures one pod per node (logging, monitoring agents) |
+| **ConfigMap** | Stores configuration data (externalize configuration) |
+| **Secret** | Stores sensitive information/credentials |
+| **PV / PVC** | Persistent storage for pods; independent of Pod lifecycle |
 
 ---
 
-Pod Details
+### Pod Details
 
-Characteristics:
+**Characteristics:**
 - Smallest deployable unit in Kubernetes
-- Ephemeral: replaced if deleted
+- **Ephemeral:** replaced if deleted
 - Wraps one or more containers
 - Containers share network namespace & volumes
 - Gets its own IP
 
-Networking:
-- Intra-pod: `localhost` or container port
-- Inter-pod: `PodIP:Port` (Pod IPs are temporary)
+**Networking:**
+- **Intra-pod:** `localhost` or container port
+- **Inter-pod:** `PodIP:Port` (Pod IPs are temporary)
 
 ---
 
-Service Types
+### Service Types
 
 Services provide stable IP/DNS to access ephemeral pods.
 
-Type	Purpose	Command	
-ClusterIP	Internal cluster access (default)	`kubectl expose pod my-pod --port 80 --target-port 80`	
-NodePort	Node IP + static port (30000-32767); mainly for testing/debugging	`kubectl expose pod my-pod --port 80 --type NodePort --name my-np-svc`	
-LoadBalancer	Public access via cloud LB (AWS ELB/NLB); requires Security Group rules for HTTP/TCP 80	`kubectl expose pod my-pod --port 80 --type LoadBalancer --name my-lb-svc`	
+| Type | Purpose | Command |
+|------|---------|---------|
+| **ClusterIP** | Internal cluster access (default) | `kubectl expose pod my-pod --port 80 --target-port 80` |
+| **NodePort** | Node IP + static port (30000-32767); mainly for testing/debugging | `kubectl expose pod my-pod --port 80 --type NodePort --name my-np-svc` |
+| **LoadBalancer** | Public access via cloud LB (AWS ELB/NLB); requires Security Group rules for HTTP/TCP 80 | `kubectl expose pod my-pod --port 80 --type LoadBalancer --name my-lb-svc` |
 
-> Note: `port` = service port, `targetPort` = pod/container port
-
+> **Note:** `port` = service port, `targetPort` = pod/container port
+```
 ---
 
 🟢 5. Networking Basics
