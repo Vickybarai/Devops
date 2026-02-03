@@ -1,16 +1,5 @@
 
 
-```markdown
-# Kubernetes Beginner Master Notes
-
-> **Goal:** Make Kubernetes resources intuitive for beginners by explaining what it is, why it exists, when to use it, how it works, and how to verify.
-
-**Learning Flow:** Concept → Why It Exists → When Used → Commands → YAML → Verification
-
----
-
-## 0. Big Picture First (Mental Model)
-
 ```
 
 Cluster
@@ -129,7 +118,7 @@ Use for:
 
 Not for production directly
 
-Production uses: Deployment → ReplicaSet → Pod
+Production uses: `Deployment → ReplicaSet → Pod`
 
 Commands
 
@@ -167,8 +156,8 @@ kubectl get pod my-pod -o wide
 Pod Networking
 
 Communication	How it Works	
-Same Pod	localhost	
-Pod → Pod	PodIP:Port	
+Same Pod	`localhost`	
+Pod → Pod	`PodIP:Port`	
 Best Practice	Service DNS	
 
 > Pod IPs are temporary — never rely on them.
@@ -477,6 +466,5 @@ kubectl get svc
 
 ---
 
-> Core Principle: If you understand WHY each resource exists, Kubernetes becomes logical — not memorization.
 
 ```
