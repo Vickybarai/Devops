@@ -1,11 +1,13 @@
 
-## 1. Create ReplicationController and Service using Command
 
-### ReplicationController (RC)
+```markdown
+# 1. Create ReplicationController and Service using Command
+
+## ReplicationController (RC)
 
 ReplicationController is a legacy Kubernetes controller whose main responsibility is to ensure a specified number of pod replicas are always running. If a pod crashes, the RC immediately creates a new pod to maintain availability.
 
-#### Command to Create ReplicationController
+### Command to Create ReplicationController
 
 ```bash
 kubectl run rc-demo --image=nginx --replicas=3 --restart=Always
@@ -20,7 +22,7 @@ Component	Description
 `--replicas=3`	Desired state: 3 pods must always run	
 `--restart=Always`	Ensures controller-based behavior	
 
-> Kubernetes stores this desired state in etcd, and the controller continuously reconciles actual state with desired state.
+> Note: Kubernetes stores this desired state in etcd, and the controller continuously reconciles actual state with desired state.
 
 Verify ReplicationController
 
@@ -59,11 +61,11 @@ kubectl get svc
 2. Difference Between ReplicationController and ReplicaSet
 
 Aspect	ReplicationController	ReplicaSet	
-Version	Older and legacy controller used in early Kubernetes versions	Newer, recommended replacement for ReplicationController	
-Selectors	Supports only equality-based selectors (`key=value`)	Supports set-based selectors (`In`, `NotIn`, `Exists`)	
+Definition	Older and legacy controller used in early Kubernetes versions	Newer, recommended replacement for ReplicationController	
+Selectors	Supports only equality-based selectors (key=value)	Supports set-based selectors (In, NotIn, Exists)	
 Pod Management	Cannot manage pods created outside its selector strictly	More expressive and flexible pod selection	
 Usage	Mostly used for learning and backward compatibility	Used internally by Deployments in production	
-Rolling Updates	No rolling update support by default	Enables rolling updates via Deployment	
+Updates	No rolling update support by default	Enables rolling updates via Deployment	
 Scaling	Limited scaling and update strategies	Advanced scaling and update mechanisms	
 Architecture	Directly manages pods	Manages pods more reliably via selector logic	
 
@@ -98,12 +100,12 @@ Level	Low-level controller	High-level orchestration object
 Aspect	ReplicaSet	StatefulSet	
 Application Type	Designed for stateless applications	Designed for stateful applications	
 Pod Identity	Pod identity is interchangeable	Each pod has a unique identity	
-Naming	Pod names have random suffixes	Pod names are sequential (`app-0`, `app-1`)	
+Naming	Pod names have random suffixes	Pod names are sequential (app-0, app-1)	
 Ordering	Pods can be created or deleted in any order	Pods follow strict creation and deletion order	
 Storage	No persistent storage guarantee	Persistent storage attached per pod	
 Scaling	Scaling does not preserve pod state	Scaling preserves pod state and identity	
 Use Cases	Used for web servers, APIs, microservices	Used for databases, queues, distributed systems	
-Analogy	Pods are treated as cattle	Pods are treated as pets	
+Metaphor	Pods are treated as cattle	Pods are treated as pets	
 Network Identity	No stable network identity	Stable DNS per pod guaranteed	
 
 ```
