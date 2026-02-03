@@ -1,17 +1,8 @@
-Here is your content formatted as a professional `README.md` file with proper GitHub Flavored Markdown syntax:
 
-```markdown
-# Kubernetes Beginner Master Notes
-
-> **Goal:** Make Kubernetes resources intuitive for beginners by explaining what it is, why it exists, when to use it, how it works, and how to verify.
-
-**Learning Flow:** Concept → Why It Exists → When Used → Commands → YAML → Verification
-
----
 
 ## 0. Big Picture First (Mental Model)
 
-```
+```bash
 
 Cluster
 └── Namespace
@@ -21,6 +12,7 @@ Cluster
 └── Service (connects to Pods via labels)
 
 ```
+
 
 ### Beginner Mental Mapping
 
