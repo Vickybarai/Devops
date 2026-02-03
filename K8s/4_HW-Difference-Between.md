@@ -1,5 +1,4 @@
 
-
 ## 1. Create ReplicationController and Service using Command
 
 ### ReplicationController (RC)
@@ -60,12 +59,12 @@ kubectl get svc
 2. Difference Between ReplicationController and ReplicaSet
 
 Aspect	ReplicationController	ReplicaSet	
-Status	Older and legacy controller used in early Kubernetes versions	Newer, recommended replacement for ReplicationController	
+Version	Older and legacy controller used in early Kubernetes versions	Newer, recommended replacement for ReplicationController	
 Selectors	Supports only equality-based selectors (`key=value`)	Supports set-based selectors (`In`, `NotIn`, `Exists`)	
 Pod Management	Cannot manage pods created outside its selector strictly	More expressive and flexible pod selection	
 Usage	Mostly used for learning and backward compatibility	Used internally by Deployments in production	
 Rolling Updates	No rolling update support by default	Enables rolling updates via Deployment	
-Scaling Strategies	Limited scaling and update strategies	Advanced scaling and update mechanisms	
+Scaling	Limited scaling and update strategies	Advanced scaling and update mechanisms	
 Architecture	Directly manages pods	Manages pods more reliably via selector logic	
 
 ---
@@ -102,7 +101,7 @@ Pod Identity	Pod identity is interchangeable	Each pod has a unique identity
 Naming	Pod names have random suffixes	Pod names are sequential (`app-0`, `app-1`)	
 Ordering	Pods can be created or deleted in any order	Pods follow strict creation and deletion order	
 Storage	No persistent storage guarantee	Persistent storage attached per pod	
-Scaling Behavior	Scaling does not preserve pod state	Scaling preserves pod state and identity	
+Scaling	Scaling does not preserve pod state	Scaling preserves pod state and identity	
 Use Cases	Used for web servers, APIs, microservices	Used for databases, queues, distributed systems	
 Analogy	Pods are treated as cattle	Pods are treated as pets	
 Network Identity	No stable network identity	Stable DNS per pod guaranteed	
