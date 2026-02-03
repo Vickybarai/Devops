@@ -59,9 +59,6 @@ kubectl get svc
 ---
 
 
-```markdown
-# Kubernetes Controllers Comparison Guide
-
 ---
 
 ## 1. ReplicationController vs ReplicaSet
