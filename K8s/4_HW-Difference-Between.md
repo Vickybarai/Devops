@@ -1,6 +1,6 @@
 
 
-```markdown
+
 # 1. Create ReplicationController and Service using Command
 
 ## ReplicationController (RC)
