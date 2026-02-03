@@ -1,4 +1,17 @@
-```bash
+
+
+```markdown
+# Kubernetes Beginner Master Notes
+
+> **Goal:** Make Kubernetes resources intuitive for beginners by explaining what it is, why it exists, when to use it, how it works, and how to verify.
+
+**Learning Flow:** Concept → Why It Exists → When Used → Commands → YAML → Verification
+
+---
+
+## 0. Big Picture First (Mental Model)
+
+```
 
 Cluster
 └── Namespace
@@ -463,3 +476,7 @@ kubectl get svc
 ```
 
 ---
+
+> Core Principle: If you understand WHY each resource exists, Kubernetes becomes logical — not memorization.
+
+```
