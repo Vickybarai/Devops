@@ -5,7 +5,8 @@
 *.tfplan
 crash.log
 *.tfvars
-
+*.hcl
 # OS
 .DS_Store
 Thumbs.db
+
