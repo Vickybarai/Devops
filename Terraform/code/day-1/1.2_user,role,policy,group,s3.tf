@@ -51,5 +51,3 @@ resource "aws_s3_bucket_public_access_block" "TF-s3-bucket-public-access-block" 
 
 }
 
-
-
