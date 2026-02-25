@@ -1,4 +1,4 @@
-
+> DAY1
 # Terraform
 
 ## What is Terraform?
@@ -527,3 +527,194 @@ Symbol	Action	Example	Meaning
 One-line interview summary:
 
 > `+` create, `-` destroy, `~` modify, `-/+` replace.
+---
+>DAY2
+---
+
+# 📚 Appendix: Detailed Concepts (Missing from Core Notes)
+
+This section covers the **Arguments** and **Usage** of key concepts that are critical for practical implementation but were summarized briefly in the main notes.
+
+---
+
+# 1️⃣ Variables (Deep Dive)
+
+## The Problem with Hardcoding
+If you hardcode values (like `instance_type = "t2.micro"`) in your resources:
+1.  You cannot reuse the code for different environments (Dev vs. Prod).
+2.  You have to edit the code to change values, increasing the risk of accidental syntax errors.
+
+## The Solution: `variable` Block
+Variables act as placeholders. Terraform replaces them with actual values during execution.
+
+### Syntax Definition
+
+```hcl
+variable "<variable_name>" {
+  description = "Explain what this variable does"
+  type        = string  # Optional: string, number, bool, list, map
+  default     = "value" # Optional: If not provided, Terraform will ask during runtime
+}
+```
+
+### How to Use Variables in Resources (Reference)
+To use a variable inside a resource block, use the syntax `var.<variable_name>`.
+
+**Example:**
+
+**1. Define the Variable:**
+```hcl
+variable "instance_size" {
+  description = "Size of the EC2 instance"
+  default     = "t3.micro"
+}
+```
+
+**2. Use the Variable in a Resource:**
+```hcl
+resource "aws_instance" "web" {
+  ami           = "ami-12345"
+  instance_type = var.instance_size  # <--- Reference here
+}
+```
+
+### How to Override Variables (Priority Order)
+You don't have to change the code to change the value. You can override `default` in three ways (Highest priority first):
+
+1.  **Command Line (CLI):**
+    ```bash
+    terraform apply -var="instance_size=t3.large"
+    ```
+2.  **`.tfvars` File:**
+    Create a file named `terraform.tfvars`:
+    ```hcl
+    instance_size = "t3.large"
+    ```
+3.  **Environment Variables:**
+    ```bash
+    export TF_VAR_instance_size="t3.large"
+    ```
+
+### Interview Question
+**Q: What happens if I define a variable without a `default` value and I don't pass one via CLI?**
+**A:** Terraform will stop and prompt you to enter the value interactively in the terminal during the `plan` or `apply` phase.
+
+---
+
+# 2️⃣ Outputs (Deep Dive)
+
+## The Problem
+After Terraform creates resources (like an EC2 instance), you need to know critical details to use them (e.g., the **Public IP** address to SSH into the server). You don't want to log into the AWS Console every time to find it.
+
+## The Solution: `output` Block
+The output block prints specific attributes of resources to the terminal after `terraform apply` finishes.
+
+### Syntax Definition
+
+```hcl
+output "<output_name>" {
+  description = "What this value represents"
+  value       = <resource_reference>.<attribute>
+}
+```
+
+### Example Usage
+
+**Resource:**
+```hcl
+resource "aws_instance" "web" {
+  ami           = "ami-12345"
+  instance_type = "t2.micro"
+}
+```
+
+**Output Block:**
+```hcl
+output "server_ip" {
+  description = "The public IP of the web server"
+  value       = aws_instance.web.public_ip
+}
+```
+
+**Result in Terminal:**
+```text
+Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
+
+Outputs:
+server_ip = "54.210.123.45"
+```
+
+### Why Outputs are Critical (DevOps View)
+1.  **Integration:** CI/CD pipelines capture these outputs to automatically configure the next step (e.g., passing the IP to Ansible).
+2.  **Visibility:** Quick verification without opening the console.
+
+---
+
+# 3️⃣ Ingress & Egress (Security Groups)
+
+**Important Note:** `ingress` and `egress` are **NOT** top-level blocks like `provider` or `resource`. They are **nested blocks** (arguments) *inside* an `aws_security_group` resource.
+
+## Definitions
+*   **Ingress:** Inbound Traffic (Traffic coming **INTO** the instance/server).
+*   **Egress:** Outbound Traffic (Traffic going **OUT** from the instance/server).
+
+## Syntax Structure
+
+```hcl
+resource "aws_security_group" "web_sg" {
+  name        = "allow_web_traffic"
+  description = "Allow web inbound traffic"
+
+  # --- INGRESS BLOCK START ---
+  ingress {
+    description = "HTTP from anywhere"
+    from_port   = 80    # Start of port range
+    to_port     = 80    # End of port range
+    protocol    = "tcp" # tcp, udp, icmp, or -1 (all)
+    cidr_blocks = ["0.0.0.0/0"] # Who is allowed? (0.0.0.0/0 = Everyone)
+  }
+  # --- INGRESS BLOCK END ---
+
+  # --- EGRESS BLOCK START ---
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1" # -1 means ALL protocols
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  # --- EGRESS BLOCK END ---
+}
+```
+
+## Arguments Explained
+
+| Argument | Description | Example Values |
+| :--- | :--- | :--- |
+| `description` | A comment explaining why this rule exists. | `"Allow SSH access"` |
+| `from_port` | The start of the port range. | `22` (for SSH) |
+| `to_port` | The end of the port range. | `22` (for single port)<br>`8080` (if range 80-8080) |
+| `protocol` | The network protocol. | `"tcp"`, `"udp"`, `"icmp"`, `"-1"` (all) |
+| `cidr_blocks` | List of IPv4 CIDR blocks allowed to connect. | `["0.0.0.0/0"]` (Public)<br>`["192.168.1.0/24"]` (Private VPN) |
+
+## Common Protocols & Ports (Cheat Sheet)
+
+| Service | Protocol | Port |
+| :--- | :--- | :--- |
+| SSH | TCP | 22 |
+| HTTP | TCP | 80 |
+| HTTPS | TCP | 443 |
+| MySQL | TCP | 3306 |
+| All Traffic | -1 | All |
+
+### Security Best Practice (Interview Tip)
+Never allow Ingress on Port 22 (SSH) from `0.0.0.0/0` in a production environment. Always restrict it to your specific office IP address or VPN range.
+
+**Bad Practice:**
+```hcl
+cidr_blocks = ["0.0.0.0/0"] # Anyone can hack you
+```
+
+**Good Practice:**
+```hcl
+cidr_blocks = ["1.2.3.4/32"] # Only your specific IP can access
+```
