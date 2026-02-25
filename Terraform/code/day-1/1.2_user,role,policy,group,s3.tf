@@ -69,14 +69,14 @@ resource "aws_s3_bucket_public_access_block" "TF-s3-bucket-public-access-block" 
   restrict_public_buckets = false
 }
 
-resource "aws_s3_bucket_acl" "bucket_acl" {
-  depends_on = [
-    aws_s3_bucket_ownership_controls.ownership,
-    aws_s3_bucket_public_access_block.TF-s3-bucket-public-access-block
-  ]
-  bucket = aws_s3_bucket.TF-s3-bucket.id
-  acl    = "public-read"
-}
+# resource "aws_s3_bucket_acl" "bucket_acl" {
+#   depends_on = [
+#     aws_s3_bucket_ownership_controls.ownership,
+#     aws_s3_bucket_public_access_block.TF-s3-bucket-public-access-block
+#   ]
+#   bucket = aws_s3_bucket.TF-s3-bucket.id
+#   acl    = "public-read"
+# }
 
 resource "aws_s3_bucket_website_configuration" "website_config" {
   bucket = aws_s3_bucket.TF-s3-bucket.id
