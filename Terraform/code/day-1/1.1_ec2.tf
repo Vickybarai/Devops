@@ -1,3 +1,6 @@
+# demo ec2
+
+
 # provider "aws" {
 #     region = "ca-central-1"
 # }

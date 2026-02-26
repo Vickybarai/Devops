@@ -1050,3 +1050,7 @@ $ terraform apply
 # aws_instance.my_server: Destruction complete
 ```
 
+===
+
+### 4. How to recover from a corrupted state file?    
+If your `terraform.tfstate` file is corrupted (e.g., due to a failed apply, manual edit, or disk error), you can recover it using **S3 Versioning**.
