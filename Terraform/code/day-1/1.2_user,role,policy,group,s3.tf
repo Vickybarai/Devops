@@ -69,6 +69,20 @@ resource "aws_s3_bucket_public_access_block" "TF-s3-bucket-public-access-block" 
   restrict_public_buckets = false
 }
 
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = aws_s3_bucket.TF-s3-bucket.id
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [
+      {
+        Effect   = "Allow",
+        Action   = ["s3:GetObject","s3:ListBucket"],
+        Resource = "arn:aws:s3:::my-tf-s3-bucket-1234567890/*"
+      }
+    ]
+  })
+}
+
 # resource "aws_s3_bucket_acl" "bucket_acl" {
 #   depends_on = [
 #     aws_s3_bucket_ownership_controls.ownership,
@@ -88,7 +102,7 @@ resource "aws_s3_bucket_website_configuration" "website_config" {
 resource "aws_s3_object" "upload_index" {
   bucket       = aws_s3_bucket.TF-s3-bucket.id
   key          = "index.html"
-  source       = "E:\\vs code\\GITHUB\\Devops\\Terraform\\code\\day-1\\index.html.txt"
+  source       = "E:\\vs code\\GITHUB\\Devops\\Terraform\\code\\day-1\\index.html"
  }
 
  #output
@@ -108,5 +122,3 @@ output "user_direct_permissions" {
 output "user_inherited_permissions" {
   value = "Full S3 Access (via Group Membership)"
 }
- 
- 
