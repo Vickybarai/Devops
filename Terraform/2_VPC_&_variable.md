@@ -67,6 +67,7 @@ terraform plan
 ### Step 5: Deploy Infrastructure
 ```bash
 terraform apply
+terraform apply -auto-approve
 ```
 
 ## 🧹 Cleanup
@@ -74,6 +75,7 @@ terraform apply
 To remove all created resources:
 ```bash
 terraform destroy
+terraform destroy -auto-approve
 ```
 
 ### Step 6: Access Your Web Server
