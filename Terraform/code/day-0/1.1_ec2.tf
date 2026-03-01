@@ -1,6 +1,3 @@
-# demo ec2
-
-
 # provider "aws" {
 #     region = "ca-central-1"
 # }
@@ -14,3 +11,16 @@
 #     Name = "my-terraform-instance"
 #   }
 # }
+provider "aws" {
+    region = var.region
+}
+
+resource "aws_instance" "TF-instance" {
+  ami           = var.ami
+  instance_type = var.instance_type
+  key_name      = var.key 
+  vpc_security_group_ids = var.sg
+  tags = {
+    Name = "my-terraform-instance"  
+  }
+}
