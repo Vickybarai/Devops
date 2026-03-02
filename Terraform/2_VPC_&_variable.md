@@ -1,243 +1,358 @@
-# 📘 Practical Guide: Mastering the 5 Core Terraform Blocks
+# 📘 Terraform VPC Infrastructure Deployment Guide
 
-**Objective:** Deploy a secure EC2 Web Server using the 5 core blocks.
-**Concept:** Understand how to define parameters (`variable`), read existing cloud info (`data`), create new resources (`resource`), and retrieve results (`output`).
+## 🎯 Overview
+This Terraform configuration deploys a complete AWS network infrastructure with a public web server, including VPC, subnet, internet gateway, routing, security groups, and an EC2 instance running nginx.
 
----
+## 🏗️ Architecture Overview
 
-## 🏗️ The Architecture
-We will build:
-1.  **Data Source:** Finds your Default VPC ID automatically.
-2.  **Resource (Security Group):** Creates a firewall using that VPC ID.
-3.  **Resource (EC2):** Creates a server attached to that Security Group.
-4.  **Output:** Displays the Server's Public IP after creation.
+```mermaid
+flowchart TD
+[ Provider ] 
+      │
+      ▼
+[ Data Source: aws_vpc ]  ───────────┐
+(Fetches existing VPC ID)             │
+      │                               │
+      ▼                               │
+[ Resource: aws_security_group ] <────┘ (Needs VPC ID)
+      │
+      ▼
+[ Resource: aws_instance ] <───────────┐
+(Needs Security Group ID)              │
+      │                                 │
+      ▼                                 │
+[ Variables: image_id, type, etc. ] ────┘ (Provides config details)
+      │
+      ▼
+[ Output: public_ip ]
+(Reads final result)
 
----
+```
 
-## 📂 Step 1: Setup Project Structure
->Create a folder named `terraform-practice` and create these empty files inside:
-> *   `main.tf` (Provider, Data, Resources)
-> *   `variables.tf` (Input definitions)
-> *   `outputs.tf` (Result definitions)
+## 📋 Prerequisites
 
----
+1. **AWS Account** with appropriate permissions
+2. **Terraform installed** (v1.0+ recommended)
+3. **AWS CLI configured** with credentials
+4. **Existing SSH Key Pair** in your AWS account
+5. **AWS AMI ID** for your region (default provided for us-east-1)
 
-## 🛠️ Step 2: The Code Implementation
+## 🚀 Quick Start
 
-### 1. Open `main.tf`
-Copy this code. Notice how we use `data` to get the ID we don't know yet, and pass it to the `resource`.
+### Step 1: Clone and Navigate
+```bash
+cd Terraform/code/day-2
+```
+
+### Step 2: Create terraform.tfvars
+Create a file named `terraform.tfvars` with your specific values:
+```hcl
+region          = "us-east-1"
+vpc_cidr        = "10.0.0.0/16"
+subnet_cidr     = "10.0.1.0/24"
+availability_zone = "us-east-1a"
+key             = "your-existing-key-pair-name"
+```
+
+### Step 3: Initialize Terraform
+```bash
+terraform init
+```
+
+### Step 4: Plan Deployment
+```bash
+terraform plan
+```
+
+### Step 5: Deploy Infrastructure
+```bash
+terraform apply
+terraform apply -auto-approve
+```
+
+## 🧹 Cleanup
+
+To remove all created resources:
+```bash
+terraform destroy
+terraform destroy -auto-approve
+```
+
+### Step 6: Access Your Web Server
+After deployment, Terraform will output the public IP. Access it in your browser:
+```
+http://<PUBLIC_IP>
+```
+
+
+```
+
+### 2. Clean Up output.tf
+
+Replace the entire `output.tf` with this clean version:
 
 ```hcl
-# ---------------------------------------------------------
-# BLOCK 1: PROVIDER
-# Tells Terraform which cloud to use (AWS) and the region.
-# ---------------------------------------------------------
-provider "aws" {
-  region = "us-east-1"
+# Output the public IP of the EC2 instance
+output "public_ip" {
+  description = "Public IP address of the web server"
+  value       = aws_instance.TF-instance.public_ip
 }
 
-# ---------------------------------------------------------
-# BLOCK 2: DATA SOURCE
-# READ-ONLY. Fetches the ID of the existing Default VPC.
-# We don't hardcode the ID because it changes per account.
-# ---------------------------------------------------------
-data "aws_vpc" "default_vpc" {
-  default = true
+# Output the VPC ID
+output "vpc_id" {
+  description = "ID of the created VPC"
+  value       = aws_vpc.tf_vpc.id
 }
 
-# ---------------------------------------------------------
-# BLOCK 3: RESOURCE (Security Group)
-# Creates a Firewall.
-# KEY CONCEPT: It depends on the Data Block (vpc_id).
-# ---------------------------------------------------------
-resource "aws_security_group" "web_sg" {
-  name        = "web-server-sg"
-  description = "Allow HTTP and restricted SSH"
+# Output the Subnet ID
+output "subnet_id" {
+  description = "ID of the created subnet"
+  value       = aws_subnet.tf_subnet.id
+}
+
+# Output the Security Group ID
+output "security_group_id" {
+  description = "ID of the created security group"
+  value       = aws_security_group.vpc_sg_tf.id
+}
+```
+
+### 3. Improve variable.tf
+
+Update `variable.tf` with proper validation and descriptions:
+
+```hcl
+variable "region" {
+  description = "AWS region where resources will be created"
+  type        = string
+  validation {
+    condition     = can(regex("^us-[a-z]+-[1-9]$", var.region))
+    error_message = "Region must be a valid AWS region format (e.g., us-east-1)."
+  }
+}
+
+variable "vpc_cidr" {
+  description = "CIDR block for the VPC"
+  type        = string
+  validation {
+    condition     = can(cidrhost(var.vpc_cidr, 0))
+    error_message = "VPC CIDR must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "subnet_cidr" {
+  description = "CIDR block for the subnet (must be within VPC CIDR)"
+  type        = string
+  validation {
+    condition     = can(cidrhost(var.subnet_cidr, 0))
+    error_message = "Subnet CIDR must be a valid IPv4 CIDR block."
+  }
+}
+
+variable "availability_zone" {
+  description = "Availability zone for the subnet"
+  type        = string
+}
+
+variable "ami" {
+  description = "AMI ID for the EC2 instance (default: Amazon Linux 2023 in us-east-1)"
+  type        = string
+  default     = "ami-0938a60d87953e820"
   
-  # ⚠️ SOLUTION TO "I DON'T HAVE THE ID":
-  # We reference the Data Block attribute here.
-  vpc_id      = data.aws_vpc.default_vpc.id 
+  validation {
+    condition     = length(var.ami) > 0
+    error_message = "AMI ID cannot be empty."
+  }
+}
 
-  # Inbound Rule: HTTP (Port 80) - Open to world
+variable "instance_type" {
+  description = "EC2 instance type"
+  type        = string
+  default     = "t3.micro"
+  
+  validation {
+    condition     = can(regex("^[a-z]+[0-9]+\\.[a-z]+$", var.instance_type))
+    error_message = "Instance type must be a valid AWS instance type (e.g., t3.micro)."
+  }
+}
+
+variable "key" {
+  description = "Name of an existing AWS key pair for SSH access"
+  type        = string
+  validation {
+    condition     = length(var.key) > 0
+    error_message = "Key pair name cannot be empty."
+  }
+}
+```
+
+### 4. Enhance main.tf with Comments
+
+Improve `main.tf` with better organization and comments:
+
+```hcl
+# ----------------------------------------------------------------------
+# Provider Configuration
+# ----------------------------------------------------------------------
+provider "aws" {
+  region = var.region
+}
+
+# ----------------------------------------------------------------------
+# VPC Resources
+# ----------------------------------------------------------------------
+resource "aws_vpc" "tf_vpc" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+  
+  tags = {
+    Name        = "tf-vpc"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+}
+
+resource "aws_subnet" "tf_subnet" {
+  vpc_id                  = aws_vpc.tf_vpc.id
+  cidr_block              = var.subnet_cidr
+  availability_zone       = var.availability_zone
+  map_public_ip_on_launch = true
+  
+  tags = {
+    Name        = "tf-subnet"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+}
+
+# ----------------------------------------------------------------------
+# Networking Resources
+# ----------------------------------------------------------------------
+resource "aws_internet_gateway" "tf_igw" {
+  vpc_id = aws_vpc.tf_vpc.id
+  
+  tags = {
+    Name        = "tf-igw"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+}
+
+resource "aws_route_table" "route_table" {
+  vpc_id = aws_vpc.tf_vpc.id
+  
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.tf_igw.id
+  }
+  
+  tags = {
+    Name        = "tf-route-table"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+}
+
+resource "aws_route_table_association" "rt_association" {
+  subnet_id      = aws_subnet.tf_subnet.id
+  route_table_id = aws_route_table.route_table.id
+}
+
+# ----------------------------------------------------------------------
+# Security Resources
+# ----------------------------------------------------------------------
+resource "aws_security_group" "vpc_sg_tf" {
+  name        = "vpc-sg-tf"
+  description = "Security group for Terraform web server"
+  vpc_id      = aws_vpc.tf_vpc.id
+  
+  tags = {
+    Name        = "tf-security-group"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
+  
+  # SSH access (restricted - should be limited to specific IP in production)
   ingress {
-    description = "HTTP from internet"
+    description = "SSH access"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"] # ⚠️ Restrict this in production!
+  }
+  
+  # HTTP access
+  ingress {
+    description = "HTTP access"
     from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
-
-  # Inbound Rule: SSH (Port 22) - Restricted to specific IP
-  ingress {
-    description = "SSH from my IP"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    # We use a VARIABLE here so we can change it easily without editing code.
-    cidr_blocks = [var.allowed_ssh_cidr]
-  }
-
-  # Outbound Rule: Allow all traffic out
+  
+  # Outbound traffic
   egress {
+    description = "All outbound traffic"
     from_port   = 0
     to_port     = 0
-    protocol    = "-1" # -1 means all protocols
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
-# ---------------------------------------------------------
-# BLOCK 3 (CONTINUED): RESOURCE (EC2 Instance)
-# Creates the Virtual Machine.
-# ---------------------------------------------------------
-resource "aws_instance" "web_server" {
-  # Using Variables for AMI and Type
-  ami           = var.image_id
+# ----------------------------------------------------------------------
+# Compute Resources
+# ----------------------------------------------------------------------
+resource "aws_instance" "TF-instance" {
+  ami           = var.ami
   instance_type = var.instance_type
-  key_name      = var.key_pair
-
-  # Attaching the Security Group we created above
-  vpc_security_group_ids = [aws_security_group.web_sg.id]
-
-  tags = {
-    Name = "Web-Server-DevOps"
-  }
-
-  # USER DATA: Heredoc syntax (<<-EOF) to run a script on startup
+  key_name      = var.key
+  
+  # Network configuration
+  subnet_id                   = aws_subnet.tf_subnet.id
+  vpc_security_group_ids      = [aws_security_group.vpc_sg_tf.id]
+  associate_public_ip_address = true
+  
+  # Ensure instance is created after networking is ready
+  depends_on = [
+    aws_internet_gateway.tf_igw,
+    aws_route_table_association.rt_association
+  ]
+  
+  # User data script to install and configure nginx
   user_data = <<-EOF
               #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
-              echo "<h1>Deployed via Terraform using 5 Blocks</h1>" > /var/www/html/index.html
+              apt update -y
+              apt install -y nginx
+              systemctl enable nginx
+              systemctl start nginx
+              echo "<h1>Terraform NGINX Working - Deployed on $(date)</h1>" > /usr/share/nginx/html/index.html
               EOF
+  
+  tags = {
+    Name        = "my-terraform-instance"
+    Environment = "dev"
+    ManagedBy   = "Terraform"
+  }
 }
 ```
 
----
+### 5. Create terraform.tfvars.example
 
-### 2. Open `variables.tf`
-This defines the inputs. We use `default` values so the code runs immediately, but you can override them.
+Add a new file `terraform.tfvars.example` to guide users:
 
 ```hcl
-# ---------------------------------------------------------
-# BLOCK 4: VARIABLES
-# Input parameters for your infrastructure.
-# ---------------------------------------------------------
+# AWS Configuration
+region          = "us-east-1"
+availability_zone = "us-east-1a"
 
-variable "image_id" {
-  description = "The AMI ID for AWS us-east-1 (Amazon Linux 2023)"
-  type        = string
-  # Note: AMI IDs are region specific. This one is for us-east-1.
-  default     = "ami-0c7217cdde317cfec" 
-}
+# Network Configuration
+vpc_cidr        = "10.0.0.0/16"
+subnet_cidr     = "10.0.1.0/24"
 
-variable "instance_type" {
-  description = "Instance size"
-  type        = string
-  default     = "t3.micro"
-}
-
-variable "key_pair" {
-  description = "Name of your existing AWS Key Pair for SSH access"
-  type        = string
-  # ⚠️ CRITICAL: You must change this to a key pair that EXISTS in your AWS account!
-  default     = "my-aws-key" 
-}
-
-variable "allowed_ssh_cidr" {
-  description = "IP address allowed to SSH into the server"
-  type        = string
-  # ⚠️ SECURITY: Change this to your own IP (e.g., "1.2.3.4/32") for safety.
-  # "0.0.0.0/0" allows the whole world (risky, used here for demo).
-  default     = "0.0.0.0/0" 
-}
-```
-
----
-
-### 3. Open `outputs.tf`
-This defines what we want to see *after* Terraform finishes.
-
-```hcl
-# ---------------------------------------------------------
-# BLOCK 5: OUTPUTS
-# Retrieves attributes from the resources after creation.
-# ---------------------------------------------------------
-
-output "public_ip_address" {
-  description = "The Public IP of the web server"
-  # Reference: resource_type.resource_name.attribute_name
-  value       = aws_instance.web_server.public_ip
-}
-
-output "security_group_id" {
-  description = "The ID of the created Security Group"
-  value       = aws_security_group.web_sg.id
-}
-```
-
----
-
-## 🚀 Step 3: Running the Practical (Commands)
-
-Open your terminal in the folder where you created the files.
-
-### 1. Initialize
-Downloads the AWS plugin.
-```bash
-terraform init
-```
-
-### 2. Plan (The "Check" Phase)
-This is where Terraform solves the "I don't have the ID" problem.
-*   It reads the `data` block -> calls AWS -> gets the VPC ID.
-*   It reads the `resource` block -> substitutes the VPC ID.
-*   It calculates what will be created.
-
-```bash
-terraform plan
-```
-*Look for the line: `Plan: 2 to add, 0 to change, 0 to destroy.`*
-
-### 3. Apply (The "Create" Phase)
-Provisions the actual resources.
-```bash
-terraform apply
-```
-*Type `yes` when prompted.*
-
-### 4. View the Result
-Once finished, Terraform will print the **Outputs** at the very bottom:
-
-```text
-Apply complete! Resources: 2 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-public_ip_address = "54.210.123.45"
-security_group_id = "sg-0987654321"
-```
-
-### 5. Verify
-Copy the `public_ip_address` and paste it into your browser. You should see:
-**"Deployed via Terraform using 5 Blocks"**
-
----
-
-## 🧠 Cheat Sheet: How Blocks Interact
-
-| Block | Role | Example | Dependency |
-| :--- | :--- | :--- | :--- |
-| **Provider** | **The Connector** | Connects to AWS | None |
-| **Data** | **The Reader** | Finds Default VPC ID | Reads from Cloud |
-| **Variable** | **The Input** | AMI ID = `ami-xxx` | Defined by You |
-| **Resource** | **The Creator** | Creates EC2 & SG | Uses Data & Variables |
-| **Output** | **The Result** | Shows Public IP | Reads from Resource |
-
-## 🛑 Cleanup (Important!)
-To stop paying AWS, destroy the resources:
-```bash
-terraform destroy
+# EC2 Configuration
+ami             = "ami-0938a60d87953e820" # Amazon Linux 2023 in us-east-1
+instance_type   = "t3.micro"
+key             = "your-existing-key-pair-name"
 ```
