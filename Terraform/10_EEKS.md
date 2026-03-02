@@ -1,40 +1,15 @@
-This code implements the "4 Pillars" strategy: Cluster Role, Cluster, Node Role, and Node Group, with the critical `timeouts` and `depends_on` configurations discussed in class.
+Here is the **complete, working code** structured into the module and root directories. This implements the "4 Pillars" strategy with the critical `timeouts` and `depends_on` configurations.
 
----
-===
-
-
-### ⚡ Execution Order (The "Proper Flow")
-
-When you run `terraform apply`, this is the exact sequence of events based on the diagram above:
-
-1.  **Data Read:** Read Default VPC and Subnet IDs.
-2.  **Cluster IAM:** Create `eks_cluster_role`.
-3.  **Cluster Policy:** Attach `AmazonEKSClusterPolicy` to `eks_cluster_role`.
-4.  **Cluster Create:** Start creating `aws_eks_cluster`.
-    *   *Wait 15-20 minutes (Control Plane Provisioning)*.
-5.  **Node IAM:** Create `eks_node_role` (Can happen in parallel with Step 4).
-6.  **Node Policies:** Attach the 3 Worker policies to `eks_node_role`.
-7.  **Node Group Create:** Start creating `aws_eks_node_group`.
-    *   Terraform verifies `aws_eks_cluster.this` is active (via `depends_on`).
-    *   Terraform verifies IAM policies exist (via `depends_on`).
-    *   AWS launches EC2 instances.
-    *   EC2 instances bootstrap and join the cluster.
-8.  **Outputs:** Return `cluster_endpoint`, `cluster_id`, etc., to the Root Module.
-
-
-===
-### 📂 Module Structure: `modules/eks`
-
-You should create three files inside this folder:
-1.  `variables.tf` (Inputs)
-2.  `main.tf` (Logic & Resources)
-3.  `outputs.tf` (Outputs)
+You can copy this directly into your files to match the structure of the repository you referenced.
 
 ---
 
-### 1. `variables.tf`
-We define the inputs so this module can be reused for any VPC or environment.
+## 1. Module Code: `modules/eks/`
+
+Create a folder named `modules/eks` and create these three files inside it.
+
+### File: `modules/eks/variables.tf`
+Defines the inputs for the module.
 
 ```hcl
 variable "cluster_name" {
@@ -56,7 +31,7 @@ variable "subnet_ids" {
 variable "instance_type" {
   description = "EC2 Instance type for the worker nodes"
   type        = string
-  default     = "t3.small" # t3.small is recommended over t2.micro for EKS
+  default     = "t3.small"
 }
 
 variable "cluster_version" {
@@ -72,25 +47,16 @@ variable "node_group_name" {
 }
 ```
 
----
-
-### 2. `main.tf`
-This is the core logic. It handles the IAM roles, the Cluster creation, and the Node Groups.
-
-**Key Technical Details Included:**
-*   **Cluster IAM Role:** Trusts `eks.amazonaws.com`.
-*   **Node IAM Role:** Trusts `ec2.amazonaws.com` and has the 3 required policies attached.
-*   **Timeouts:** Explicitly set to 20 minutes to prevent Terraform from failing during the long cluster boot process.
-*   **Depends_on:** Ensures policies are attached *before* resources attempt to use the roles.
+### File: `modules/eks/main.tf`
+Contains the logic for the 4 Pillars, IAM roles, and dependencies.
 
 ```hcl
 # ---------------------------------------------------
-# 1. CLUSTER IAM ROLE
+# PILLAR 1: CLUSTER IAM ROLE
 # ---------------------------------------------------
 resource "aws_iam_role" "eks_cluster_role" {
   name = "${var.cluster_name}-cluster-role"
 
-  # Trust Relationship: Allows the EKS Service to assume this role
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -107,14 +73,13 @@ resource "aws_iam_role" "eks_cluster_role" {
   }
 }
 
-# Attach the AWS Managed Policy for Cluster Control Plane
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster_role.name
 }
 
 # ---------------------------------------------------
-# 2. EKS CLUSTER (The Control Plane)
+# PILLAR 2: EKS CLUSTER (Control Plane)
 # ---------------------------------------------------
 resource "aws_eks_cluster" "this" {
   name     = var.cluster_name
@@ -123,18 +88,17 @@ resource "aws_eks_cluster" "this" {
 
   vpc_config {
     subnet_ids = var.subnet_ids
-    # Ensure public access is enabled if you want to access the API endpoint from outside the VPC
+    # Enable public access endpoint so we can connect from local machine
     endpoint_public_access = true 
   }
 
-  # CRITICAL: Cluster creation takes ~15-20 minutes. 
-  # Terraform defaults to 10 mins. We MUST override this.
+  # CRITICAL: Cluster creation can take 15-20 mins. Default is 10.
   timeouts {
     create = "20m"
     delete = "20m"
   }
 
-  # CRITICAL: Ensure the policy is attached before the cluster tries to start.
+  # CRITICAL: Ensure policy is attached before cluster starts
   depends_on = [
     aws_iam_role_policy_attachment.eks_cluster_policy
   ]
@@ -145,12 +109,11 @@ resource "aws_eks_cluster" "this" {
 }
 
 # ---------------------------------------------------
-# 3. NODE IAM ROLE (For Worker Nodes)
+# PILLAR 3: NODE IAM ROLE
 # ---------------------------------------------------
 resource "aws_iam_role" "eks_node_role" {
   name = "${var.cluster_name}-node-role"
 
-  # Trust Relationship: Allows EC2 Service to assume this role
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -168,26 +131,23 @@ resource "aws_iam_role" "eks_node_role" {
 }
 
 # Attach the 3 Required Policies for Worker Nodes
-# 1. Allows nodes to join the cluster
 resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_node_role.name
 }
 
-# 2. Allows CNI (Networking) to work
 resource "aws_iam_role_policy_attachment" "eks_cni_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.eks_node_role.name
 }
 
-# 3. Allows nodes to pull images from ECR
 resource "aws_iam_role_policy_attachment" "eks_ecr_readonly" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_node_role.name
 }
 
 # ---------------------------------------------------
-# 4. EKS NODE GROUP (The Workers)
+# PILLAR 4: EKS NODE GROUP (Workers)
 # ---------------------------------------------------
 resource "aws_eks_node_group" "this" {
   cluster_name    = aws_eks_cluster.this.name
@@ -203,15 +163,12 @@ resource "aws_eks_node_group" "this" {
 
   instance_types = [var.instance_type]
 
-  # CRITICAL: Ensure all 3 policies are attached before creating the node group
+  # CRITICAL: Ensure policies are attached before nodes boot
   depends_on = [
     aws_iam_role_policy_attachment.eks_worker_node_policy,
     aws_iam_role_policy_attachment.eks_cni_policy,
     aws_iam_role_policy_attachment.eks_ecr_readonly,
-  ]
-
-  # Ensure nodes are created after the cluster is ready
-  depends_on = [
+    # Ensure cluster exists before adding nodes
     aws_eks_cluster.this
   ]
 
@@ -225,10 +182,8 @@ resource "aws_eks_node_group" "this" {
 }
 ```
 
----
-
-### 3. `outputs.tf`
-We output these values so the root module (or a CI/CD pipeline) can use them to configure `kubectl` or deploy applications.
+### File: `modules/eks/outputs.tf`
+Returns values to the root module.
 
 ```hcl
 output "cluster_id" {
@@ -252,18 +207,18 @@ output "node_role_arn" {
 }
 
 output "cluster_certificate_authority_data" {
-  description = "Base64 encoded certificate data required to communicate with the cluster"
+  description = "Base64 encoded certificate data required for kubectl"
   value       = aws_eks_cluster.this.certificate_authority[0].data
 }
 ```
 
 ---
 
-### 🚀 How to Call This Module (Root `main.tf`)
+## 2. Root Code: `day11/` (or Root Directory)
 
-To use the code above, you need to call this module from your root directory (e.g., `day11/main.tf`). Since the lecture mentioned using the **Default VPC**, here is how you fetch it and pass it to the module.
+This file calls the module and sets up the VPC data sources.
 
-**File:** `day11/main.tf`
+### File: `main.tf`
 
 ```hcl
 terraform {
@@ -279,12 +234,13 @@ provider "aws" {
   region = "us-east-1"
 }
 
-# 1. Fetch Default VPC
+# ---------------------------------------------------
+# DATA SOURCES: Fetch Existing Network
+# ---------------------------------------------------
 data "aws_vpc" "default" {
   default = true
 }
 
-# 2. Fetch Default Subnets
 data "aws_subnets" "default" {
   filter {
     name   = "vpc-id"
@@ -292,27 +248,64 @@ data "aws_subnets" "default" {
   }
 }
 
-# 3. Call the EKS Module
+# ---------------------------------------------------
+# MODULE CALL: Deploy EKS
+# ---------------------------------------------------
 module "my_eks_cluster" {
-  source = "./modules/eks"
+  source = "../modules/eks" # Adjust path if running from a different folder
 
-  cluster_name = "my-production-cluster"
-  vpc_id       = data.aws_vpc.default.id
-  subnet_ids   = data.aws_subnets.default.ids
+  cluster_name  = "my-production-cluster"
+  vpc_id        = data.aws_vpc.default.id
+  subnet_ids    = data.aws_subnets.default.ids
   instance_type = "t3.small"
+  cluster_version = "1.29"
 }
 
-# 4. Output the Cluster Endpoint so you can configure kubectl
+# ---------------------------------------------------
+# OUTPUTS: Display Connection Info
+# ---------------------------------------------------
 output "cluster_endpoint" {
-  value = module.my_eks_cluster.cluster_endpoint
+  description = "EKS API Endpoint"
+  value       = module.my_eks_cluster.cluster_endpoint
+}
+
+output "kubectl_config_command" {
+  description = "Command to update kubeconfig"
+  value       = "aws eks update-kubeconfig --name ${module.my_eks_cluster.cluster_id} --region us-east-1"
 }
 ```
 
-### ⚠️ Critical Implementation Notes
+---
 
-1.  **Timeouts:** Without the `timeouts { create = "20m" }` block in the cluster resource, Terraform will timeout and fail after 10 minutes, but the cluster will actually still be creating in the background. This creates a "zombie" state.
-2.  **Service Principals:** Notice the difference in `assume_role_policy`:
-    *   Cluster uses `eks.amazonaws.com`.
-    *   Node Role uses `ec2.amazonaws.com`.
-    *   If you swap these, the creation will fail.
-3.  **Node Group Policies:** The lecture emphasized attaching **exactly** these 3 policies to the Node Role (`AmazonEKSWorkerNodePolicy`, `AmazonEKS_CNI_Policy`, `AmazonEC2ContainerRegistryReadOnly`). Missing the CNI policy is the most common reason why nodes get stuck in `NotReady` status.
+## 3. How to Run
+
+### Step 1: Initialize
+Navigate to your root folder (e.g., `day11/`) and run:
+```bash
+terraform init
+```
+
+### Step 2: Plan
+Verify what will be created:
+```bash
+terraform plan
+```
+
+### Step 3: Apply
+Deploy the infrastructure. **This will take about 15-20 minutes.**
+```bash
+terraform apply
+```
+
+### Step 4: Configure kubectl
+Once the apply is complete, copy the `kubectl_config_command` from the output and run it in your terminal, or run:
+```bash
+aws eks update-kubeconfig --name my-production-cluster --region us-east-1
+```
+
+### Step 5: Verify
+Check your nodes:
+```bash
+kubectl get nodes
+```
+*You should see 2 nodes in `Ready` status.*
