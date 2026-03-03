@@ -1,4 +1,3 @@
-```markdown
 # Introduction to Jenkins & CI/CD
 
 ## 1. Recap: Software Development Life Cycle (SDLC)
@@ -66,18 +65,26 @@ DevOps aims to automate these repetitive tasks.
 
 **Prerequisites:**
 *   Since Jenkins is Java-based, we must install Java first.
-*   For the current LTS version of Jenkins, we will use **Java 17 (OpenJDK 17)**.
+*   For the current LTS version of Jenkins, we will use **Java 21 (OpenJDK 21)**.
 
 **Step-by-Step Installation:**
 
 1.  **Install Java:**
     ```bash
     sudo apt update
-    sudo apt install openjdk-17-jre
+    sudo apt install fontconfig openjdk-21-jre
+    java -version
     ```
 
 2.  **Add Jenkins Repository:**
-    *   Add the Jenkins GPG key and repository to the system sources list (as per official documentation).
+    *   Add the Jenkins GPG key and repository to the system sources list.
+    ```bash
+    sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+      https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
+    echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
+      https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+      /etc/apt/sources.list.d/jenkins.list > /dev/null
+    ```
 
 3.  **Update and Install Jenkins:**
     ```bash
@@ -91,19 +98,33 @@ DevOps aims to automate these repetitive tasks.
     sudo systemctl enable jenkins
     ```
 
-5.  **Configure Security Group (AWS):**
-    *   Jenkins runs on port **8080** by default.
-    *   Ensure your AWS Security Group allows Inbound traffic on port **8080**.
+<!-- 5.  **Configure Instance Firewall (UFW):**
+    *   By default, Ubuntu's firewall (UFW) might block external connections. You must explicitly allow port 8080.
+    ```bash
+    sudo ufw allow 8080
+    sudo ufw status
+    ``` -->
 
-6.  **Access Jenkins:**
+6.  **Configure Security Group (AWS):**
+    *   Go to your EC2 Console -> Security Groups.
+    *   Edit **Inbound Rules**.
+    *   Add a rule:
+        *   **Type:** Custom TCP
+        *   **Port Range:** 8080
+        *   **Source:** `0.0.0.0/0` (Allows access from anywhere) OR your specific IP address.
+
+7.  **Access Jenkins:**
     *   Open your browser and go to: `http://<YOUR-EC2-PUBLIC-IP>:8080`
+    *   *Note: If you still cannot connect, see the Troubleshooting section below.*
 
-7.  **Unlock Jenkins:**
+8.  **Unlock Jenkins:**
     *   Jenkins is locked by default for security.
     *   Retrieve the initial admin password from:
-        `/var/lib/jenkins/secrets/initialAdminPassword`
+        ```bash
+        sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+        ```
 
-8.  **Setup Wizard:**
+9.  **Setup Wizard:**
     *   **Plugins:** You can choose to install "Suggested Plugins" or select "None" to install them manually later.
     *   **Create Admin User:** Set up your first admin account.
 
@@ -112,7 +133,37 @@ DevOps aims to automate these repetitive tasks.
 
 ---
 
-## 6. Q&A & Technical Clarifications
+## 6. Troubleshooting: "Unable to Access via Public IP"
+If you have followed the steps above but still see "This site can't be reached" or a connection timeout:
+
+1.  **Check if Jenkins is running locally:**
+    Run this command inside your EC2 terminal. If this returns HTML code, Jenkins is running, and the issue is network/firewall related.
+    ```bash
+    curl localhost:8080
+    ```
+
+2.  **Verify Jenkins Listening Address:**
+    Sometimes Jenkins binds only to `127.0.0.1` (localhost). To make it accessible via the Public IP, it must listen on `0.0.0.0`.
+    *   Edit the configuration file:
+        ```bash
+        sudo nano /etc/default/jenkins
+        ```
+    *   Find the line `JENKINS_ARGS` and add/modify the httpListenAddress:
+        ```bash
+        JENKINS_ARGS="--webroot=/var/cache/jenkins/war --httpPort=$HTTP_PORT --httpListenAddress=0.0.0.0"
+        ```
+    *   Save and exit (Ctrl+O, Enter, Ctrl+X).
+    *   Restart Jenkins:
+        ```bash
+        sudo systemctl restart jenkins
+        ```
+
+3.  **Check AWS Security Group again:**
+    Ensure you are editing the Security Group **attached to your EC2 instance**, not a different one. You can check this in the EC2 console under the "Security" tab of your instance.
+
+---
+
+## 7. Q&A & Technical Clarifications
 *   **Instance Sizing:** A `t2.micro` or `t3.small` might freeze because Jenkins is resource-heavy. It is recommended to use a `t2.medium` or `t3.medium` for practice.
 *   **SSH Tools:** In companies, you often won't have direct console access. You will use tools like **MobaXterm** or **Putty** to connect via SSH.
 *   **Documentation:** Always use official documentation for installation to ensure you get the latest stable versions, as repositories often lag behind.
