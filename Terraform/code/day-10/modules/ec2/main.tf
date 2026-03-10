@@ -17,6 +17,9 @@ resource "aws_instance" "EC2" {
 
   user_data = var.user_data
 
+<<<<<<< HEAD
   
+=======
+>>>>>>> 40a49ddd9e152cf3ea2cb07ec426d9e1ead6b0d6
 
 }
