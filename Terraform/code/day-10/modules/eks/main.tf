@@ -28,7 +28,7 @@ resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
 # ---------------------------------------------------
 # PILLAR 2: EKS CLUSTER (Control Plane)
 # ---------------------------------------------------
-resource "aws_eks_cluster" "this" {
+resource "aws_eks_cluster" "my-cluster" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster_role.arn
   version  = var.cluster_version
@@ -96,8 +96,8 @@ resource "aws_iam_role_policy_attachment" "eks_ecr_readonly" {
 # ---------------------------------------------------
 # PILLAR 4: EKS NODE GROUP (Workers)
 # ---------------------------------------------------
-resource "aws_eks_node_group" "this" {
-  cluster_name    = aws_eks_cluster.this.name
+resource "aws_eks_node_group" "my-cluster" {
+  cluster_name    = aws_eks_cluster.my-cluster.name
   node_group_name = var.node_group_name
   node_role_arn   = aws_iam_role.eks_node_role.arn
   subnet_ids      = var.subnet_ids
@@ -116,7 +116,7 @@ resource "aws_eks_node_group" "this" {
     aws_iam_role_policy_attachment.eks_cni_policy,
     aws_iam_role_policy_attachment.eks_ecr_readonly,
     # Ensure cluster exists before adding nodes
-    aws_eks_cluster.this
+    aws_eks_cluster.my-cluster
   ]
 
   labels = {
