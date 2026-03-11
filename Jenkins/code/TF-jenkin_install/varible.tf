@@ -10,6 +10,7 @@ variable "ami_value" {
 
 variable "instance_type_value" {
   description = "value for aws instance_type"
+  type = string
 }
 
 variable "instance_key_name" {

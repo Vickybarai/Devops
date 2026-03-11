@@ -15,59 +15,11 @@ module "jenkins" {
   subnet_id_value = ["subnet-016c5cd1838c909f4"]
   storage_size = 9
 
-#  user_data = <<-EOF
-# sudo apt update
-# sudo apt install fontconfig openjdk-21-jre -y
-# java -version
-# sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-#   https://pkg.jenkins.io/debian-stable/jenkins.io-2026.key
-# echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
-#   https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
-#   /etc/apt/sources.list.d/jenkins.list > /dev/null 
-# sudo apt update
-# sudo apt install jenkins 
-#   sudo systemctl daemon-reload
-#   sudo systemctl enable jenkins
-#   sudo systemctl start jenkins
-#   sudo systemctl status jenkins
+ user_data = <<-EOF
 
-user_data = <<-EOF
-#!/bin/bash
-set -e
-
-# Update system packages
-apt-get update -y
-
-# Install required dependencies
-apt-get install -y fontconfig openjdk-21-jre wget
-
-# Verify Java installation
-java -version
-
-# Create keyrings directory
-mkdir -p /etc/apt/keyrings
-
-# Add Jenkins repository key
-wget -O /etc/apt/keyrings/jenkins-keyring.asc \
-https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
-
-# Add Jenkins repository
-echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" \
-| tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-
-# Update package list again
-apt-get update -y
-
-# Install Jenkins
-apt-get install -y jenkins
-
-# Start and enable Jenkins service
-systemctl daemon-reload
-systemctl enable jenkins
-systemctl start jenkins
-
-# Check Jenkins status
-systemctl status jenkins
 EOF
-
 }
+
+
+
+
