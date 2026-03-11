@@ -1,3 +1,7 @@
+This repository  collection of **DevOps lecture notes and study materials**. It is structured lecture-wise,
+ DevOps topics such as **Linux commands, Git/GitHub, Jenkins, Docker, Kubernetes, and Terraform**, 
+ 
+ 
  AWS Cloud Computing – 
 ---
 
