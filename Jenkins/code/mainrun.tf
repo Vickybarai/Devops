@@ -18,4 +18,8 @@ module "jenkins" {
  user_data = <<-EOF
 
 EOF
+
+}
+output "jenkins_public_ip" {
+  value = module.jenkins.public_ip
 }
