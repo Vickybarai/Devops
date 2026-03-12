@@ -1,3 +1,7 @@
+plugin use :
+- **Git Plugin**
+- **Pipeline Plugin**
+
 # Introduction to Jenkins & CI/CD
 
 ## 1. Recap: Software Development Life Cycle (SDLC)
