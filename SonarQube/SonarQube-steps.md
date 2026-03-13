@@ -1,184 +1,160 @@
-## The instructor demonstrated setting up SonarQube on an AWS EC2 instance.
+## Integrating SonarQube into Jenkins Pipeline
 
-### Prerequisites
-*   **Java:** SonarQube is Java-based. You must install **OpenJDK 17** (the latest supported version).
-*   **Database:** SonarQube requires a database (PostgreSQL is recommended).
-*   **Hardware:** Minimum 2GB RAM, but 4GB is recommended for smooth performance.
+### 1. Understanding the "Quality Gate"
+Before configuring Jenkins, understand this key concept discussed in the lecture:
 
-*   Launch an EC2 instance (e.g., Ubuntu, t3.small or t3.medium).
-*   Allow port **9000** in the Security Group (Inbound Rules).
+*   **What is it?** A policy you set in SonarQube (e.g., "Zero Bugs allowed").
+*   **How it affects Jenkins:** If your code is bad (has bugs or security holes), SonarQube fails the Quality Gate.
+*   **Result:** Your Jenkins Pipeline will show **RED (Failure)** and stop. It will not proceed to Deploy.
 
+---
 
+### 2. Prerequisites Checklist
+Ensure you have the following ready before starting:
 
-===
+| Component | Details |
+| :--- | :--- |
+| **SonarQube Server** | Must be running. Access at `http://<YOUR-IP>:9000`. |
+| **Database** | PostgreSQL must be running and configured with a user and database (e.g., `sonarqube`). |
+| **Java** | Installed on the Jenkins Agent. |
+| **GitHub Repo** | Your project code (e.g., `shubhamkalsait/cdec-b48-jenkins`). |
+| **SonarQube Account** | You must log in as admin and generate a **Token**. |
 
+---
 
-### **Step 1: Install Java and PostgreSQL**
-First, we install the two main requirements: **Java** (to run SonarQube) and **PostgreSQL** (the database to store the data).
+### 3. Jenkins Setup for SonarQube
 
-Run this command:
-```bash
-sudo apt update
-sudo apt install openjdk-17-jdk postgresql -y
+#### A. Install Plugins
+1.  Go to **Manage Jenkins** > **Plugins** > **Available Plugins**.
+2.  Search for **SonarQube Scanner** and **Sonar Quality Gate**. Install both without restart.
+
+#### B. Configure Global Tool
+1.  Go to **Manage Jenkins** > **Global Tool Configuration**.
+2.  Scroll down to **SonarQube Scanner**.
+3.  Click **Add SonarQube Scanner**.
+    *   **Name:** Give it a name like `Sonar Server`.
+    *   **SONARQUBE_HOME:** Point to the folder where you installed SonarQube (e.g., `/opt/sonar`).
+    *   **JDK:** Select the version (e.g., JDK 17).
+    *   **Click Save.**
+
+#### C. Add Credentials (The "API Key" Error)
+1.  Log in to SonQube (`http://<YOUR-IP>:9000`) as **admin**.
+2.  Click your name (Top Right) > **My Account** > **Security**.
+3.  **Generate Token**.
+4.  **Copy** the Token** (starts with `sqp...`).
+5.  Go back to Jenkins > **Manage Jenkins** > **Credentials** > **System**.
+6.  **Add** > **Secret text**.
+    *   **Secret:** Paste the token here.
+    *   **ID:** Give it a name like `sonar-token`.
+    *   Click **Create**.
+
+---
+
+### 4. The Pipeline Script (Simplified)
+Replace your existing `Test` stage (or add a new stage) with this code.
+*   **Note:** Replace `easy-grade` with your actual Project Key from SonarQube dashboard.
+
+```groovy
+pipeline {
+    agent any
+    tools {
+        // Ensure Maven is available (configured in Global Tool Config)
+        maven 'M3' 
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Get code
+                git branch: 'main', url: 'https://github.com/shubhamkalsait/cdec-b48-jenkins.git'
+                // If you are in a subfolder, navigate to it (e.g., `cd backend` or `backend/src/main/java`)
+                // sh 'cd backend && mvn clean package' 
+            }
+        }
+
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            // sh 'mvn test' // Optional: Run unit tests before scanning
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                // Connect to SonarQube using the Token and Config
+                withSonarQube(installation: 'Sonar Server', 
+                             credentialsId: 'sonar-token', 
+                             scannerHome: tool 'M3') {
+                    // This command triggers the scan
+                    sh "mvn sonar:sonar \
+                     -Dsonar.projectKey=easy-grade \
+                     -Dsonar.host=${env.SONAR_HOST} \
+                     -Dsonar.login=admin \
+                     -Dsonar.password=admin \
+                     -Dsonar.sources=src"
+                }
+            }
+        }
+    }
+}
 ```
-*   **Note:** This will take a moment. Once done, start the database service:
-    ```bash
-    sudo systemctl start postgresql
-    ```
+
+### Important: Environment Variables
+In the script above, I used `${env.SONAR_HOST}`.
+*   **Where do I define this?**
+    In the Pipeline configuration, look for **Environment variables**.
+    *   Key: `SONAR_HOST` (or `SONAR_URL`).
+    *   Value: `http://<YOUR-PUBLIC-IP>:9000`
 
 ---
 
-### **Step 2: Configure the Database**
-Now we need to create a specific database and a user for SonarQube. We do this by entering the Postgres command line.
+### 5. Troubleshooting Common Errors
 
-1.  **Enter the Postgres SQL shell** as the superuser:
-    ```bash
-    sudo -u postgres psql
-    ```
-    *(The prompt will change to `postgres=#`)*
+#### Error: "Pipeline passes (Green) but SonarQube shows Red (Failed)"
+*   **The Issue:** SonarQube blocked the build.
+*   **The Fix:** Go to SonQube Dashboard -> **Projects** -> Click your project.
+    *   Look at the **Quality Gate** section.
+    *   If it says "Failed" and shows Bugs/Vulnerabilities, you must fix the code in your local IDE, push to GitHub, and run Jenkins again.
 
-2.  **Run the following commands one by one** inside the shell. You can copy and paste them.
-    *   This creates a user named `linux` with password `redhat`.
-    *   This creates a database named `sonarqube`.
-    *   This grants full access to that user.
-    ```sql
-    CREATE USER linux PASSWORD 'redhat';
-    CREATE DATABASE sonarqube;
-    GRANT ALL PRIVILEGES ON DATABASE sonarqube TO linux;
-    \c sonarqube;
-    GRANT ALL PRIVILEGES ON SCHEMA public TO linux;
-    \q
-    ```
-    *(The last command `\q` will exit the database shell and bring you back to the normal Linux command line).*
+#### Error: "Connection Refused" or "401 Unauthorized"
+*   **The Issue:** Jenkins is sending the wrong password or Token.
+*   **The Fix:**
+    *   Did you copy the **Token** (starts with `sqp_...`) into the Jenkins Credentials?
+    *   Did you update the `sonar.jdbc.url` in `/opt/sonar/conf/sonar.properties`?
+    *   Did you check the **Global Tool Configuration** name matches the path?
+
+#### Error: "API ID / Key ID ... connection refused"
+*   **The Issue:** The "Installation Name" in Jenkins Global Tool Configuration doesn't match the actual installation or ID is wrong.
+*   **The Fix:**
+    *   Go to SonarQube Dashboard -> **My Account** -> **Security**.
+    *   **Generate Token**.
+    *   In Jenkins, check the **Credentials** you added. Ensure the Secret matches the token exactly.
+    *   Check the **Global Tool Configuration**: Ensure `SONARQUBE_HOME` is correct (e.g., `/opt/sonar`).
+
+#### Error: "SonarQube Scanner not found"
+*   **The Issue:** Jenkins doesn't know where the `mvn` command comes from.
+*   **The Fix:**
+    *   Did you add `maven 'M3'` in the `tools {}` block?
+    *   Is the `scannerHome` path correct?
+    *   Did you include the `withSonarQube` wrapper?
 
 ---
 
-### **Step 3: Tune Linux System Settings**
-SonarQube is a "heavy" application. Linux has default limits on files and memory that are too low. If you skip this, SonarQube will crash or fail to start.
+### Summary of the Process
+1.  **Develop:** Write code locally.
+2.  **Push:** Push to GitHub.
+3.  **Build:** Jenkins pulls and builds it.
+4.  **Scan:** SonarQube analyzes it.
+5.  **Result:**
+    *   **Quality Gate Pass:** Pipeline continues to Deploy.
+    *   **Quality Gate Fail:** Pipeline stops. Check Dashboard for details.
 
-Copy and paste these commands:
+This ensures you only deploy **clean code** to production.
 ```bash
-sysctl -w vm.max_map_count=524288
-sysctl -w fs.file-max=131072
-ulimit -n 131072
-ulimit -u 8192
+# Quick check if SonarQube is up on port 9000
+curl http://<YOUR-IP>:9000/api/system/status
+
+# Check database connection
+psql -U linux -d sonarqube -c "SELECT 1"
 ```
-*   **What this does:** It increases the number of files the system can open and the memory mapping limits to prevent "Out of Memory" errors.
 
----
-
-### **Step 4: Download and Install SonarQube**
-We will download SonarQube, extract it, and move it to a standard software directory (`/opt/`) to keep the server organized.
-
-1.  **Download the zip file:**
-    ```bash
-    wget https://binaries.sonarsource.com/Distribution/sonarqube/sonarqube-25.5.0.107428.zip
-    ```
-2.  **Install unzip tool** (to open the zip file) and extract the files:
-    ```bash
-    sudo apt install unzip -y
-    unzip sonarqube-25.5.0.107428.zip
-    ```
-3.  **Move the folder** to `/opt/sonar`:
-    ```bash
-    sudo mv sonarqube-25.5.0.107428 /opt/sonar
-    ```
-    *   **Why?** It is much easier to remember `/opt/sonar` than the long version number folder.
-
----
-
-### **Step 5: Configure SonarQube to Connect to Database**
-Now we must tell SonarQube where the database is located.
-
-1.  **Navigate to the configuration folder:**
-    ```bash
-    cd /opt/sonar/conf
-    ```
-    *(Full path is `/opt/sonar/conf/`)*
-
-2.  **Open the configuration file:**
-    ```bash
-    vim sonar.properties
-    ```
-    *(This opens a text editor inside the terminal).*
-
-3.  **Edit the file:**
-    *   Use the arrow keys to scroll down.
-    *   Look for the lines starting with `# sonar.jdbc.username`, `# sonar.jdbc.password`, and `# sonar.jdbc.url`.
-    *   **Uncomment them** by deleting the `#` at the beginning of the line.
-    *   Change the values to match the database we created in Step 2.
-    
-    It should look exactly like this:
-    ```properties
-    sonar.jdbc.username=linux
-    sonar.jdbc.password=redhat
-    sonar.jdbc.url=jdbc:postgresql://localhost/sonarqube
-    ```
-
-    **How to save and exit in Vim:**
-    1.  Press `Esc` key.
-    2.  Type `:wq` (colon, w, q).
-    3.  Press `Enter`.
-
----
-
-### **Step 6: Set Permissions (Crucial Security Step)**
-For security and stability, we should not run SonarQube as `root` or `ubuntu`. We create a dedicated user.
-
-1.  **Create the user named `sonar`:**
-    ```bash
-    sudo useradd sonar -m
-    ```
-
-2.  **Give this user ownership** of the SonarQube folder:
-    ```bash
-    sudo chown sonar:sonar -R /opt/sonar
-    ```
-    *   **Why?** The `sonar` user needs permission to read, write, and execute files inside `/opt/sonar`.
-
----
-
-### **Step 7: Start SonarQube**
-Now we switch to the `sonar` user and start the application.
-
-1.  **Switch to the `sonar` user:**
-    ```bash
-    su sonar
-    ```
-
-2.  **Navigate to the scripts folder:**
-    ```bash
-    cd /opt/sonar/bin/linux-x86-64
-    ```
-    *(Full path is `/opt/sonar/bin/linux-x86-64`)*
-
-3.  **Start SonarQube:**
-    ```bash
-    ./sonar.sh start
-    ```
-
-4.  **Check if it is running:**
-    ```bash
-    ./sonar.sh status
-    ```
-    *   You should see a message saying `SonarQube is running` (or similar).
-
----
-
-### **Step 8: Access SonarQube Dashboard**
-1.  Open your web browser.
-2.  Go to: `http://<YOUR-SERVER-PUBLIC-IP>:9000`
-    *   *Note:* Ensure Port 9000 is open in your AWS Security Group or Firewall.
-3.  **Default Login:**
-    *   **Username:** `admin`
-    *   **Password:** `admin`
-4.  It will ask you to update the password immediately. Set a new password and continue.
-
-Once the server is running, how do we check code?
-
-1.  **Configure Project:** In the SonarQube dashboard, create a new project (e.g., "My Java App").
-2.  **Generate Token:** Create a security token for this project.
-3.  **Run Scanner:** On your local machine or Jenkins pipeline, run the SonarQube Scanner command pointing to your project source code.
-    *   *Example Command:* `mvn sonar:sonar -Dsonar.projectKey=my-app`
-4.  **Analysis:** The scanner sends the code to the Server. The Server compares it against the rules in the Database.
-5.  **Report:** The Dashboard updates with a "Quality Gate" status (Passed/Failed) and lists all Bugs, Vulnerabilities, and Code Smells.
+**If the connection is refused, check your AWS Security Group for Port 9000.**
