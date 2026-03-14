@@ -1,6 +1,6 @@
 node {  
     stage('PULL') { 
-                git branch: 'main-code', url: 'https://github.com/Vickybarai/CURD_app.git'
+                git branch: 'master', url: 'https://github.com/Vickybarai/jenkins.git'
                 echo 'NODE :Pulling code from repository...'
     }
     stage('BUILD') { 
