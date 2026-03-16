@@ -171,4 +171,24 @@ If you have followed the steps above but still see "This site can't be reached" 
 *   **Instance Sizing:** A `t2.micro` or `t3.small` might freeze because Jenkins is resource-heavy. It is recommended to use a `t2.medium` or `t3.medium` for practice.
 *   **SSH Tools:** In companies, you often won't have direct console access. You will use tools like **MobaXterm** or **Putty** to connect via SSH.
 *   **Documentation:** Always use official documentation for installation to ensure you get the latest stable versions, as repositories often lag behind.
+
+```
+if Jenkins lock without login password
+
+# 1. Stop the Jenkins service
+sudo systemctl stop jenkins
+
+# 2. Create a backup of the current state
+sudo cp /var/lib/jenkins/config.xml /var/lib/jenkins/config.xml.bak
+
+# 3. Disable security inline using sed (flips true to false)
+sudo sed -i 's/<useSecurity>true<\/useSecurity>/<useSecurity>false<\/useSecurity>/g' /var/lib/jenkins/config.xml
+
+# 4. Restart the Jenkins service
+sudo systemctl start jenkins
+
+# 5. Verify the service is running
+sudo systemctl status jenkins
+
+
 ```
