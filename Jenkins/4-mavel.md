@@ -136,6 +136,23 @@ pipeline {
 }
 ```
 
+---
+✅ Fix (Critical)
+Step 1: Go to:
+Manage Jenkins → Configure System → Global Properties
+
+Step 2: Set correct PATH (append, not override)
+
+Use:
+Name: PATH
+Value: /usr/share/maven/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+Step 3: Restart Jenkins
+sudo systemctl restart jenkins
+
+---
+---
+
 **Explanation:**
 *   `sh`: This tells Jenkins to execute a shell command on the agent.
 *   `cd backend`: Changes the current directory to `backend` (where `pom.xml` resides).

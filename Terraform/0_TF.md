@@ -640,8 +640,8 @@ output "server_ip" {
 Apply complete! Resources: 1 added, 0 changed, 0 destroyed.
 
 Outputs:
-server_ip = "54.210.123.45"
 ```
+server_ip = "54.210.123.45"
 
 ### Why Outputs are Critical (DevOps View)
 1.  **Integration:** CI/CD pipelines capture these outputs to automatically configure the next step (e.g., passing the IP to Ansible).

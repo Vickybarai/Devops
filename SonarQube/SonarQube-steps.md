@@ -56,9 +56,9 @@ SonarQube is a "heavy" application. Linux has default limits on files and memory
 Copy and paste these commands:
 ```bash
 sysctl -w vm.max_map_count=524288
-sysctl -w fs.file-max=131072
 ulimit -n 131072
 ulimit -u 8192
+sysctl -w fs.file-max=131072
 ```
 *   **What this does:** It increases the number of files the system can open and the memory mapping limits to prevent "Out of Memory" errors.
 
@@ -73,8 +73,8 @@ We will download SonarQube, extract it, and move it to a standard software direc
     ```
 
 2.  **Install unzip** (if not installed) and **extract** the files:
-    ```bash
     sudo apt install unzip -y
+    ```bash
     unzip sonarqube-25.5.0.107428.zip
     ```
 
@@ -147,12 +147,12 @@ Now we switch to the `sonar` user and start the application.
 
 2.  **Navigate to the scripts folder:**
     ```bash
-    cd /opt/sonar/bin/linux-x86-64
+        cd /opt/sonar/bin/linux-x86-64
     ```
 
 3.  **Start SonarQube:**
     ```bash
-    ./sonar.sh start
+        ./sonar.sh start
     ```
 
 4.  **Check if it is running:**
