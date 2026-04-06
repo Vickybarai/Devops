@@ -1,574 +1,323 @@
 
-## 🖥️ 1. Linux & Operating System
 
-### **How do you find files modified two days ago in Linux?**
-```bash
-find /path/to/search -mtime -2 -ls
-```
-**Explanation**: The `find` command with `-mtime -2` locates files modified less than 2 days ago. Adding `-ls` displays detailed file information. For exactly 2 days ago, use `-mtime 2`. You can also combine with `-name` to filter specific file types.
+### 1. Linux & Operating System
 
-### **What is the sudoers file? What is its purpose?**
-The **sudoers file** (`/etc/sudoers`) controls which users can run commands with `sudo` privileges. It defines **permission rules** for delegating administrative tasks without sharing root passwords. Always edit it using `visudo` (which validates syntax) to prevent locking yourself out.
+#### **How do you find files modified two days ago in Linux?**
+*   **What:** A command to search the filesystem based on time metadata.
+*   **Type:** File search command (`find`).
+*   **Use:** To locate logs, configuration changes, or recently created files.
+*   **How:** Use the `find` command with the `-mtime` flag.
+    ```bash
+    find . -mtime -2 -type f
+    ```
+*   **Simple Interview Answer:**
+    "I use the `find` command. Specifically, `find . -mtime -2 -type f` looks in the current directory (`.`) for files (`-type f`) modified less than 2 days ago (`-mtime -2`). This is useful for tracking recent changes or finding specific log files generated in the last 48 hours."
 
-### **What is a zombie process?**
-A **zombie process** is a child process that has completed execution but still has an entry in the process table. Its parent hasn't read its exit code yet, so the process remains "undead." While they don't consume CPU, too many can fill the process table and prevent new processes from starting 【turn0search1】. To clean them, identify and fix the parent process (often by killing or restarting it) or reboot the system.
+#### **What is the sudoers file? What is its purpose?**
+*   **What:** A configuration file that defines user permissions.
+*   **Type:** System configuration file located at `/etc/sudoers`.
+*   **Use:** To control which users have the right to execute commands as the `root` or superuser.
+*   **How:** It is edited using the `visudo` command (which locks the file and checks syntax) to prevent errors.
+*   **Simple Interview Answer:**
+    "The `sudoers` file is the central control point for user permissions in Linux. It determines *who* can run *what* commands with elevated privileges. Its purpose is security—ensuring not everyone has root access, and allowing specific users to perform specific admin tasks. We always edit it with `visudo` to avoid locking ourselves out with syntax errors."
 
-### **Short Linux Questions:**
-| Topic | Commands & Concepts |
-| :--- | :--- |
-| **Permissions** | `chmod 755 file` (rwx for owner, rx for group/others); `chown user:group file` |
-| **Process Management** | `ps aux` (list processes), `top` (real-time monitoring), `kill PID` (terminate process) |
-| **Networking** | `ip addr` (show IP addresses), `netstat -tuln` (list listening ports), `ssh user@host` (remote login) |
-| **Disk Usage** | `df -h` (disk space), `du -sh directory` (directory size) |
+#### **What is a zombie process?**
+*   **What:** A process that has completed execution but still holds an entry in the process table.
+*   **Type:** Defunct process.
+*   **Use:** (None, it is a system state).
+*   **How:** It occurs when a child process finishes but the parent process hasn't called `wait()` to read its exit status yet.
+*   **Simple Interview Answer:**
+    "A zombie process is essentially a dead process that hasn't been fully 'cleaned up' by its parent. The child finished its job and sent an exit signal, but the parent didn't acknowledge it. It appears in the process table but consumes no memory or CPU. If the parent crashes, the 'init' process (PID 1) usually adopts and cleans these up."
 
----
-
-## ☁️ 2. AWS (Amazon Web Services)
-
-### **How do you allow HTTP and HTTPS access to an EC2 instance?**
-1.  **Create a Security Group** (or edit an existing one) associated with your EC2 instance.
-2.  **Add Inbound Rules**:
-    *   **Type**: HTTP **Protocol**: TCP **Port**: 80 **Source**: `0.0.0.0/0` (or your specific IP)
-    *   **Type**: HTTPS **Protocol**: TCP **Port**: 443 **Source**: `0.0.0.0/0` (or your specific IP)
-3.  Ensure your **Network ACLs** (NACLs) and **OS firewall** (e.g., `iptables`, `ufw`) also allow this traffic.
-
-### **What is the pricing model of the CloudWatch Agent?**
-The CloudWatch Agent itself is **free to install and use**. You pay for:
-*   **Custom Metrics**: Standard CloudWatch metrics rates apply per metric.
-*   **Logs**: Ingestion and storage costs for log data sent to CloudWatch Logs.
-*   **Events**: Standard CloudWatch Events pricing.
-
-### **What is the difference between ALB and NLB?**
-
-| Feature | **Application Load Balancer (ALB)** | **Network Load Balancer (NLB)** |
-| :--- | :--- | :--- |
-| **Layer** | Layer 7 (Application) | Layer 4 (Transport) |
-| **Protocols** | HTTP, HTTPS, WebSocket | TCP, TLS, UDP |
-| **Routing** | Content-based (path, host header) | IP-based, extreme performance |
-| **Static IP** | No | Yes (Elastic IP support) |
-| **Use Case** | Web apps, microservices, containers | Extreme performance, TCP/UDP traffic |
-
-### **What is the difference between Multi-AZ and Load Balancing?**
-*   **Multi-AZ (Multi-Availability Zone)**: A **high availability** feature for services like RDS or EC2. It automatically replicates data/servers to another AZ within the same region. If the primary AZ fails, AWS fails over to the standby AZ, minimizing downtime 【turn0search5】【turn0search8】.
-*   **Load Balancing**: A **traffic distribution** mechanism. It distributes incoming network traffic across multiple targets (e.g., EC2 instances, containers) in one or more AZs. This improves scalability and availability by ensuring no single server is overwhelmed.
-
-**In short**: Multi-AZ protects against **AZ failure** (disaster recovery). Load Balancing distributes **traffic** (scalability and high availability).
-
-### **Explain NAT Gateway (creation + traffic flow)**
-**NAT Gateway** enables instances in a **private subnet** to connect to the internet (for updates, API calls) while preventing the internet from initiating connections with those instances.
-
-```mermaid
-flowchart LR
-    A[Instances in Private Subnet] -->|Outbound Traffic| B[NAT Gateway in Public Subnet]
-    B -->|Translates Private IP to Public IP| C[Internet Gateway]
-    C -->|Response Traffic| D[Internet]
-    D -->|Response to NAT's Public IP| C
-    C -->|Translates Public IP back to Private IP| B
-    B -->|Forwards Response| A
-```
-
-**Creation Steps**:
-1.  Allocate an **Elastic IP** (EIP) in your VPC.
-2.  Create a **NAT Gateway** in a **public subnet**, associating it with the EIP.
-3.  Update the **route table** associated with your **private subnet(s)**: Add a route `0.0.0.0/0` pointing to the NAT Gateway ID.
-4.  Ensure your NAT Gateway's security group allows outbound traffic.
-
-### **Explain Auto Scaling Group**
-An **Auto Scaling Group (ASG)** automatically scales the number of EC2 instances in your application based on demand.
-*   **Scaling Policies**: Define when to scale (e.g., CPU > 70% for 5 minutes) and by how much.
-*   **Min/Max/Desired Capacity**: Set limits on the number of instances.
-*   **Health Checks**: ASG replaces unhealthy instances.
-*   **Integration**: Works seamlessly with Elastic Load Balancers to distribute traffic across the dynamically scaled instances.
-
-### **Explain Load Balancer in AWS**
-A **Load Balancer** distributes incoming application traffic across multiple targets, such as EC2 instances, containers, and IP addresses, in multiple Availability Zones.
-*   **Health Checks**: Periodically checks the health of registered targets and routes traffic only to healthy ones.
-*   **Types**: ALB (L7), NLB (L4), Classic Load Balancer (Legacy, L4/L7).
-*   **Key Benefits**: Improves availability and fault tolerance, scales your application, and centralizes management of SSL/TLS certificates.
-
-### **Explain S3 Lifecycle policies and Storage Classes**
-**S3 Lifecycle Policies** automate moving objects between different **storage classes** to optimize costs.
-*   **How it Works**: Define rules (e.g., "Move objects with prefix `logs/` to Standard-IA after 30 days, then to Glacier after 90 days, and delete after 1 year").
-*   **Common Storage Classes**:
-    *   **Standard**: Frequently accessed data (default).
-    *   **Standard-IA (Infrequent Access)**: Less frequently accessed data, lower storage cost, retrieval fee.
-    *   **One Zone-IA**: Like Standard-IA, but data stored in a single AZ (lower cost, less durability).
-    *   **Glacier**: Long-term data archival, very cheap, retrieval takes minutes to hours.
-    *   **Glacier Deep Archive**: Lowest cost for data rarely accessed (12+ hours retrieval).
+#### **Any short Linux question (commands, permissions, process management, networking basics)**
+*   **Permissions:**
+    *   **What:** Access controls for files/directories.
+    *   **How:** `chmod 755 file` (Owner: rwx, Group: rx, Others: rx).
+*   **Process Management:**
+    *   **What:** Managing running programs.
+    *   **How:** `ps -ef` (view processes), `kill -9 [PID]` (force stop).
+*   **Networking:**
+    *   **What:** Checking connectivity.
+    *   **How:** `ping google.com`, `curl -I http://example.com` (check headers).
+*   **Simple Interview Answer:**
+    "For permissions, I use `chmod` and `chown` to manage access. For processes, I rely on `ps` to list them and `kill` to stop them. For networking basics, I use `ping` to check connectivity and `netstat` or `ss` to see which ports are open and listening on the server."
 
 ---
 
-## ☸️ 3. Kubernetes (K8s) & Containerization
+### 2. AWS (Amazon Web Services)
 
-### **What is the difference between arguments (args) and environment variables (env)?**
-*   **`args`**: These are **command-line arguments** passed directly to the container's entrypoint command. They override the `CMD` instruction in a Dockerfile. Example: `args: ["--port", "8080"]` sets the port at runtime.
-*   **`env`**: These are **environment variables** available inside the container's process space. They are used for configuration (e.g., database URLs, API keys) and are set before the container starts. Example: `env: [{name: "DB_HOST", value: "mysql-service"}]`.
+#### **How do you allow HTTP and HTTPS access to an EC2 instance?**
+*   **What:** Configuring network access rules.
+*   **Type:** Security Group Inbound Rules.
+*   **Use:** To allow web traffic to reach your application.
+*   **How:** Edit the Security Group attached to the EC2 instance. Add rules for Port 80 (HTTP) and Port 443 (HTTPS).
+*   **Simple Interview Answer:**
+    "You need to configure the **Security Group** associated with the instance. I would add an Inbound Rule allowing traffic on Port 80 for HTTP and Port 443 for HTTPS. I would usually set the source to `0.0.0.0/0` to allow access from anywhere, or restrict it to a specific IP range for better security."
 
-**Key Difference**: `args` modify the **command execution**, while `env` provides **configuration data** to the application.
+#### **What is the pricing model of the CloudWatch Agent?**
+*   **What:** Cost structure for monitoring data.
+*   **Type:** Pay-as-you-go based on data volume.
+*   **Use:** To monitor servers and applications more deeply than standard metrics.
+*   **How:** You pay for custom metrics and log ingestion (data sent to CloudWatch).
+*   **Simple Interview Answer:**
+    "The CloudWatch Agent software itself is free, but you pay for the **data** it generates. Specifically, you are charged for **Custom Metrics** and **Log Ingestion/Storage**. Standard metrics like CPU usage are free, but if I send detailed application logs or custom memory stats, I pay based on the volume of that data."
 
-### **What is the difference between ConfigMap and Secret?**
-| Feature | **ConfigMap** | **Secret** |
-| :--- | :--- | :--- |
-| **Purpose** | Store **non-confidential** data (config files, command-line args, env vars) | Store **sensitive** data (passwords, tokens, SSH keys) |
-| **Data Storage** | Stored as **plain text** (base64 encoded but easily decodable) | Stored **encoded** (base64) and can be **encrypted at rest** |
-| **Usage** | Mounted as volumes or used as env vars | Mounted as volumes or used as env vars |
-| **Example** | `nginx.conf`, application properties | Database password, API token |
+#### **What is the difference between ALB and NLB?**
+*   **What:** Two types of AWS Load Balancers.
+*   **Type:**
+    *   **ALB (Application Load Balancer):** Layer 7 (Application).
+    *   **NLB (Network Load Balancer):** Layer 4 (Transport).
+*   **Use:** ALB for web routing (URL paths); NLB for ultra-high performance (TCP/UDP).
+*   **How:** ALB inspects HTTP headers; NLB just passes packets.
+*   **Simple Interview Answer:**
+    "The main difference is the Layer they operate on. **ALB** works at Layer 7, meaning it understands HTTP/HTTPS content and can route traffic based on URL paths (like `/api` vs `/images`). **NLB** works at Layer 4, handling raw TCP and UDP traffic. NLB is much faster and handles millions of requests per second, but it can't inspect the content of the packets like ALB can."
 
-### **Explain three-tier architecture in Kubernetes**
-A three-tier architecture divides an application into **presentation (web)**, **application (business logic)**, and **data (database)** layers, each deployed as separate microservices.
+#### **What is the difference between Multi-AZ and Load Balancing?**
+*   **What:** Two distinct high-availability strategies.
+*   **Type:** Infrastructure redundancy (Multi-AZ) vs. Traffic distribution (Load Balancing).
+*   **Use:** Multi-AZ protects against data center failure; Load Balancing prevents server overload.
+*   **How:** Multi-AZ replicates data across physical data centers; Load Balancing spreads traffic across healthy instances.
+*   **Simple Interview Answer:**
+    "They serve different purposes. **Multi-AZ** is about disaster recovery—it duplicates my resources (like a database) across separate physical data centers so if one burns down, the other takes over. **Load Balancing** is about traffic management—it distributes incoming users across multiple servers so no single server crashes due to heavy load."
 
-```mermaid
-flowchart TD
-    subgraph "Presentation Tier"
-        A[Web Pods<br>Nginx/Frontend]
-    end
+#### **Explain NAT Gateway (creation + traffic flow)**
+*   **What:** Network Address Translation Gateway.
+*   **Type:** Managed AWS service for outbound internet access.
+*   **Use:** To allow private instances (in a private subnet) to download updates/patches without being exposed to the internet.
+*   **How:**
+    1.  Create it in a **Public Subnet**.
+    2.  Allocate an **Elastic IP**.
+    3.  Update **Private Subnet Route Table** to point `0.0.0.0/0` to the NAT Gateway ID.
+*   **Simple Interview Answer:**
+    "A NAT Gateway lets private servers talk *out* to the internet, but stops the internet from talking *in*. To create one, you place it in a Public Subnet and give it a static Elastic IP. For traffic flow: When a private instance requests a web page, the request goes to the Route Table, which directs it to the NAT Gateway. The NAT Gateway replaces the private IP with its public IP, sends the request out, and passes the response back to the private instance."
 
-    subgraph "Application Tier"
-        B[App Pods<br>Backend API<br>Spring Boot/Node.js]
-    end
+#### **Explain Auto Scaling Group**
+*   **What:** A logical grouping of EC2 instances.
+*   **Type:** Elasticity service.
+*   **Use:** To automatically adjust capacity based on demand (scale out when busy, scale in when quiet).
+*   **How:** Define a minimum/maximum size and scaling policies (e.g., add an instance if CPU > 80%).
+*   **Simple Interview Answer:**
+    "An Auto Scaling Group ensures I have the correct number of EC2 instances running to handle the load. If traffic spikes and CPU usage goes high, it automatically launches new instances. If traffic drops, it terminates instances to save money. It also handles health checks, replacing any unhealthy instances automatically."
 
-    subgraph "Data Tier"
-        C[Database Pods<br>MySQL/PostgreSQL]
-    end
+#### **Explain Load Balancer in AWS**
+*   **What:** A traffic manager.
+*   **Type:** ELB (Classic), ALB, or NLB.
+*   **Use:** To distribute incoming application traffic across multiple targets (EC2, Containers) in multiple Availability Zones.
+*   **How:** It acts as a single point of contact (DNS name) for clients and routes requests only to registered, healthy targets.
+*   **Simple Interview Answer:**
+    "A Load Balancer sits in front of my servers and acts as a traffic cop. It accepts incoming requests and routes them to a group of backend servers (like EC2 instances) using algorithms like Round Robin. If a server fails, the Load Balancer detects it and stops sending traffic there until it recovers."
 
-    A -- "HTTP/HTTPS Requests" --> B
-    B -- "Read/Write Queries" --> C
-    
-    subgraph "Kubernetes Services"
-        S1[Service: web-svc]
-        S2[Service: app-svc]
-        S3[Service: db-svc]
-    end
-
-    A -.-> S1
-    B -.-> S2
-    C -.-> S3
-
-    subgraph "Ingress"
-        I[Ingress Controller]
-    end
-
-    I --> S1
-```
-
-**Kubernetes Implementation**:
-*   **Web Tier**: Pods running Nginx/React, exposed via a `Service` of type `ClusterIP` or `LoadBalancer`, accessed through an `Ingress`.
-*   **App Tier**: Pods running your backend API, exposed via a `Service` (ClusterIP). The web tier communicates with this service.
-*   **Data Tier**: Pods running a database (e.g., MySQL), exposed via a `Service` (ClusterIP). The app tier communicates with this service. Data persistence is handled using `PersistentVolumeClaims`.
-
-### **Traffic is routed to a pod, but no response is received — what could be the issue?**
-This is a common troubleshooting scenario. Potential issues, in order of likelihood:
-1.  **Pod Application Issue**: The application inside the pod is not running, is crashing, or is listening on the wrong port/interface. Check pod logs: `kubectl logs <pod-name>`.
-2.  **Service Misconfiguration**: The `Service` is not correctly selecting the pods (e.g., mismatched `selector` labels) or is pointing to the wrong port. Verify the service: `kubectl get service <service-name> -o yaml`.
-3.  **Network Policy**: A `NetworkPolicy` is blocking traffic between the source and the pod. Check if policies exist: `kubectl get networkpolicies`.
-4.  **Security Group/ Firewall Rules**: If running on a cloud provider, the node's Security Group or firewall rules might be blocking the traffic on the service's port (NodePort/LoadBalancer).
-5.  **DNS Issue**: If using service names, CoreDNS might be misconfigured. Check DNS resolution from within a pod: `kubectl exec -it <pod-name> -- nslookup <service-name>`.
-
-### **Explain Deployment vs StatefulSet**
-| Feature | **Deployment** | **StatefulSet** |
-| :--- | :--- | :--- |
-| **Use Case** | **Stateless** applications (web servers, APIs) | **Stateful** applications (databases, Kafka, Redis) |
-| **Pod Identity** | Pods have **randomized** names (e.g., `app-7d8f9c5d-k6b4n`) | Pods have **stable, unique** names (e.g., `web-0`, `web-1`) |
-| **Storage** | Ephemeral storage (can use PVCs, but pods are interchangeable) | Each pod gets its **own stable PersistentVolume** |
-| **Scaling** | Scales up/down, pods are **interchangeable** | Scales sequentially, maintains **stable network identity** |
-| **Updates** | Creates new ReplicaSet, performs rolling update | Performs **ordered, graceful** rolling updates (e.g., `web-0` then `web-1`) |
-
-### **Write and explain a Pod manifest file**
-```yaml
-# pod.yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: my-app-pod
-  labels:
-    app: my-app
-spec:
-  containers:
-  - name: my-app-container
-    image: nginx:latest # The container image to use
-    ports:
-    - containerPort: 80 # Port the container listens on
-    resources:
-      requests:
-        memory: "64Mi"
-        cpu: "250m"
-      limits:
-        memory: "128Mi"
-        cpu: "500m"
-    env: # Environment variables
-    - name: ENV_VAR
-      value: "production"
-    volumeMounts: # Mount a volume
-    - name: config-volume
-      mountPath: /etc/config
-  volumes: # Define a volume
-  - name: config-volume
-    configMap:
-      name: app-config
-```
-**Explanation**:
-*   **`apiVersion`/`kind`**: Specifies the K8s API version and resource type.
-*   **`metadata`**: Name and labels (used for selection by Services/Deployments).
-*   **`spec`**: Defines the desired state of the pod.
-    *   **`containers`**: List of containers in the pod.
-        *   **`image`**: Container image from a registry.
-        *   **`ports`**: Ports the container exposes.
-        *   **`resources`**: Resource requests (guaranteed) and limits (max allowed).
-        *   **`env`**: Environment variables injected into the container.
-        *   **`volumeMounts`**: Where to mount a volume inside the container.
-    *   **`volumes`**: Definition of volumes available to the pod (e.g., ConfigMap, PersistentVolume).
+#### **Explain S3 Lifecycle policies and Storage Classes**
+*   **What:** Rules to manage data cost and retention.
+*   **Type:** S3 feature (Lifecycle configuration).
+*   **Use:** To automatically move data to cheaper storage as it gets older (Cost Optimization).
+*   **How:**
+    *   **Storage Classes:** Standard (Hot), IA (Infrequent Access), Glacier (Cold/Archive).
+    *   **Policy:** "Move to IA after 30 days, Delete after 1 year."
+*   **Simple Interview Answer:**
+    "S3 Lifecycle policies automate data management. For example, I can set a rule to move files from **S3 Standard** (expensive) to **S3 Glacier** (very cheap) 30 days after they are created. Storage classes help us pay less for data we don't access often. The policy handles the move automatically so we don't have to do it manually."
 
 ---
 
-## 🐳 4. Docker
+### 3. Kubernetes (K8s) & Containerization
 
-### **Write and explain a Dockerfile for a Java application**
-```dockerfile
-# Use a multi-stage build for efficiency
-# Stage 1: Build the application
-FROM maven:3.8.5-openjdk-17-slim AS build
-WORKDIR /app
-# Copy pom.xml and download dependencies (cached layer)
-COPY pom.xml .
-RUN mvn dependency:go-offline
-# Copy source code and build
-COPY src ./src
-RUN mvn clean package -DskipTests
+#### **What is the difference between arguments (args) and environment variables (env)?**
+*   **What:** Two ways to pass configuration to a container.
+*   **Type:** Runtime parameters.
+*   **Use:** `env` for configuration settings; `args` for command execution details.
+*   **How:** `env` sets `KEY=VALUE` pairs inside the OS; `args` passes parameters directly to the entrypoint command.
+*   **Simple Interview Answer:**
+    "Both pass data to the application, but differently. **Environment Variables (`env`)** are like settings loaded into the container's operating system (e.g., `DB_HOST=localhost`). **Arguments (`args`)** are command-line flags passed to the application command itself (e.g., `--port=8080`). I use `env` for general config and `args` when I need to override the startup command."
 
-# Stage 2: Create the runtime image
-FROM openjdk:17-jdk-slim
-WORKDIR /app
-# Copy the JAR file from the build stage
-COPY --from=build /app/target/myapp-*.jar app.jar
-# (Optional) Create a non-root user for security
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
-USER appuser
-# Expose the application port
-EXPOSE 8080
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "app.jar"]
-```
-**Explanation**:
-*   **`FROM ... AS build`**: Uses a Maven-based image for the first build stage.
-*   **`WORKDIR`**: Sets the working directory.
-*   **`COPY pom.xml ... RUN mvn dependency:go-offline`**: Copies the pom.xml first and downloads dependencies. This layer is cached if `pom.xml` doesn't change, speeding up builds.
-*   **`COPY src ... RUN mvn clean package`**: Copies source code and builds the application, creating the JAR file.
-*   **`FROM openjdk:...`**: The second, smaller runtime stage uses a JDK image.
-*   **`COPY --from=build ...`**: Copies only the built JAR file from the first stage, leaving behind build tools and source code, resulting in a smaller final image.
-*   **`RUN groupadd/useradd` & `USER`**: Creates a non-root user for better security (running as root is a risk).
-*   **`EXPOSE`**: Documents which port the container listens on (doesn't actually publish the port).
-*   **`ENTRYPOINT`**: Sets the command to execute when the container starts.
+#### **What is the difference between ConfigMap and Secret?**
+*   **What:** K8s objects for storing configuration data.
+*   **Type:** Non-sensitive vs. Sensitive data storage.
+*   **Use:** ConfigMap for URLs and config files; Secret for passwords and tokens.
+*   **How:** ConfigMap stores plain text; Secret stores base64 encoded data.
+*   **Simple Interview Answer:**
+    "The main difference is sensitivity. A **ConfigMap** is used for non-sensitive data like configuration files, application variables, or URLs. A **Secret** is used for sensitive data like passwords, SSH keys, or API tokens. While Secrets are base64 encoded and not meant to be logged, they aren't encrypted by default without extra configuration, but they are treated more securely by Kubernetes."
 
----
+#### **Explain three-tier architecture in Kubernetes**
+*   **What:** A standard app design pattern.
+*   **Type:** Architecture pattern.
+*   **Use:** To separate concerns: Presentation, Logic, and Data.
+*   **How:**
+    1.  **Frontend (Web):** Pods exposed via Service/Ingress.
+    2.  **Backend (App):** Pods communicating with Frontend and Database.
+    3.  **Database:** Usually StatefulSet or External Service.
+*   **Simple Interview Answer:**
+    "In K8s, this means separating the app into three layers:
+    1.  **Frontend:** A Deployment (like React/Node) exposed to the internet via an Ingress.
+    2.  **Backend:** A Deployment (like Java/Python) that connects to the frontend but stays internal.
+    3.  **Database:** A StatefulSet (or Cloud DB) for data persistence.
+    Communication happens via internal K8s Services (ClusterIP)."
 
-## 📚 5. Git & Version Control
+#### **Traffic is routed to a pod, but no response is received — what could be the issue?**
+*   **What:** Troubleshooting network connectivity in K8s.
+*   **Type:** Debugging scenario.
+*   **Use:** To identify why a service is failing.
+*   **How:** Check Pod logs, Pod status (CrashLoopBackOff), Port mismatch, Security Groups, or Resource limits.
+*   **Simple Interview Answer:**
+    "If traffic reaches the Pod but gets no response, I would check three things:
+    1.  **Application Crash:** Did the app start? I check `kubectl logs` to see if it threw an error.
+    2.  **Port Mismatch:** Is the app listening on port 8080, but the K8s Service is pointing to port 80?
+    3.  **Security Groups:** Is an AWS firewall blocking the response traffic?
+    4.  **Probes:** Did the Liveness/Readiness probe fail, causing K8s to stop routing traffic?"
 
-### **What is the difference between git revert and git reset?**
-| Feature | **`git revert`** | **`git reset`** |
-| :--- | :--- | :--- |
-| **Operation** | Creates a **new commit** that undoes the changes of a previous commit | Moves the branch pointer **backward**, effectively **deleting** commits |
-| **Safety** | **Safe** for shared branches (doesn't rewrite history) | **Dangerous** for shared branches (rewrites history, can cause issues for others) |
-| **Use Case** | Publicly undo a commit while preserving history | Undo local changes, discard commits, or reset to a previous state locally |
-| **History** | Preserves the original commit and the revert commit | Alters project history by removing commits |
+#### **Explain Deployment vs StatefulSet**
+*   **What:** Controllers for managing Pods.
+*   **Type:** Stateless vs. Stateful workload management.
+*   **Use:** Deployment for web servers; StatefulSet for databases.
+*   **How:** Deployment creates interchangeable Pods with random IDs. StatefulSet creates Pods with sticky, ordered names (web-0, web-1) and stable storage.
+*   **Simple Interview Answer:**
+    "**Deployment** is for stateless apps. All Pods are identical; if one dies, a new random one replaces it. **StatefulSet** is for stateful apps like databases. It guarantees that a Pod always has the same identity (name) and the same storage, even if it restarts. This is crucial because databases need to know 'who they are' to maintain data consistency."
 
-**Key Difference**: `git revert` is a **forward-moving** operation that creates a new commit to undo changes, making it safe for shared branches. `git reset` is a **backward-moving** operation that discards commits, which is powerful but rewrites history and should be used carefully, mainly on local branches 【turn0search22】【turn0search24】.
-
-### **Why are Git webhooks used?**
-**Git webhooks** are **HTTP callbacks** that are triggered by specific events in a Git repository (e.g., `push`, `pull request`, `merge`). They are used to:
-*   **Automate CI/CD Pipelines**: Notify a Jenkins/GitLab CI server to start a new build or deployment when code is pushed.
-*   **Trigger External Workflows**: Send notifications to Slack, Microsoft Teams, or other services about repository activity.
-*   **Integrate with Third-Party Services**: Automatically update issue trackers, trigger tests, or perform custom actions based on code changes.
-
-**In short**: Webhooks enable **real-time, event-driven automation** by connecting your Git repository to other tools in your DevOps toolchain.
-
-### **Explain branching strategy in GitHub**
-A popular branching strategy is **GitHub Flow**:
-```mermaid
-gitGraph
-    commit id: "Initial commit"
-    branch develop
-    checkout develop
-    commit id: "Dev work"
-    branch feature
-    checkout feature
-    commit id: "Feature A"
-    checkout develop
-    merge feature
-    commit id: "Merge Feature A"
-    checkout main
-    merge develop tag: "v1.0"
-```
-1.  **`main` Branch**: This branch always reflects the **production-ready** state. It's protected, and direct commits are often disabled.
-2.  **`develop` Branch**: This is the **integration** branch where all features are combined. It's a step above `main` but not yet production-ready.
-3.  **Feature Branches**: Created from `develop` for each new feature or bugfix (e.g., `feature/login-auth`). Work happens here, and it's merged back into `develop` via a Pull Request (PR) after review and testing.
-4.  **Pull Requests (PRs)**: The primary mechanism for code review and discussion. Merging a PR into `develop` should always pass CI checks.
-5.  **Release Branches**: Optionally created from `develop` when preparing for a release. Final testing and stabilization happen here. It's then merged into `main` (for production) and `develop`.
-6.  **Tags**: Used on `main` to mark specific release versions (e.g., `v1.0.0`).
-
-**Alternative**: **Git Flow** is a more complex strategy with `master`, `develop`, `feature`, `release`, and `hotfix` branches, suitable for projects with scheduled release cycles.
+#### **Write and explain a Pod manifest file**
+*   **What:** A YAML file defining a Pod.
+*   **Type:** K8s Configuration.
+*   **Use:** To declare the desired state of a Pod.
+*   **How:**
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: my-app-pod
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+    ```
+*   **Simple Interview Answer:**
+    "This YAML creates a single Pod.
+    *   `apiVersion: v1` and `kind: Pod` tell K8s what object we are making.
+    *   `metadata.name` gives it a unique ID.
+    *   `spec` defines the 'desired state'. Here, I'm asking for a container named `nginx` using the `nginx:latest` image, and I'm declaring that the app listens on port 80 inside the container."
 
 ---
 
-## ⚙️ 6. CI/CD (Jenkins + Code Quality)
+### 4. Docker
 
-### **What are the stages in a Jenkins pipeline?**
-A Jenkins Pipeline is typically divided into multiple stages, each representing a distinct phase of the delivery process. Common stages include:
+#### **Write and explain a Dockerfile for a Java application**
+*   **What:** A text document containing all commands to build an image.
+*   **Type:** Build script.
+*   **Use:** To automate the creation of a Docker image for an app.
+*   **How:**
+    ```dockerfile
+    # 1. Base OS with Java
+    FROM openjdk:11-jre-slim
 
-```mermaid
-flowchart LR
-    A[Checkout<br>git checkout] --> B[Build<br>mvn clean package]
-    B --> C[Test<br>mvn test]
-    C --> D[Static Analysis<br>SonarQube Scan]
-    D --> E{Quality Gate?}
-    E -- Pass --> F[Deploy<br>kubectl apply]
-    E -- Fail --> G[Stop Pipeline]
-```
+    # 2. Working directory
+    WORKDIR /app
 
-*   **Checkout**: Pulls the source code from the Git repository.
-*   **Build**: Compiles the source code and builds the artifact (e.g., JAR, WAR, Docker image).
-*   **Test**: Runs automated unit and integration tests.
-*   **Static Analysis**: Performs code quality checks (e.g., using SonarQube).
-*   **Deploy**: Deploys the artifact to a staging or production environment.
+    # 3. Copy JAR file
+    COPY target/myapp.jar /app/myapp.jar
 
-### **Explain a 4-stage pipeline (Pull → Build → Test → Deploy)**
-A **4-stage pipeline** is a fundamental CI/CD workflow. Here's how it works in Jenkins using a Declarative Pipeline syntax:
+    # 4. Run command
+    CMD ["java", "-jar", "myapp.jar"]
+    ```
+*   **Simple Interview Answer:**
+    "I start with `FROM openjdk:11` to get a lightweight Java environment.
+    *   `WORKDIR /app` sets the directory inside the container.
+    *   `COPY` moves my compiled Java JAR file from my machine into the container.
+    *   `CMD` specifies the command that runs when the container starts—executing the Java JAR file. This ensures anyone who runs this image gets the exact same runtime environment."
 
-```groovy
-pipeline {
-    agent any
-    stages {
-        stage('Pull') {
-            steps {
-                echo 'Pulling code from repository...'
-                git 'https://github.com/your-repo/your-project.git'
-            }
-        }
-        stage('Build') {
-            steps {
-                echo 'Building the project...'
-                sh 'mvn clean package' // For Java
-                // sh 'docker build -t myapp:latest .' // For Docker
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                sh 'mvn test' // For Java
-                // sh 'docker run myapp:latest npm test' // For Node.js
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying to environment...'
-                // sh 'kubectl apply -f k8s/' // For Kubernetes
-                // sh 'docker push myrepo/myapp:latest' // For Docker Registry
-            }
-        }
+---
+
+### 5. Git & Version Control
+
+#### **What is the difference between git revert and git reset?**
+*   **What:** Commands to undo changes.
+*   **Type:** History manipulation.
+*   **Use:** Revert for safe undoing on shared branches; Reset for cleaning local history.
+*   **How:** `revert` creates a *new* commit that undoes changes. `reset` moves the branch pointer *back*, deleting commits.
+*   **Simple Interview Answer:**
+    "The key difference is safety. **`git revert`** creates a *new* commit that reverses a previous change. This is safe for shared branches because it preserves history. **`git reset`** moves the branch pointer backward, effectively deleting commits. I use this only on my local machine to clean up messy commits before pushing, because it rewrites history and can break other people's repositories if used on shared code."
+
+#### **Why are Git webhooks used?**
+*   **What:** HTTP callbacks triggered by Git events.
+*   **Type:** Automation trigger.
+*   **Use:** To connect Git events (like a push) to external tools (like Jenkins).
+*   **How:** Configure a URL in GitHub/GitLab settings. When code is pushed, Git sends a POST request to that URL.
+*   **Simple Interview Answer:**
+    "Webhooks are used for automation. For example, when I push code to GitHub, the webhook sends an automatic signal to my Jenkins server. This signal triggers the Jenkins pipeline to start building and testing the code immediately. It removes the need for a human to manually click a 'build' button every time code changes."
+
+#### **Explain branching strategy in GitHub**
+*   **What:** Rules for creating and merging branches.
+*   **Type:** Workflow management (e.g., Git Flow, Trunk Based).
+*   **Use:** To organize development and stabilize the production code.
+*   **How:** Maintain a permanent `main` branch. Create short-lived `feature` branches for new work. Merge via Pull Requests.
+*   **Simple Interview Answer:**
+    "I typically use a simplified **Git Flow**. We have a `main` branch for production-ready code. When I need to work on a new feature, I create a `feature` branch from `main`. Once the code is tested and ready, I create a **Pull Request (PR)**. My team reviews the code, and once approved, it merges back into `main`. This keeps `main` stable and allows for easy code review."
+
+---
+
+### 6. CI/CD (Jenkins + Code Quality)
+
+#### **What are the stages in a Jenkins pipeline?**
+*   **What:** Logical blocks of work in a pipeline script.
+*   **Type:** Pipeline definition (Declarative or Scripted).
+*   **Use:** To break down the software delivery process into distinct steps.
+*   **How:** Defined in a `Jenkinsfile` using the `stage` block.
+*   **Simple Interview Answer:**
+    "Stages divide the pipeline into clear steps. Typical stages include **Build** (compiling code), **Test** (running unit/integration tests), and **Deploy** (pushing to a server). This structure makes logs easier to read and helps us fail fast—if the build stage fails, the pipeline stops, and we don't waste time running tests on broken code."
+
+#### **Explain a 4-stage pipeline (Pull → Build → Test → Deploy)**
+*   **What:** A standard continuous delivery workflow.
+*   **Type:** CI/CD Pipeline.
+*   **Use:** To automate the path from code commit to production.
+*   **How:**
+    1.  **Pull:** `git checkout` / `git pull` to get latest code.
+    2.  **Build:** `mvn clean package` or `docker build`.
+    3.  **Test:** `mvn test` or run automated scripts.
+    4.  **Deploy:** `kubectl apply` or `scp` to server.
+*   **Simple Interview Answer:**
+    "This is the standard automation flow:
+    1.  **Pull:** Jenkins fetches the latest code from the Git repository.
+    2.  **Build:** It compiles the source code (e.g., compiling Java or building a Docker image).
+    3.  **Test:** It runs automated tests to ensure the build isn't broken.
+    4.  **Deploy:** If tests pass, it deploys the artifact to a server or Kubernetes environment."
+
+#### **Why is SonarQube used? What is a Quality Gate?**
+*   **What:** Static code analysis tool.
+*   **Type:** Code Quality & Security tool.
+*   **Use:** To detect bugs, code smells, and security vulnerabilities automatically.
+*   **How:** It scans code during the CI pipeline. A **Quality Gate** is a pass/fail criteria (e.g., "Coverage must be > 80%").
+*   **Simple Interview Answer:**
+    "SonarQube is used to analyze code quality for bugs and vulnerabilities. A **Quality Gate** is the pass/fail threshold defined for the project. For example, we might set a Quality Gate that says 'New code coverage must be at least 80%.' If the code fails this check, SonarQube will fail the build, preventing low-quality or insecure code from being merged to the main branch."
+
+---
+
+### 7. Terraform (Infrastructure as Code)
+
+#### **What is terraform.tfstate? How do you secure it?**
+*   **What:** A file that tracks the real-world resources managed by Terraform.
+*   **Type:** State file (JSON format).
+*   **Use:** To map your configuration to the actual resource IDs in the cloud (e.g., mapping "web_server" to "i-12345").
+*   **How:** Terraform creates it automatically.
+*   **Security:** Never commit to Git. Store in a secure backend like AWS S3 with encryption and versioning.
+*   **Simple Interview Answer:**
+    "The `terraform.tfstate` file is Terraform's memory. It stores the IDs and properties of the real infrastructure AWS created so Terraform knows what to update next time. It contains sensitive data, so I **never** commit it to Git. To secure it, I use a **Remote Backend** like AWS S3 with server-side encryption enabled, and I enable **State Locking** (using DynamoDB) so two people can't write to it at the same time."
+
+#### **Write and explain an EC2 Terraform configuration file (ec2.tf)**
+*   **What:** A Terraform configuration file (HCL language).
+*   **Type:** Infrastructure Code.
+*   **Use:** To provision an EC2 instance on AWS.
+*   **How:**
+    ```hcl
+    resource "aws_instance" "my_web_server" {
+      ami           = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI
+      instance_type = "t2.micro"
+
+      tags = {
+        Name = "MyWebServer"
+      }
     }
-    post {
-        always {
-            echo 'Pipeline completed, regardless of success or failure.'
-        }
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed!'
-        }
-    }
-}
-```
-**Explanation**:
-*   **`agent any`**: Executes the pipeline on any available Jenkins agent.
-*   **`stages`**: Contains all the sequential stages of the pipeline.
-*   **`steps`**: Contains the actual shell commands or build steps to execute within each stage.
-*   **`post`**: Defines actions that run after the pipeline completes (e.g., sending notifications).
-
-### **Why is SonarQube used? What is a Quality Gate?**
-*   **SonarQube** is an **open-source platform** for continuous inspection of code quality. It performs **static code analysis** to detect bugs, code smells, vulnerabilities, and code duplications. It provides **dashboarding** and **reporting** to track technical debt and code health over time.
-*   **A Quality Gate** is a **set of threshold conditions** that must be met before code can be deemed ready for the next stage (e.g., deployment). It's a **pass/fail criterion** for code quality. Examples of conditions in a Quality Gate:
-    *   Code coverage on new code > 80%
-    *   No critical vulnerabilities
-    *   No blocker bugs
-    *   Maintainability rating better than 'B'
-
-**How it works in Jenkins**: The Jenkins pipeline runs a SonarQube scan. The pipeline then uses the `waitForQualityGate()` step (from the SonarQube Scanner plugin) to pause and wait for SonarQube to finish analyzing the report. If the Quality Gate fails, the Jenkins pipeline can be made to fail, preventing the deployment of low-quality code 【turn0search26】【turn0search29】.
-
----
-
-## 🏗️ 7. Terraform (Infrastructure as Code)
-
-### **What is terraform.tfstate? How do you secure it?**
-*   **`terraform.tfstate`** is a **file** that Terraform uses to **map real-world resources** to your configuration. It stores the **state** of your managed infrastructure and metadata. This file is crucial because it allows Terraform to know what actual resources exist and to plan and execute changes accordingly. It's created after the first `terraform apply`.
-*   **Securing `tfstate`** is critical because it can contain **sensitive information** (e.g., database passwords, secret keys).
-    *   **Remote State**: Store the state file remotely in a secure backend like **AWS S3** (with versioning and encryption enabled), **Terraform Cloud**, or **HashiCorp Consul**. This is better than local storage for teams.
-    *   **Encryption**: Ensure your remote storage backend encrypts the state file at rest (e.g., S3 Server-Side Encryption).
-    *   **Access Control**: Restrict access to the state file/backend using IAM policies (for S3) or access controls in Terraform Cloud/Consul. Only authorized personnel and automated systems should have read/write access.
-    *   **Versioning**: Enable versioning on your backend (e.g., S3 versioning) to recover from accidental deletions or corruptions.
-    *   **Avoid committing `.tfstate` files**: Never commit your state files to version control (Git). They are dynamic and contain sensitive data. Use `.gitignore` to exclude them.
-
-### **Write and explain an EC2 Terraform configuration file (ec2.tf)**
-```hcl
-# ec2.tf
-
-# 1. Configure the AWS Provider
-provider "aws" {
-  region = "us-east-1"
-}
-
-# 2. Create a VPC (Virtual Private Cloud)
-resource "aws_vpc" "my_vpc" {
-  cidr_block = "10.0.0.0/16"
-  tags = {
-    Name = "my-terraform-vpc"
-  }
-}
-
-# 3. Create an Internet Gateway
-resource "aws_internet_gateway" "my_igw" {
-  vpc_id = aws_vpc.my_vpc.id
-}
-
-# 4. Create a Route Table
-resource "aws_route_table" "my_rt" {
-  vpc_id = aws_vpc.my_vpc.id
-  route {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.my_igw.id
-  }
-  tags = {
-    Name = "my-route-table"
-  }
-}
-
-# 5. Create a Subnet
-resource "aws_subnet" "my_subnet" {
-  vpc_id            = aws_vpc.my_vpc.id
-  cidr_block        = "10.0.1.0/24"
-  availability_zone = "us-east-1a"
-  map_public_ip_on_launch = true
-  tags = {
-    Name = "my-subnet"
-  }
-}
-
-# 6. Associate Route Table with Subnet
-resource "aws_route_table_association" "my_rta" {
-  subnet_id      = aws_subnet.my_subnet.id
-  route_table_id = aws_route_table.my_rt.id
-}
-
-# 7. Create a Security Group to allow HTTP/SSH
-resource "aws_security_group" "allow_web" {
-  name        = "allow_web_traffic"
-  description = "Allow Web inbound traffic"
-  vpc_id      = aws_vpc.my_vpc.id
-
-  ingress {
-    description = "HTTPS"
-    from_port   = 443
-    to_port     = 443
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "HTTP"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-  ingress {
-    description = "SSH"
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "allow_web"
-  }
-}
-
-# 8. Create a Network Interface (optional, for static IP)
-# resource "aws_network_interface" "web-server-nic" {
-#   subnet_id       = aws_subnet.my_subnet.id
-#   private_ips     = ["10.0.1.50"]
-#   security_groups = [aws_security_group.allow_web.id]
-# }
-
-# 9. Create an EC2 Instance
-resource "aws_instance" "web_server" {
-  ami           = "ami-0c55b159cbfafe1f0" # Amazon Linux 2 AMI in us-east-1
-  instance_type = "t2.micro"
-  # key_name      = "my-key-pair" # Uncomment if you have a key pair
-  # network_interface {
-  #   network_interface_id = aws_network_interface.web-server-nic.id
-  #   device_index         = 0
-  # }
-  subnet_id                   = aws_subnet.my_subnet.id
-  vpc_security_group_ids      = [aws_security_group.allow_web.id]
-  associate_public_ip_address = true # Assign a public IP
-
-  tags = {
-    Name = "HelloWorld"
-  }
-  user_data = <<-EOF
-              #!/bin/bash
-              yum update -y
-              yum install -y httpd
-              systemctl start httpd
-              systemctl enable httpd
-              echo "<h1>Hello from Terraform!</h1>" > /var/www/html/index.html
-              EOF
-}
-
-# 10. Output the Public IP of the Instance
-output "instance_public_ip" {
-  description = "Public IP of the EC2 instance"
-  value       = aws_instance.web_server.public_ip
-}
-```
-**Explanation**:
-*   **`provider "aws"`**: Configures the AWS provider with the desired region.
-*   **`resource "aws_vpc"`**: Creates a new Virtual Private Cloud with a specified CIDR block.
-*   **`resource "aws_internet_gateway"`**: Attaches an internet gateway to the VPC to enable internet access.
-*   **`resource "aws_route_table"` & `aws_route_table_association`**: Define routing rules (all traffic to the internet via the IGW) and associate them with the subnet.
-*   **`resource "aws_subnet"`**: Creates a subnet within the VPC where the EC2 instance will reside. `map_public_ip_on_launch = true` ensures instances get a public IP.
-*   **`resource "aws_security_group"`**: Acts as a virtual firewall to control inbound and outbound traffic for the EC2 instance.
-*   **`resource "aws_instance"`**: Provisions the actual EC2 server, specifying the AMI, instance type, subnet, security group, and a `user_data` script that runs on first boot to install and start a web server.
-*   **`output`**: Defines values that will be displayed after the apply command (e.g., the public IP to access your web server).
-
-**Workflow**: Run `terraform init` → `terraform plan` → `terraform apply` to create this infrastructure. Terraform will create the `terraform.tfstate` file to manage the state of these resources.
-
----
-
-## 🎯 Final Strategic View & Preparation Tips
-
-This domain-first structure is excellent. Here's how to prepare effectively:
-
-```mermaid
-flowchart TD
-    A[Layer 1: Foundation<br>Linux & Git] --> B[Layer 2: Core Cloud<br>AWS]
-    B --> C[Layer 3: Runtime<br>Docker & K8s]
-    C --> D[Layer 4: Automation<br>CI/CD & Terraform]
-```
-
-1.  **Master the Fundamentals (Linux & Git)**: Ensure you can confidently navigate the filesystem, manage processes/permissions, and handle Git branching/merging/reverting. This is your foundation.
-2.  **Deep Dive into Core Cloud (AWS)**: Focus on the most used services: EC2, VPC, S3, RDS, and ELB. Understand their concepts, pricing, and how they interconnect.
-3.  **Get Hands-On with Container Orchestration (Docker & K8s)**: Build Docker images, write Kubernetes manifests (Pods, Deployments, Services), and understand core concepts like networking and storage.
-4.  **Embrace Automation (CI/CD & Terraform)**: Practice building Jenkins pipelines, integrating tools like SonarQube, and writing Terraform code to provision and manage infrastructure.
-
-**General Interview Tips**:
-*   **Practice Out Loud**: Explain concepts as if teaching someone else. It reveals gaps in your understanding.
-*   **Use Analogies**: Complex cloud concepts (like VPCs) are easier to explain with real-world comparisons.
-*   **Be Honest**: If you don't know something, say so. Then explain how you'd find the answer (e.g., "I haven't worked extensively with EKS, but I'm familiar with Docker and standard Kubernetes, and I'm confident I could learn EKS quickly given its documentation").
-*   **Ask Clarifying Questions**: For scenario-based questions ("Traffic is routed to a pod, but no response..."), ask questions to narrow down the problem (e.g., "Is the pod running? What do the logs say?").
+    ```
+*   **Simple Interview Answer:**
+    "This file defines an AWS EC2 instance using Terraform.
+    *   `resource "aws_instance"` tells Terraform we want to create a virtual machine.
+    *   `ami` specifies which machine image to use (like the OS template).
+    *   `instance_type` defines the hardware size (`t2.micro` is the free tier eligible size).
+    *   `tags` are used to label the instance 'MyWebServer' so we can easily identify it in the AWS console."
