@@ -1,4 +1,4 @@
-```markdown
+
 # Azure Lecture Notes: AWS vs. Azure & Core Services
 
 ## 📌  Topics Covered
@@ -160,6 +160,3 @@ AWS uses families like T2, M5, C5. Azure uses alphabetical series:
 | **Naming** | Security Group | **Network Security Group (NSG)**. |
 | **VM Authentication** | Key Pairs only | **Password OR SSH Keys**. |
 
----
-
-```
