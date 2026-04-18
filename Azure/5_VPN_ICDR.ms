@@ -1,7 +1,7 @@
 
 # Lecture 5: VPN Gateway & Hybrid Connectivity
 
-## 📌 Today's Topics Covered
+## 📌 Todays Topics Covered
 1.  **Hybrid Cloud:** Connecting On-Premise Data Center with Azure.
 2.  **VPN Gateway:** Creating the gateway in Azure.
 3.  **Local Network Gateway:** Configuring the on-premises device.
