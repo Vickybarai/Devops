@@ -1,4 +1,4 @@
-```markdown
+
 # Azure Container Registry (ACR) Guide
 
 ## 1. Overview
@@ -151,4 +151,3 @@ az container create \
 
 **Q7: What is a common error when creating Container Instances, and why does it happen?**
 *   **Answer:** A "Validation Failed" or "Zone" error often occurs when trying to deploy on a **Free Tier** or using configurations that require **Availability Zones** (which might require more resources or higher SKUs). It indicates a mismatch between the requested resources and the available capacity/tier.
-```
