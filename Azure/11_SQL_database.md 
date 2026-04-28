@@ -1,4 +1,4 @@
-
+'''
 # Cloud Services Guide: AWS vs Azure (Serverless & Databases)
 
 ## 1. Serverless Computing: AWS Lambda vs. Azure Functions
@@ -146,3 +146,4 @@ Both services provide **Managed Relational Database Services**. This means you d
 
 **Q9: Is Azure SQL Database considered IaaS or PaaS?**
 *   **Answer:** It is **PaaS (Platform as a Service)**. You do not manage the underlying server or infrastructure; you only manage the database itself (schemas, data, users).
+'''
