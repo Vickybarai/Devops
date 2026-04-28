@@ -1,0 +1,52 @@
+
+### 1. What is RDS? (Concept)
+In the context of the lecture, just as **AWS Lambda** and **Azure Functions** abstract the server management for *code* (Compute), **RDS** (Relational Database Service) abstracts the server management for *databases*.
+
+*   **Concept:** It is a **PaaS (Platform as a Service)** for databases.
+*   **Working:** You do not need to install the database software, manage the operating system, or handle patching manually. The cloud provider manages the infrastructure, and you just use the database service.
+
+### 2. Difference: AWS RDS vs. Azure SQL Database
+
+The lecture highlights a specific key difference regarding the **database engines** available:
+
+| Feature | AWS RDS (Amazon Relational Database Service) | Azure SQL Database (Microsoft Azure) |
+| :--- | :--- | :--- |
+| **Service Type** | Managed Relational Database Service | Managed Relational Database Service |
+| **Database Engines** | Supports **Multiple Engines**:<br>• MySQL<br>• PostgreSQL<br>• MariaDB<br>• Oracle<br>• SQL Server<br>• Amazon Aurora | The lecture notes that Azure primarily offers the **Microsoft SQL Server Engine**.<br>*(Note: Azure does offer separate services for MySQL/PostgreSQL, but the core "Azure SQL" service is for Microsoft SQL Server).* |
+| **Key Distinction** | Gives you a choice to use almost any popular database engine you are comfortable with. | Optimized specifically for the **Microsoft SQL Server** ecosystem. |
+
+**Summary from Lecture:**
+> *"Azure service gives only one engine option which is Microsoft SQL Server."*
+> *"AWS RDS was similar but..."*
+
+### 3. Working & Steps (General Implementation)
+While the transcript moves quickly to the next topic, the steps to set up a database in the Azure Portal (similar to AWS) follow this pattern:
+
+1.  **Navigate to the Service:** Go to the Azure Portal and search for **"Azure SQL Database"**.
+2.  **Create Database:** Click on **Create**.
+3.  **Basics Configuration:**
+    *   **Resource Group:** Select an existing group or create a new one (to keep resources organized).
+    *   **Database Name:** Give your database a unique name.
+    *   **Server:** Create a new server (this is the logical container for your databases).
+    *   **Compute + Storage:** Select the pricing tier/vCore based on your workload needs.
+4.  **Review + Create:** Validate the settings and deploy.
+5.  **Connection:** Once deployed, you will get a **Connection String** (host name, username, password) to connect your application or Function App to this database.
+
+---
+
+### 4. Interview Ready Questions (AWS vs Azure RDS)
+
+**Q1: What is the equivalent of AWS RDS in Microsoft Azure?**
+*   **Answer:** The equivalent service is **Azure SQL Database**. Both are managed relational database services that fall under the PaaS model.
+
+**Q2: What is the main difference between AWS RDS and Azure SQL regarding database engines?**
+*   **Answer:** AWS RDS supports multiple database engines including MySQL, PostgreSQL, Oracle, MariaDB, and SQL Server. Azure SQL Database is primarily focused on the **Microsoft SQL Server** engine.
+
+**Q3: Why would you choose a Managed Database Service (like RDS or Azure SQL) over a traditional database installed on a VM (EC2/Azure VM)?**
+*   **Answer:** Managed services handle administrative tasks like OS patching, backups, high availability, and scaling automatically. This allows developers to focus on the data and application logic rather than database maintenance.
+
+**Q4: Is Azure SQL Database considered IaaS or PaaS?**
+*   **Answer:** It is **PaaS (Platform as a Service)**. You do not manage the underlying server or infrastructure; you only manage the database itself (schemas, data, users).
+
+**Q5: How does Azure SQL pricing typically work compared to AWS RDS?**
+*   **Answer:** Both generally follow a "pay-as-you-go" model based on **compute power (vCores/Dtus)** and **storage**. You pay for the performance tier you select (e.g., Basic, Standard, Premium).
