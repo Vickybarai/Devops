@@ -1,291 +1,316 @@
 
-# 🚀 Amazon EKS (Elastic Kubernetes Service)
-## 📌 1. Amazon EKS Overview
+# 🚀 Mastering Amazon EKS (Elastic Kubernetes Service)
 
-**Definition:**  
-Amazon Elastic Kubernetes Service (EKS) is a fully managed Kubernetes service by AWS that handles all **control plane components** for you.
+## 📚 Table of Contents
+1. [Overview](#-1-overview)
+2. [High-Level Architecture](#-high-level-architecture)
+3. [Deployment Models](#-2-eks-deployment-models)
+4. [IAM Roles Setup](#-3-iam-roles)
+5. [Traditional Cluster Creation](#-4-traditional-eks-cluster-creation)
+6. [Managed Node Groups](#-5-create-managed-node-group)
+7. [EKS Auto Mode](#-6-eks-auto-mode-workflow)
+8. [Configuration & Access](#-7-configure-kubectl)
+9. [Kubernetes Operations](#-8-core-kubernetes-commands)
+10. [Troubleshooting](#-11-troubleshooting)
+11. [Summary](#-interview-summary)
 
-### High-Level Architecture
+---
 
-**Control Plane (Managed by AWS):**
-- API Server
-- ETCD (Cluster state store)
-- Scheduler
-- Controller Manager
+## 📌 1. Overview
 
-**Worker Nodes (User-managed):**
-- EC2 instances
-- Node Groups
-- Fargate
+### What is Amazon EKS?
+Amazon Elastic Kubernetes Service (EKS) is a **fully managed** Kubernetes service. AWS handles the heavy lifting of the Kubernetes Control Plane, allowing you to focus on your applications.
 
-**Principle:**  
-> You **never SSH into the control plane**; all interaction is via `kubectl` or API.
+### Responsibility Split
+| Component | Managed By | Details |
+| :--- | :--- | :--- |
+| **Control Plane** | **AWS** | API Server, ETCD, Scheduler, Controller Manager. No SSH access allowed. |
+| **Worker Nodes** | **User** | EC2 Instances (Managed/Self-Managed), Fargate, or Auto Mode Nodes. |
 
-**Learning Tools:**  
-- Minikube, Killercoda (for offline practice)
+### Interaction Tools
+You interact with the EKS Control Plane via:
+- `kubectl` (CLI)
+- AWS CLI
+- EKS API
+- AWS Console / CloudShell
+
+---
+
+## 🏗 High-Level Architecture
+
+```text
+   User (You)
+      │
+      │ kubectl / AWS CLI
+      ▼
+─────────────────────────────────────
+│  EKS Control Plane (Managed by AWS) │
+│                                     │
+│  ├── API Server                     │
+│  ├── ETCD (Cluster Data)            │
+│  ├── Scheduler                      │
+│  └── Controller Manager             │
+─────────────────────────────────────
+      │
+      ▼
+─────────────────────────────────────
+│  Worker Nodes (Managed by You)      │
+│                                     │
+│  ├── Node 1 (Pod-1, Pod-2)          │
+│  ├── Node 2 (Pod-3, Pod-4)          │
+│  └── Node 3 (Pod-5)                 │
+─────────────────────────────────────
+```
 
 ---
 
 ## 🛠 Tools Used
-
-- **AWS Console** – Cluster and node creation
-- **AWS CloudShell** – kubectl + AWS CLI (recommended)
-- **Killercoda** – Practice Kubernetes labs
-
----
-
-## 🟢 2. EKS Cluster Creation Step-by-Step
-
-### Phase 1 Phase 1: Preparation
-
-**IAM Roles:**
-
-| Role Type | Required Policies |
-|-----------|------------------|
-| **Cluster Role** | `AmazonEKSClusterPolicy` |
-| **Node Role** | `AmazonEKSWorkerNodePolicy` |
-| | `AmazonEC2ContainerRegistryReadOnly` |
-| | `AmazonEKS_CNI_Policy` |
-
-**Networking Requirements:**
-- VPC with **public & private subnets**
-- Security Groups for cluster & nodes
-- Internet Gateway & proper Route Tables
-
-> **Tip:** Use default subnets and security groups if unsure; AWS EKS will configure basic networking automatically.
+- **AWS Console:** For cluster creation and management.
+- **AWS CLI / CloudShell:** For infrastructure commands.
+- **kubectl:** The standard command-line tool for Kubernetes.
+- **Killercoda:** Recommended environment for practice.
 
 ---
 
-### Phase 2: Create Control Plane (STEP 1-3)
+## 📌 2. EKS Deployment Models
 
-> Always start with the EKS Cluster. Worker nodes are added later.
+AWS offers two primary approaches to creating clusters:
 
-#### Step-by-Step:
+### Option 1: Traditional EKS (Recommended for Learning)
+You manually define the cluster and the node groups.
+- **Flow:** `Cluster` → `Node Group` → `EC2 Instances`
+- **Management:** You manage Cluster, Node Groups, and Scaling.
+- **Best For:** Interviews, deep learning, understanding K8s internals.
 
-1. Open AWS Console → EKS → **Add cluster** → **Create**
-2. Provide:
-   - **Cluster Name:** `my-eks-cluster`
-   - **Kubernetes Version:** Default (example: 1.34)
-   - **IAM Role:** `eks-cluster-role` (Cluster Role with `AmazonEKSClusterPolicy`)
-   - **VPC & Subnets:** Default VPC or existing (Public + Private, Minimum 2 AZs)
-   - **Security Group:** Default
-   - **Endpoint Access:** Public OR Public + Private (recommended)
-3. Click **Create Cluster**
-
-⏳ **Creation time:** 8–12 minutes
-
-✅ **Control Plane is ready**  
-❌ **No worker nodes yet**
-
-> **Why IAM Role needed?**  
-> Enables EKS to manage networking, security groups, and logging on your behalf.
+### Option 2: EKS Auto Mode
+AWS automates the provisioning of nodes, storage, and networking.
+- **Flow:** `Cluster` → `AWS Automatically Creates Nodes`
+- **Management:** AWS manages infrastructure; you deploy applications.
+- **Best For:** Production automation, reducing operational overhead.
+- **Note:** Hides many internal details, not ideal for beginners.
 
 ---
 
-### Phase 3: Access Cluster (STEP 5)
+## 📌 3. IAM Roles
 
-From your laptop, CloudShell, or EC2 instance:
+Before creating a cluster, you must set up two specific IAM roles.
 
-#### Option A: AWS CloudShell (Recommended)
+### A. Cluster Role (`eks-cluster-role`)
+Used by the Kubernetes control plane to make calls to other AWS services on your behalf.
 
-CloudShell already has AWS CLI + kubectl.
+**Policies to Attach:**
+- `AmazonEKSClusterPolicy`
+- `AmazonEKSComputePolicy`
+- `AmazonEKSNetworkingPolicy`
+- `AmazonEKSLoadBalancingPolicy`
+- `AmazonEKSBlockStoragePolicy`
 
-```bash
-aws eks update-kubeconfig --name my-eks-cluster --region ap-south-1
-```
+### B. Node Role (`eks-node-role`)
+Used by the worker nodes (Kubelet and CNI plugin) to make calls to AWS APIs.
 
-What this command does:
-- Fetches cluster details
-- Updates kubeconfig
-- Authenticates kubectl using IAM
-
-Verify:
-
-```bash
-kubectl get nodes
-```
-
-Option B: Killercoda
-
-kubeconfig is usually preconfigured. Directly run:
-
-```bash
-kubectl get nodes
-```
-
-> `aws eks update-kubeconfig` is not required unless specified.
-
----
-
-Phase 4: Create Node Group (Worker Nodes) (STEP 4)
-
-> Pods always run on Worker Nodes, not on the control plane.
-
-Steps:
-
-1. EKS → Your Cluster → Compute → Add Node Group
-2. Node group name: `eks-worker-nodes`
-3. Node IAM Role: Attach these three mandatory policies:
-   - `AmazonEKSWorkerNodePolicy`
-   - `AmazonEKS_CNI_Policy`
-   - `AmazonEC2ContainerRegistryReadOnly`
-
-> Without these policies, nodes will not join the cluster.
-
-Node Configuration:
-
-- AMI: Amazon Linux 2
-- Instance type: `t3.small`
-- Scaling:
-  - Desired: `2`
-  - Min: `1`
-  - Max: `3`
-- Enable Node Auto-Repair and Auto-Update
-- Select same subnets as cluster
-
-Create Node Group
-
-⏳ Time: 5–7 minutes
-
-> Important Notes:
-`AmazonEKSWorkerNodePolicy`
+**Policies to Attach:**
+- `AmazonEKSWorkerNodePolicy`
 - `AmazonEKS_CNI_Policy`
 - `AmazonEC2ContainerRegistryReadOnly`
-
-> Without these policies, nodes will not join the cluster.
-
-Node Configuration:
-
-- AMI: Amazon Linux 2
-- Instance type: `t3.medium`
-- Scaling:
-  - Desired: `2`
-  - Min: `1`
-  - Max: `3`
-- Enable Node Auto-Repair and Auto-Update
-- Select same subnets as cluster
-
-Create Node Group
-
-⏳ Time: 5–7 minutes
-
-> Important Notes:
-- Ensure nodes are in proper subnets for networking
-- kube-proxy is installed automatically for service networking
+- `AmazonElasticContainerRegistryPublicReadOnly`
 
 ---
 
-🟢 3. Core kubectl Commands
+## 📌 4. Traditional EKS Cluster Creation
+
+> **⚠️ IMPORTANT:** Select **"Custom Configuration"**. Do **NOT** select "Quick Configuration" if you want to learn the architecture and manage Node Groups manually.
+
+### Step 1: Navigate to EKS
+1. Open AWS Console.
+2. Go to **EKS** service.
+3. Click **Create Cluster**.
+
+### Step 2: Configure Metadata
+- **Name:** `my-eks-cluster`
+- **Kubernetes Version:** Select the latest stable version.
+- **Cluster Service Role:** Select `eks-cluster-role`.
+
+### Step 3: Networking
+- **VPC:** Select `Default VPC`.
+- **Subnets:** Select at least **2 Availability Zones** (Public + Private subnets).
+- **Security Group:** `Default`.
+- **Cluster Endpoint Access:** `Public and Private` (Recommended for learning).
+
+### Step 4: Create
+1. Click **Create**.
+2. Wait **10–15 minutes**.
+3. Status must change to **Active**.
+
+---
+
+## 📌 5. Create Managed Node Group
+
+Once the cluster is active, you need compute capacity.
+
+### Steps
+1. Go to your Cluster → **Compute** tab.
+2. Click **Add Node Group**.
+
+### Configuration
+- **Name:** `eks-worker-nodes`
+- **Node IAM Role:** Select `eks-node-role`.
+
+### Compute Settings (Free Tier Friendly)
+- **Instance Type:** `t3.micro`
+  - *Note:* Avoid `t3.medium` if on Free Tier to prevent `InstanceLaunchFailures`.
+- **Scaling:**
+  - Desired Size: `1`
+  - Min Size: `1`
+  - Max Size: `2`
+
+### Finalize
+1. Click **Create**.
+2. Wait **5–10 minutes**.
+
+---
+
+## 📌 6. EKS Auto Mode Workflow
+
+If you choose **"Quick Configuration"** during cluster creation, you are using EKS Auto Mode.
+
+**How it works:**
+1. You select the Cluster Role and Node Role immediately.
+2. AWS automatically provisions nodes without you creating a Node Group manually.
+
+**Why does AWS ask for a Node Role twice?**
+- **Auto Mode:** Uses the role provided during creation to manage nodes automatically.
+- **Managed Node Groups:** If you switch to manual management later, you define a specific Node Group role.
+These are distinct systems. It is normal for the prompts to look similar.
+
+---
+
+## 📌 7. Configure kubectl
+
+To interact with your cluster from the terminal, update your kubeconfig.
+
+**Using AWS CloudShell:**
 
 ```bash
-kubectl get nodes                    # List all nodes
-kubectl get pods                     # List all pods
-kubectl get pods -o wide             # View pods with node and IP info
-kubectl describe pod <pod-name>      # Detailed pod information
-kubectl logs <pod-name>              # View pod logs
-kubectl exec -it my-pod -- bash      # Enter pod terminal
-kubectl delete pod my-pod            # Delete a pod
+aws eks update-kubeconfig \
+  --name my-eks-cluster \
+  --region ap-south-1
 ```
 
-> `kubectl` always communicates with the API Server, never directly with nodes.
-
----
-
-## 🟢 4. Kubernetes Objects
-
-| Object | Purpose |
-|--------|---------|
-| **Pod** | Smallest deployable unit; runs one or more containers; ephemeral |
-| **Deployment** | Manages pods and rolling updates; enables rollbacks |
-| **ReplicaSet** | Ensures a specific number of pod replicas are running |
-| **Service** | Provides stable networking & discovery for ephemeral pods |
-| **Namespace** | Logical separation of resources |
-| **StatefulSet** | For stateful applications with stable identity + storage |
-| **DaemonSet** | Ensures one pod per node (logging, monitoring agents) |
-| **ConfigMap** | Stores configuration data (externalize configuration) |
-| **Secret** | Stores sensitive information/credentials |
-| **PV / PVC** | Persistent storage for pods; independent of Pod lifecycle |
-
----
-
-### Pod Details
-
-**Characteristics:**
-- Smallest deployable unit in Kubernetes
-- **Ephemeral:** replaced if deleted
-- Wraps one or more containers
-- Containers share network namespace & volumes
-- Gets its own IP
-
-**Networking:**
-- **Intra-pod:** `localhost` or container port
-- **Inter-pod:** `PodIP:Port` (Pod IPs are temporary)
-
----
-
-### Service Types
-
-Services provide stable IP/DNS to access ephemeral pods.
-
-| Type | Purpose | Command |
-|------|---------|---------|
-| **ClusterIP** | Internal cluster access (default) | `kubectl expose pod my-pod --port 80 --target-port 80` |
-| **NodePort** | Node IP + static port (30000-32767); mainly for testing/debugging | `kubectl expose pod my-pod --port 80 --type NodePort --name my-np-svc` |
-| **LoadBalancer** | Public access via cloud LB (AWS ELB/NLB); requires Security Group rules for HTTP/TCP 80 | `kubectl expose pod my-pod --port 80 --type LoadBalancer --name my-lb-svc` |
-
-> **Note:** `port` = service port, `targetPort` = pod/container port
----
-
-🟢 5. Networking Basics
-
-Intra-Pod Communication
-- Same Pod
-- Same IP
-- Use `localhost`
-
-Inter-Pod Communication
-- Different Pods
-- Different IPs
-- Use `PodIP:Port`
-- Pod IPs are temporary
-
-Why Services Are Required
-
-Pod IPs change. Services provide:
-- Stable IP
-- DNS
-- Load balancing
-
----
-
-🧪 Sample Test Commands
-
+**Verify Connection:**
 ```bash
-# Create and expose a pod
-kubectl run my-pod --image=httpd
-kubectl expose pod my-pod --port 80 --type NodePort --name my-np-svc
+kubectl get nodes
+```
+*Expected Output:* Nodes listed with status `Ready`.
 
-# Verify
-kubectl get pods -o wide
-kubectl get svc
-curl <pod-ip>  # Test connectivity
+---
+
+## 📌 8. Core Kubernetes Commands
+
+### Cluster Information
+```bash
+kubectl get nodes          # List all worker nodes
+kubectl get pods           # List all pods in default namespace
+kubectl get pods -o wide   # List pods with IP and Node info
+```
+
+### Debugging
+```bash
+kubectl describe pod <pod-name>   # Detailed events/status of a pod
+kubectl logs <pod-name>           # Print logs of a container
+```
+
+### Operations
+```bash
+kubectl delete pod <pod-name>                     # Delete a pod
+kubectl exec -it <pod-name> -- /bin/bash          # Access shell inside pod
 ```
 
 ---
 
-✅ 6. Summary Workflow
+## 📌 9. Deploy First Pod
 
-1. Prepare IAM roles & networking
-2. Create Control Plane (EKS Cluster)
-3. Access cluster via kubectl (`aws eks update-kubeconfig`)
-4. Create Node Group (Worker Nodes)
-5. Deploy Pods & Services
-6. Kubernetes automatically handles scaling, networking, and health
+**Deploy an Nginx web server:**
+```bash
+kubectl run nginx --image=nginx
+```
+
+**Check status:**
+```bash
+kubectl get pods
+```
 
 ---
 
-🎯 Interview Summary
+## 📌 10. Services (Networking)
 
-> "In Amazon EKS, AWS manages the Kubernetes control plane. We create the EKS cluster first, assign IAM roles for permissions, then add EC2-based worker nodes. Access is configured using `aws eks update-kubeconfig`, and applications are exposed using Kubernetes Services."
-
+### 1. ClusterIP (Internal)
+Accessible only within the cluster.
+```bash
+kubectl expose pod nginx --port=80
 ```
+
+### 2. NodePort (External via Node IP)
+Exposes the service on each Node’s IP at a static port.
+```bash
+kubectl expose pod nginx --port=80 --type=NodePort
+```
+
+### 3. LoadBalancer (External via AWS ELB)
+Provisions an AWS Load Balancer to route traffic to the service.
+```bash
+kubectl expose pod nginx --port=80 --type=LoadBalancer
+```
+
+---
+
+## 📌 11. Troubleshooting
+
+### Issue: No Nodes Found (`kubectl get nodes` returns nothing)
+**Possible Causes:**
+- Node Group creation failed.
+- IAM Role missing permissions.
+- Networking issues (Subnets).
+
+### Issue: `NodeCreationFailure`
+**Cause 1: Wrong Instance Type**
+- **Error:** The specified instance type is not eligible for Free Tier.
+- **Fix:** Use `t3.micro` instead of `t3.medium`.
+
+**Cause 2: Missing IAM Policies**
+- **Fix:** Ensure `AmazonEKSWorkerNodePolicy`, `AmazonEKS_CNI_Policy`, and `AmazonEC2ContainerRegistryReadOnly` are attached to the Node Role.
+
+**Cause 3: Private Subnet without NAT Gateway**
+- **Error:** Nodes cannot reach EKS public APIs to bootstrap.
+- **Fix:** Use Public Subnets for learning, or configure a NAT Gateway for private subnets.
+
+---
+
+## 📌 12. Complete Workflow Summary
+
+```text
+1. Create IAM Roles (Cluster & Node)
+            ↓
+2. Create EKS Cluster (Custom Config)
+            ↓
+3. Wait for Status: Active
+            ↓
+4. Create Managed Node Group (t3.micro)
+            ↓
+5. Wait for Status: Ready
+            ↓
+6. Update kubeconfig (aws eks update-kubeconfig...)
+            ↓
+7. Verify Nodes (kubectl get nodes)
+            ↓
+8. Deploy Application (kubectl run nginx...)
+            ↓
+9. Expose Service (kubectl expose... --type=LoadBalancer)
+            ↓
+10. Access Application
+```
+
+---
+
+## 🎯 Interview Summary
+
+Amazon EKS is a managed Kubernetes service where **AWS manages the Control Plane** (API Server, ETCD, Scheduler, Controller Manager). Users manage **Worker Nodes** which can be EC2 instances (Managed Node Groups) or serverless (Fargate/Auto Mode). Access is configured via `kubectl` and IAM authentication, and applications are exposed using standard Kubernetes Services like **ClusterIP**, **NodePort**, and **LoadBalancer** (which integrates with AWS ELB/NLB).
