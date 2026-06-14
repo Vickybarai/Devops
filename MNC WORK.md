@@ -88,20 +88,25 @@ Since you now know how MNCs actually work, do not give "Ideal" answers. Give "Re
 
 
 ___
-FRESHER / JUNIOR (0-2 years)
+#FRESHER / JUNIOR (0-2 years)
 
 Product companies: 6-12 LPA 
+
 Service companies: 3.5-6 LPA 
+
 Startups (funded): 5-9 LPA
 
-MID-LEVEL (3-5 years)
+___
+
+#MID-LEVEL (3-5 years)
 
 Product companies: ₹15-28 LPA 
 Service companies: *8-14 LPA 
 MNC India offices: ₹12-22 LPA 
 Remote for US companies: ₹20-40 LPA
 
-SENIOR / LEAD (5-8 years)
+___
+#SENIOR / LEAD (5-8 years)
 
 Product companies: ₹28-50 LPA 
 Cloud Architect roles: ₹35-60 LPA 
