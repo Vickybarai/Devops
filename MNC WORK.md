@@ -82,3 +82,41 @@ Since you now know how MNCs actually work, do not give "Ideal" answers. Give "Re
 1.  **Start as Support:** Don't worry if your first job is just closing tickets. That is where you learn the "AWS Services" by fixing errors.
 2.  **Process is King:** In interviews, always mention **SOPs, Approvals, and Testing**. MNCs love process.
 3.  **Specialize:** You don't need to be a master of everything. Be good at one thing (e.g., Jenkins or Terraform) and have basic knowledge of the rest.
+
+
+
+
+
+___
+FRESHER / JUNIOR (0-2 years)
+
+Product companies: 6-12 LPA 
+Service companies: 3.5-6 LPA 
+Startups (funded): 5-9 LPA
+
+MID-LEVEL (3-5 years)
+
+Product companies: ₹15-28 LPA 
+Service companies: *8-14 LPA 
+MNC India offices: ₹12-22 LPA 
+Remote for US companies: ₹20-40 LPA
+
+SENIOR / LEAD (5-8 years)
+
+Product companies: ₹28-50 LPA 
+Cloud Architect roles: ₹35-60 LPA 
+Remote international: ₹45-90 LPA
+
+What pushes you to the higher end:
+
+Multi-cloud skills (not just one provider)
+
+→ Kubernetes + Terraform fluency
+
+Platform Engineering background
+
+→ SRE experience (oncall, SLOs, error budgets)
+
+→ DevSecOps knowledge
+
+→ Strong communication (yes, really)
