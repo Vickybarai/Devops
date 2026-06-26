@@ -1,1 +1,8 @@
-yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  namespace: nginx
+  labels:
+    app: nginx
+
