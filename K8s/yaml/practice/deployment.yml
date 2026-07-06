@@ -6,26 +6,26 @@ metadata:
 labels:
     app: my-app-deep
     type: my-type-deep
+
 spec:
   replicas: 3 
   selector:
     matchLabels:
       app: my-app-deep
 
-      # same as pod yml
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 1
       maxUnavailable: 1
 
-
+      # same as pod yml
   template:
     metadata:
       labels:
         app: my-app-deep
     spec:
-      containers:
+    containers:
       - name: my-container
         image: nginx:1.19
         ports:
