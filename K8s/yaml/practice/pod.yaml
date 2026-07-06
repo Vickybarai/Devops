@@ -12,3 +12,13 @@ spec:
     image: nginx:latest
     ports:
     - containerPort: 80 
+
+
+# kubectl apply -f pod.yaml
+# kubectl get pods 
+# kubectl  get pods -o wide -w
+# kubectl describe pods pod-nginx
+# kubectl delete -f pod-df.yml
+# kubectl explain pod.spec.containers
+
+ 
