@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-app-deep
+  namespace: default
+  labels:
+    app: my-app-deep
+    type: my-type-deep
+spec:
+  containers:
+  - name: my-container
+    image: nginx:latest
+    ports:
+    - containerPort: 80 
