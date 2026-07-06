@@ -1,22 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata: 
-  name: nginx-deployment
-  namespace: nginx  
+  name: my-deployment-deep
+  namespace: default
+labels:
+    app: my-app-deep
+    type: my-type-deep
 spec:
   replicas: 3 
   selector:
     matchLabels:
-      app: nginx
+      app: my-app-deep
 
       # same as pod yml
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+
+
   template:
     metadata:
       labels:
-        app: nginx
+        app: my-app-deep
     spec:
       containers:
-      - name: nginx
-        image: nginx:latest
+      - name: my-container
+        image: nginx:1.19
         ports:
         - containerPort: 80
