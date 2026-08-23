@@ -168,21 +168,42 @@ Open an **Incognito/Private browser window**. Go to your Jenkins URL and log in 
 
 ---
 
-### Quick Emergency Flow (Cheat Sheet)
-If you ever need to reset a password in the future, follow this exact sequence to avoid locking yourself out:
+### How to Re-enable Security via Browser Console
 
+**Step 1:** Make sure you are currently logged into Jenkins (even though security is disabled).
+
+**Step 2:** Open a new tab and go to the Jenkins Script Console:
 ```text
-Jenkins Dashboard
-       ↓
-Manage Jenkins → Security
-       ↓
-DON'T SAVE YET!
-       ↓
-Manage Jenkins → Users → Your Username → Configure
-       ↓
-Password & Confirm Password → Save
-       ↓
-Back to Security → Verify settings → Save
-       ↓
-Test in Incognito Browser
+http://<YOUR-JENKINS-IP>:8080/script
 ```
+
+**Step 3:** Paste the Groovy code below into the console box and click **Run**.
+
+<details>
+<summary>📁 Click to view: Groovy Script to Re-enable Security</summary>
+
+```groovy
+// Re-enables Jenkins security and saves the configuration safely
+
+import jenkins.model.*
+
+// 1. Re-enable security globally
+def jenkins = Jenkins.getInstance()
+jenkins.setDisableSecurity(false)
+
+// 2. Force Jenkins to save the state to disk
+jenkins.save()
+
+println("✅ SUCCESS: Security has been re-enabled.")
+println("Please log out and log back in with your new password.")
+```
+</details>
+
+### What to expect next:
+1. The console will print `✅ SUCCESS: Security has been re-enabled.`
+2. **Crucial Step:** Click **"Log out"** in the top right corner of the Jenkins dashboard.
+3. The login page will immediately reappear.
+4. Enter your username and the **new password** you created in the UI.
+5. You are back to normal! 
+
+> ⚠️ **WARNING:** Do **NOT** run this script unless you are 100% sure you know your password. If you enable security without having a valid password set for your user, you will instantly lock yourself out and have to run the SSH Nuclear Script again!
