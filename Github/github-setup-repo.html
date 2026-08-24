@@ -1,0 +1,2169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional GitHub Repository Setup Guide for DevOps Engineers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .code-block {
+            background: #0F172A;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .code-block pre {
+            padding: 20px 24px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #e2e8f0;
+        }
+        .code-block .code-header {
+            background: rgba(255,255,255,0.05);
+            padding: 10px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .code-block .code-dots {
+            display: flex;
+            gap: 6px;
+        }
+        .code-block .code-dots span {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .comment { color: #64748b; }
+        .command { color: #38bdf8; }
+        .flag { color: #fbbf24; }
+        .string { color: #4ade80; }
+        .keyword { color: #c084fc; }
+        .variable { color: #fb923c; }
+        .flow-line {
+            position: relative;
+        }
+        .flow-line::before {
+            content: '';
+            position: absolute;
+            left: 23px;
+            top: 48px;
+            bottom: -8px;
+            width: 2px;
+            background: linear-gradient(to bottom, #2563EB, #3b82f6, #60a5fa);
+        }
+        .flow-line:last-child::before {
+            display: none;
+        }
+        .step-card {
+            transition: all 0.3s ease;
+        }
+        .step-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+        }
+        .copy-btn {
+            transition: all 0.2s ease;
+        }
+        .copy-btn:hover {
+            background: rgba(255,255,255,0.15);
+        }
+        .copy-btn.copied {
+            color: #4ade80;
+        }
+        .segment-badge {
+            animation: pulse-soft 3s ease-in-out infinite;
+        }
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        .tree-line {
+            border-left: 2px solid #e2e8f0;
+        }
+        .toc-link {
+            transition: all 0.2s ease;
+        }
+        .toc-link:hover {
+            color: #2563EB;
+            padding-left: 4px;
+        }
+        .warning-box {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1), rgba(245, 158, 11, 0.05));
+            border-left: 4px solid #f59e0b;
+        }
+        .info-box {
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(37, 99, 235, 0.05));
+            border-left: 4px solid #2563EB;
+        }
+        .success-box {
+            background: linear-gradient(135deg, rgba(22, 163, 74, 0.1), rgba(22, 163, 74, 0.05));
+            border-left: 4px solid #16a34a;
+        }
+        .danger-box {
+            background: linear-gradient(135deg, rgba(220, 38, 38, 0.1), rgba(220, 38, 38, 0.05));
+            border-left: 4px solid #dc2626;
+        }
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, #2563EB, #3b82f6);
+            z-index: 100;
+            transition: width 0.1s ease;
+        }
+        .folder-tree {
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900">
+
+    <!-- Progress Bar -->
+    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-white/20" style="background: rgba(15,23,42,0.9); backdrop-filter: blur(12px);">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <i data-lucide="git-branch" class="w-5 h-5 text-white"></i>
+                </div>
+                <div>
+                    <span class="text-white font-semibold text-lg">GitHub Pro Setup</span>
+                    <span class="text-slate-400 text-xs block -mt-1">Enterprise-Grade Repository Guide</span>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-6">
+                <a href="#prerequisites" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">Prerequisites</a>
+                <a href="#flow" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">Flow</a>
+                <a href="#steps" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">Steps</a>
+                <a href="#security" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">Security</a>
+                <a href="#checklist" class="text-slate-300 hover:text-white text-sm font-medium transition-colors">Checklist</a>
+                <a href="https://github.com/jaiswaladi246/three-tier-app-eks-gitops" target="_blank" class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    View Repo
+                </a>
+            </div>
+            <button id="mobileMenuBtn" class="md:hidden text-white">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+        </div>
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-900/95 border-t border-white/10 px-6 py-4">
+            <a href="#prerequisites" class="block py-2 text-slate-300 hover:text-white text-sm">Prerequisites</a>
+            <a href="#flow" class="block py-2 text-slate-300 hover:text-white text-sm">Flow</a>
+            <a href="#steps" class="block py-2 text-slate-300 hover:text-white text-sm">Steps</a>
+            <a href="#security" class="block py-2 text-slate-300 hover:text-white text-sm">Security</a>
+            <a href="#checklist" class="block py-2 text-slate-300 hover:text-white text-sm">Checklist</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[700px] flex items-center overflow-hidden">
+        <div class="absolute inset-0">
+            <img src="https://picsum.photos/seed/devops-github-hero/1920/1080.jpg" alt="DevOps Background" class="w-full h-full object-cover">
+            <div class="absolute inset-0" style="background: linear-gradient(to right, #0f172a, rgba(15,23,42,0.85), rgba(15,23,42,0.4))"></div>
+        </div>
+        <div class="relative max-w-7xl mx-auto px-6 pt-20 w-full">
+            <div class="max-w-3xl">
+                <div class="flex items-center gap-3 mb-6">
+                    <span class="segment-badge bg-blue-600/20 text-blue-400 border border-blue-500/30 px-3 py-1 rounded-full text-xs font-semibold tracking-wider uppercase">Complete Guide</span>
+                    <span class="text-slate-400 text-sm">•</span>
+                    <span class="text-slate-400 text-sm">11 Segments</span>
+                    <span class="text-slate-400 text-sm">•</span>
+                    <span class="text-slate-400 text-sm">~45 Min Read</span>
+                </div>
+                <h1 class="text-4xl md:text-6xl font-semibold text-white tracking-tight leading-[1.1] mb-6">
+                    Professional GitHub<br>
+                    <span class="text-blue-400">Repository Setup</span><br>
+                    for DevOps Engineers
+                </h1>
+                <p class="text-slate-300 text-lg leading-relaxed mb-8 max-w-2xl">
+                    Transform your GitHub repository from a basic code dump into an enterprise-grade, 
+                    recruiter-ready project with proper structure, security, automation, and governance.
+                </p>
+                <div class="flex flex-wrap gap-4 mb-10">
+                    <a href="#steps" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                        <i data-lucide="play" class="w-4 h-4"></i>
+                        Start Building
+                    </a>
+                    <a href="#flow" class="border border-white/20 hover:bg-white/10 text-white px-8 py-3.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                        <i data-lucide="git-branch" class="w-4 h-4"></i>
+                        View Flow
+                    </a>
+                </div>
+                <!-- Stats -->
+                <div class="flex flex-wrap gap-8">
+                    <div>
+                        <div class="text-2xl font-semibold text-white">11</div>
+                        <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Segments</div>
+                    </div>
+                    <div class="w-px bg-white/20"></div>
+                    <div>
+                        <div class="text-2xl font-semibold text-white">30+</div>
+                        <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Commands</div>
+                    </div>
+                    <div class="w-px bg-white/20"></div>
+                    <div>
+                        <div class="text-2xl font-semibold text-white">6</div>
+                        <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Security Rules</div>
+                    </div>
+                    <div class="w-px bg-white/20"></div>
+                    <div>
+                        <div class="text-2xl font-semibold text-white">100%</div>
+                        <div class="text-xs text-slate-400 uppercase tracking-wider mt-1">Enterprise Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- What You'll Achieve -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-xs font-bold tracking-widest uppercase text-blue-600">By The End</span>
+                <h2 class="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mt-3">What You'll Have</h2>
+                <p class="text-slate-500 mt-4 max-w-2xl mx-auto">Every single piece below will be implemented by the time you finish this guide</p>
+            </div>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="p-6 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-blue-50 group-hover:bg-blue-100 rounded-lg flex items-center justify-center mb-4 transition-colors">
+                        <i data-lucide="folder-tree" class="w-6 h-6 text-blue-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-2">Enterprise Folder Structure</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Organized src, k8s, terraform, .github, docs, scripts directories</p>
+                </div>
+                <div class="p-6 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-green-50 group-hover:bg-green-100 rounded-lg flex items-center justify-center mb-4 transition-colors">
+                        <i data-lucide="shield-check" class="w-6 h-6 text-green-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-2">Repository Security</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Branch protection, rule sets, signed commits, force push blocked</p>
+                </div>
+                <div class="p-6 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-purple-50 group-hover:bg-purple-100 rounded-lg flex items-center justify-center mb-4 transition-colors">
+                        <i data-lucide="workflow" class="w-6 h-6 text-purple-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-2">GitHub Actions CI/CD</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">Automated hygiene checks, linting, validation pipelines</p>
+                </div>
+                <div class="p-6 rounded-xl border border-slate-200 hover:border-blue-200 hover:shadow-lg transition-all duration-300 group">
+                    <div class="w-12 h-12 bg-amber-50 group-hover:bg-amber-100 rounded-lg flex items-center justify-center mb-4 transition-colors">
+                        <i data-lucide="file-text" class="w-6 h-6 text-amber-600"></i>
+                    </div>
+                    <h3 class="font-semibold text-slate-900 mb-2">Governance & Docs</h3>
+                    <p class="text-slate-500 text-sm leading-relaxed">CODEOWNERS, SECURITY.md, CODE_OF_CONDUCT, releases & versioning</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Prerequisites -->
+    <section id="prerequisites" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex items-center gap-3 mb-4">
+                <span class="bg-blue-100 text-blue-700 text-xs font-bold px-3 py-1 rounded-full">SEGMENT 0</span>
+            </div>
+            <h2 class="text-3xl md:text-4xl font-semibold text-slate-900 tracking-tight mb-4">Prerequisites & Tools</h2>
+            <p class="text-slate-500 text-lg max-w-3xl mb-12">Install these tools before you begin. Every tool serves a specific purpose in our professional setup.</p>
+
+            <div class="grid md:grid-cols-3 gap-6">
+                <!-- Tool 1 -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="terminal" class="w-5 h-5 text-orange-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900">Git Bash</h3>
+                            <span class="text-xs text-slate-400">Required</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4">Unix-like terminal for Windows. Provides bash commands essential for DevOps workflows.</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <span class="bg-red-500"></span>
+                                <span class="bg-yellow-500"></span>
+                                <span class="bg-green-500"></span>
+                            </div>
+                            <span class="text-xs text-slate-400">Install</span>
+                        </div>
+                        <pre><span class="comment"># Search "Git Bash download for Windows"</span>
+<span class="comment"># Download from git-scm.com</span>
+<span class="comment"># Install with default options</span></pre>
+                    </div>
+                    <div class="mt-4 code-block">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <span class="bg-red-500"></span>
+                                <span class="bg-yellow-500"></span>
+                                <span class="bg-green-500"></span>
+                            </div>
+                            <span class="text-xs text-slate-400">Verify</span>
+                        </div>
+                        <pre><span class="command">git</span> <span class="flag">--version</span>
+<span class="comment"># git version 2.x.x</span></pre>
+                    </div>
+                </div>
+
+                <!-- Tool 2 -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-slate-800 rounded-lg flex items-center justify-center">
+                            <i data-lucide="github" class="w-5 h-5 text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900">GitHub CLI (gh)</h3>
+                            <span class="text-xs text-slate-400">Required</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4">Official CLI for GitHub. Create repos, manage PRs, configure settings — all from terminal.</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <span class="bg-red-500"></span>
+                                <span class="bg-yellow-500"></span>
+                                <span class="bg-green-500"></span>
+                            </div>
+                            <span class="text-xs text-slate-400">Install (Windows)</span>
+                        </div>
+                        <pre><span class="command">winget</span> <span class="flag">install</span> <span class="string">GitHub.cli</span>
+<span class="comment"># Click "Yes" on the popup</span>
+<span class="comment"># Restart VS Code after install</span></pre>
+                    </div>
+                    <div class="mt-4 code-block">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <span class="bg-red-500"></span>
+                                <span class="bg-yellow-500"></span>
+                                <span class="bg-green-500"></span>
+                            </div>
+                            <span class="text-xs text-slate-400">Verify</span>
+                        </div>
+                        <pre><span class="command">gh</span> <span class="flag">--version</span>
+<span class="comment"># gh version 2.x.x</span></pre>
+                    </div>
+                </div>
+
+                <!-- Tool 3 -->
+                <div class="bg-white rounded-xl p-6 border border-slate-200 shadow-sm">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="code-2" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-semibold text-slate-900">VS Code</h3>
+                            <span class="text-xs text-slate-400">Required</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-500 mb-4">Our primary IDE. Switch terminal to Git Bash, use integrated Git features.</p>
+                    <div class="code-block">
+                        <div class="code-header">
+                            <div class="code-dots">
+                                <span class="bg-red-500"></span>
+                                <span class="bg-yellow-500"></span>
+                                <span class="bg-green-500"></span>
+                            </div>
+                            <span class="text-xs text-slate-400">Switch to Git Bash</span>
+                        </div>
+                        <pre><span class="comment"># In VS Code terminal:</span>
+<span class="comment"># Click the dropdown (PowerShell)</span>
+<span class="comment"># Select "Git Bash" from list</span>
+<span class="comment"># Now you have bash terminal!</span></pre>
+                    </div>
+                    <div class="mt-4 info-box p-3 rounded-r-lg">
+                        <p class="text-xs text-blue-700"><strong>Tip:</strong> Create a dedicated folder like <code class="bg-blue-100 px-1 rounded">GitHub-Repo</code> and open it in VS Code before starting.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Complete Flow Diagram -->
+    <section id="flow" class="py-24 bg-slate-900 text-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16">
+                <span class="text-xs font-bold tracking-widest uppercase text-blue-400">COMPLETE FLOW</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mt-3">11-Segment Setup Flow</h2>
+                <p class="text-slate-400 mt-4 max-w-2xl mx-auto">Follow these segments in exact order. Each segment builds upon the previous one.</p>
+            </div>
+
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Flow Card 1 -->
+                <a href="#step1" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">01</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Authenticate & Create Repo</h3>
+                            <p class="text-slate-400 text-sm mt-1">GH CLI login, token setup, repo creation with MIT license</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 2 -->
+                <a href="#step2" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">02</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Local Setup & Identity</h3>
+                            <p class="text-slate-400 text-sm mt-1">Git config username/email, clone, verify trunk branch</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 3 -->
+                <a href="#step3" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">03</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Enterprise Folder Structure</h3>
+                            <p class="text-slate-400 text-sm mt-1">src, k8s, terraform, .github, docs, scripts directories</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 4 -->
+                <a href="#step4" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">04</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">.gitkeep & Empty Folders</h3>
+                            <p class="text-slate-400 text-sm mt-1">Git doesn't track empty folders — solve with .gitkeep files</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 5 -->
+                <a href="#step5" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">05</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Governance Files</h3>
+                            <p class="text-slate-400 text-sm mt-1">CODEOWNERS, SECURITY.md, CODE_OF_CONDUCT.md, SUPPORT.md</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 6 -->
+                <a href="#step6" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">06</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Commit Standards & PR</h3>
+                            <p class="text-slate-400 text-sm mt-1">Conventional commits, feature branch, PR with proper description</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 7 -->
+                <a href="#step7" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">07</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">GitHub Actions Workflows</h3>
+                            <p class="text-slate-400 text-sm mt-1">CI pipeline for repo hygiene, linting, validation automation</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 8 -->
+                <a href="#step8" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">08</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Issue Templates & PR Templates</h3>
+                            <p class="text-slate-400 text-sm mt-1">Bug report, feature request templates, PR checklist template</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 9 -->
+                <a href="#step9" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">09</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Professional README</h3>
+                            <p class="text-slate-400 text-sm mt-1">Badges, architecture diagram, setup instructions, contribution guide</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 10 -->
+                <a href="#step10" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">10</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-blue-400 transition-colors">Rule Sets & Branch Protection</h3>
+                            <p class="text-slate-400 text-sm mt-1">PR required, status checks, squash only, signed commits, no force push</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Flow Card 11 -->
+                <a href="#step11" class="group p-5 rounded-xl border border-white/10 hover:border-blue-500/50 hover:bg-white/5 transition-all duration-300">
+                    <div class="flex items-start gap-4">
+                        <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0 text-sm font-bold">11</div>
+                        <div>
+                            <h3 class="font-semibold text-white group-hover:text-green-400 transition-colors">Releases, Versioning & Profile</h3>
+                            <p class="text-slate-400 text-sm mt-1">Git tags, GitHub releases, semantic versioning, interview-ready profile</p>
+                        </div>
+                    </div>
+                </a>
+                <!-- Final -->
+                <div class="p-5 rounded-xl border border-green-500/30 bg-green-500/5 flex items-center gap-4">
+                    <div class="w-10 h-10 bg-green-600 rounded-lg flex items-center justify-center flex-shrink-0">
+                        <i data-lucide="check-circle" class="w-5 h-5 text-white"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-semibold text-green-400">✅ Recruiter-Ready Repository</h3>
+                        <p class="text-slate-400 text-sm mt-1">Enterprise-grade structure with full automation</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DETAILED STEPS -->
+    <section id="steps" class="py-24 bg-white">
+        <div class="max-w-5xl mx-auto px-6">
+
+            <!-- ==================== STEP 1 ==================== -->
+            <div id="step1" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">01</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 1</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Authenticate & Create Repository</h2>
+                    </div>
+                </div>
+
+                <!-- Step 1.1 -->
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">1.1</span>
+                            <h4 class="font-semibold text-slate-900">Verify Git & GH Installation</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># Verify Git is installed</span>
+<span class="command">git</span> <span class="flag">--version</span>
+
+<span class="comment"># Verify GitHub CLI is installed</span>
+<span class="command">gh</span> <span class="flag">--version</span>
+
+<span class="comment"># Check if GH is authenticated (will show error if not)</span>
+<span class="command">gh</span> <span class="flag">auth status</span>
+<span class="comment"># Expected if NOT logged in:</span>
+<span class="comment"># "failed to login to github.com"</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1.2 -->
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">1.2</span>
+                            <h4 class="font-semibold text-slate-900">Generate Personal Access Token</h4>
+                        </div>
+                        <div class="info-box p-4 rounded-r-lg mb-4">
+                            <p class="text-sm text-blue-800"><strong>Important:</strong> We use a token instead of web browser login for better control and automation.</p>
+                        </div>
+                        <ol class="text-sm text-slate-600 space-y-2 ml-4 list-decimal">
+                            <li>Go to <a href="https://github.com/settings/tokens" target="_blank" class="text-blue-600 underline hover:text-blue-800">github.com/settings/tokens</a></li>
+                            <li>Click <strong>"Generate new token (classic)"</strong></li>
+                            <li>Name it: <code class="bg-slate-200 px-2 py-0.5 rounded text-xs">repo-access-setup</code></li>
+                            <li>Select scopes: <code class="bg-slate-200 px-2 py-0.5 rounded text-xs">repo, workflow, admin:repo_hook</code></li>
+                            <li>Set expiration (30 days recommended for security)</li>
+                            <li>Click <strong>"Generate token"</strong> and <strong>copy it immediately</strong> (you won't see it again)</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <!-- Step 1.3 -->
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">1.3</span>
+                            <h4 class="font-semibold text-slate-900">Authenticate GH CLI with Token</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="command">gh</span> <span class="flag">auth login</span>
+<span class="comment"># ? What account? → Press Enter (github.com)</span>
+<span class="comment"># ? Preferred protocol? → Select HTTPS</span>
+<span class="comment"># ? Authenticate Git? → Y (yes)</span>
+<span class="comment"># ? How to authenticate? → Paste an authentication token</span>
+<span class="comment"># ? Paste token → PASTE YOUR TOKEN HERE</span></pre>
+                        </div>
+                        <div class="success-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-green-800"><strong>✅ Verify:</strong> Run <code class="bg-green-100 px-2 py-0.5 rounded text-xs">gh auth status</code> — should now show your username and account type.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1.4 -->
+                <div class="pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">1.4</span>
+                            <h4 class="font-semibold text-slate-900">Set Global Git Configuration</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># 1. Set default branch to 'main' (not master)</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="flag">--global</span> <span class="variable">init.defaultBranch</span> <span class="string">main</span>
+
+<span class="comment"># 2. Set VS Code as default Git editor</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="flag">--global</span> <span class="variable">core.editor</span> <span class="string">"code --wait"</span>
+
+<span class="comment"># 3. Auto-remove stale remote branch references</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="flag">--global</span> <span class="variable">fetch.prune</span> <span class="string">true</span></pre>
+                        </div>
+                        <div class="warning-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-amber-800"><strong>⚠️ Why this matters:</strong> These 3 settings ensure every new repo uses <code class="bg-amber-100 px-1 rounded">main</code>, opens PR descriptions in VS Code, and keeps your local branches clean.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 1.5 -->
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">1.5</span>
+                            <h4 class="font-semibold text-slate-900">Create Remote Repository with GH CLI</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="command">gh</span> <span class="flag">repo create</span> <span class="string">three-tier-app-eks-gitops</span> \
+  <span class="flag">--public</span> \
+  <span class="flag">--description</span> <span class="string">"Enterprise-grade three-tier application deployed on AWS EKS using GitOps methodology with ArgoCD, Terraform, and GitHub Actions CI/CD pipelines"</span> \
+  <span class="flag">--gitignore</span> <span class="string">Python</span> \
+  <span class="flag">--license</span> <span class="string">MIT</span> \
+  <span class="flag">--clone</span></pre>
+                        </div>
+                        <div class="info-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-blue-800"><strong>💡 Breakdown:</strong> <code class="bg-blue-100 px-1 rounded">--public</code> = visible to recruiters, <code class="bg-blue-100 px-1 rounded">--gitignore</code> = pre-configured ignores, <code class="bg-blue-100 px-1 rounded">--license MIT</code> = professional open-source license, <code class="bg-blue-100 px-1 rounded">--clone</code> = auto-clones to local.</p>
+                        </div>
+                        <div class="success-box p-4 rounded-r-lg mt-3">
+                            <p class="text-sm text-green-800"><strong>✅ Result:</strong> Repository created with <code class="bg-green-100 px-1 rounded">LICENSE</code> and <code class="bg-green-100 px-1 rounded">.gitignore</code> already present. Verify on GitHub!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 2 ==================== -->
+            <div id="step2" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">02</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 2</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Local Setup & Identity Configuration</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">2.1</span>
+                            <h4 class="font-semibold text-slate-900">Configure Git Identity for This Repo</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># Navigate into the cloned repo</span>
+<span class="command">cd</span> <span class="string">three-tier-app-eks-gitops</span>
+
+<span class="comment"># Set your identity (local to this repo)</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="variable">user.name</span> <span class="string">"Your Name"</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="variable">user.email</span> <span class="string">"your-email@example.com"</span>
+
+<span class="comment"># Verify</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="variable">user.name</span>
+<span class="command">git</span> <span class="flag">config</span> <span class="variable">user.email</span></pre>
+                        </div>
+                        <div class="warning-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-amber-800"><strong>⚠️ Use your REAL GitHub email:</strong> Go to Settings → Emails → make sure the email matches. This is how commits get linked to your profile!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">2.2</span>
+                            <h4 class="font-semibold text-slate-900">Verify Trunk Branch & Pull Latest</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># Confirm you're on main</span>
+<span class="command">git</span> <span class="flag">branch</span> <span class="flag">--show-current</span>
+<span class="comment"># Output: main</span>
+
+<span class="comment"># Verify remote tracking</span>
+<span class="command">git</span> <span class="flag">remote</span> <span class="flag">-v</span>
+<span class="comment"># origin  https://github.com/user/repo.git (fetch)</span>
+<span class="comment"># origin  https://github.com/user/repo.git (push)</span>
+
+<span class="comment"># Pull latest changes</span>
+<span class="command">git</span> <span class="flag">pull</span> <span class="variable">origin</span> <span class="string">main</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">2.3</span>
+                            <h4 class="font-semibold text-slate-900">Create Feature Branch (NEVER work on main directly)</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># Create and switch to feature branch</span>
+<span class="command">git</span> <span class="flag">checkout</span> <span class="flag">-b</span> <span class="string">core-repo-scaffold</span>
+
+<span class="comment"># Verify current branch</span>
+<span class="command">git</span> <span class="flag">branch</span> <span class="flag">--show-current</span>
+<span class="comment"># Output: core-repo-scaffold</span></pre>
+                        </div>
+                        <div class="danger-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-red-800"><strong>🚫 Golden Rule:</strong> NEVER push directly to <code class="bg-red-100 px-1 rounded">main</code>. Always create a feature branch, make changes, open a PR, get approval, then merge via squash.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 3 ==================== -->
+            <div id="step3" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">03</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 3</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Enterprise Folder Structure</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">3.1</span>
+                            <h4 class="font-semibold text-slate-900">Create All Directories in One Command</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="command">mkdir</span> <span class="flag">-p</span> <span class="string">src/client</span> \
+  <span class="string">src/server</span> \
+  <span class="string">k8s/qa</span> \
+  <span class="string">k8s/prod</span> \
+  <span class="string">terraform</span> \
+  <span class="string">.github/workflows</span> \
+  <span class="string">.github/ISSUE_TEMPLATE</span> \
+  <span class="string">docs</span> \
+  <span class="string">images</span> \
+  <span class="string">scripts</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">3.2</span>
+                            <h4 class="font-semibold text-slate-900">Verify Folder Structure</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="command">tree</span> <span class="flag">-a</span> <span class="flag">-L</span> <span class="string">3</span>
+<span class="comment"># If 'tree' not installed, use:</span>
+<span class="command">find</span> <span class="string">.</span> <span class="flag">-type</span> <span class="string">d</span> <span class="flag">|</span> <span class="command">sort</span></pre>
+                        </div>
+
+                        <div class="mt-6 bg-white rounded-xl border border-slate-200 p-6">
+                            <h5 class="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                                <i data-lucide="folder-tree" class="w-5 h-5 text-blue-600"></i>
+                                Expected Enterprise Structure
+                            </h5>
+                            <div class="folder-tree text-slate-700 bg-slate-900 rounded-lg p-5 text-slate-300">
+<pre>three-tier-app-eks-gitops/
+├── .github/
+│   ├── workflows/          <span class="comment"># CI/CD pipelines</span>
+│   └── ISSUE_TEMPLATE/     <span class="comment"># Bug, feature templates</span>
+├── src/
+│   ├── client/             <span class="comment"># Frontend code</span>
+│   └── server/             <span class="comment"># Backend code</span>
+├── k8s/
+│   ├── qa/                 <span class="comment"># QA environment manifests</span>
+│   └── prod/               <span class="comment"># Prod environment manifests</span>
+├── terraform/              <span class="comment"># IaC for infrastructure</span>
+├── docs/                   <span class="comment"># Project documentation</span>
+├── images/                 <span class="comment"># Architecture diagrams</span>
+├── scripts/                <span class="comment"># Automation/utility scripts</span>
+├── .gitignore
+└── LICENSE</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">3.3</span>
+                            <h4 class="font-semibold text-slate-900">Purpose of Each Directory</h4>
+                        </div>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">src/client/</code>
+                                <p class="text-xs text-slate-500 mt-1">Frontend application — React, Angular, Vue, etc.</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">src/server/</code>
+                                <p class="text-xs text-slate-500 mt-1">Backend API — Node.js, Python, Go, Java, etc.</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">k8s/qa/ & k8s/prod/</code>
+                                <p class="text-xs text-slate-500 mt-1">Kubernetes manifests separated by environment</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">terraform/</code>
+                                <p class="text-xs text-slate-500 mt-1">Infrastructure as Code — VPC, EKS, RDS, etc.</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">.github/workflows/</code>
+                                <p class="text-xs text-slate-500 mt-1">GitHub Actions CI/CD pipeline YAML files</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">.github/ISSUE_TEMPLATE/</code>
+                                <p class="text-xs text-slate-500 mt-1">Standardized issue creation forms</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">docs/</code>
+                                <p class="text-xs text-slate-500 mt-1">Design docs, runbooks, architecture decisions</p>
+                            </div>
+                            <div class="bg-white rounded-lg p-3 border border-slate-200">
+                                <code class="text-xs font-mono text-blue-600 bg-blue-50 px-2 py-0.5 rounded">scripts/</code>
+                                <p class="text-xs text-slate-500 mt-1">Setup, deployment, utility automation scripts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 4 ==================== -->
+            <div id="step4" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">04</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 4</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">.gitkeep — Making Git Track Empty Folders</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">4.1</span>
+                            <h4 class="font-semibold text-slate-900">The Problem: Git Ignores Empty Folders</h4>
+                        </div>
+                        <div class="danger-box p-4 rounded-r-lg mb-4">
+                            <p class="text-sm text-red-800"><strong>🚫 Critical Issue:</strong> If you run <code class="bg-red-100 px-1 rounded">git add .</code> right now, Git will say <strong>"nothing to commit"</strong> because Git only tracks FILES, not empty directories!</p>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># This will FAIL — "nothing to commit"</span>
+<span class="command">git</span> <span class="flag">add</span> <span class="string">.</span>
+<span class="command">git</span> <span class="flag">commit</span> <span class="flag">-m</span> <span class="string">"add folders"</span>
+<span class="comment"># ❌ nothing to commit, working tree clean</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">4.2</span>
+                            <h4 class="font-semibold text-slate-900">The Solution: Add .gitkeep to Every Empty Folder</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots">
+                                    <span class="bg-red-500"></span>
+                                    <span class="bg-yellow-500"></span>
+                                    <span class="bg-green-500"></span>
+                                </div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)">
+                                    <i data-lucide="copy" class="w-3 h-3"></i> Copy
+                                </button>
+                            </div>
+                            <pre><span class="comment"># Add .gitkeep to ALL empty directories</span>
+<span class="command">find</span> <span class="string">.</span> <span class="flag">-type</span> <span class="string">d</span> <span class="flag">-empty</span> <span class="flag">-exec</span> <span class="command">touch</span> <span class="string">{}/.gitkeep</span> <span class="string">\;</span>
+
+<span class="comment"># Verify .gitkeep files were created</span>
+<span class="command">find</span> <span class="string">.</span> <span class="flag">-name</span> <span class="string">".gitkeep"</span>
+
+<span class="comment"># Now add and commit — THIS WILL WORK ✅</span>
+<span class="command">git</span> <span class="flag">add</span> <span class="string">.</span>
+<span class="command">git</span> <span class="flag">status</span>
+<span class="comment"># ✅ Shows all .gitkeep files as "new file"</span></pre>
+                        </div>
+                        <div class="info-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-blue-800"><strong>💡 What is .gitkeep?</strong> It's a convention (not a Git feature). It's an empty file whose only purpose is to force Git to track the parent directory. Name it <code class="bg-blue-100 px-1 rounded">.gitkeep</code> so its purpose is self-documenting.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 5 ==================== -->
+            <div id="step5" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">05</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 5</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Governance Files (Most People Miss This)</h2>
+                    </div>
+                </div>
+
+                <div class="warning-box p-4 rounded-r-lg mb-8 ml-14">
+                    <p class="text-sm text-amber-800"><strong>⚠️ These files separate professionals from beginners:</strong> Governance files tell recruiters and collaborators that you understand enterprise standards. GitHub automatically recognizes these special filenames.</p>
+                </div>
+
+                <!-- CODEOWNERS -->
+                <div class="flow-line pl-14 mb-6">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600">5.1</span>
+                            <h4 class="font-semibold text-slate-900">CODEOWNERS</h4>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">.github/CODEOWNERS</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-3">Defines who must approve PRs for specific paths. Auto-request reviews when PRs touch those files.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># .github/CODEOWNERS</span>
+<span class="comment"># These users/teams must review changes to these paths</span>
+
+<span class="comment"># Infrastructure changes require infra review</span>
+<span class="string">/terraform/</span>  <span class="variable">@your-username</span>
+<span class="string">/k8s/</span>        <span class="variable">@your-username</span>
+
+<span class="comment"># CI/CD pipeline changes</span>
+<span class="string">/.github/workflows/</span>  <span class="variable">@your-username</span>
+
+<span class="comment"># Default owner for everything else</span>
+<span class="string">*</span>  <span class="variable">@your-username</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SECURITY.md -->
+                <div class="flow-line pl-14 mb-6">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600">5.2</span>
+                            <h4 class="font-semibold text-slate-900">SECURITY.md</h4>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">.github/SECURITY.md</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-3">GitHub shows a "Security" tab when this file exists. Tells people how to report vulnerabilities responsibly.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Security Policy</span>
+
+<span class="keyword">## Supported Versions</span>
+| Version | Supported |
+| ------- | ----------|
+| 1.0.x   | ✅        |
+| &lt; 1.0   | ❌        |
+
+<span class="keyword">## Reporting a Vulnerability</span>
+Please do NOT open a public issue for security vulnerabilities.
+Instead, email <span class="string">your-email@example.com</span> with:
+- Description of the vulnerability
+- Steps to reproduce
+- Potential impact
+- Suggested fix (if any)
+
+We will respond within 48 hours and credit you in the advisory.</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CODE_OF_CONDUCT.md -->
+                <div class="flow-line pl-14 mb-6">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600">5.3</span>
+                            <h4 class="font-semibold text-slate-900">CODE_OF_CONDUCT.md</h4>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">CODE_OF_CONDUCT.md</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-3">GitHub adds a "Code of Conduct" link in the repo header. Use the <a href="https://www.contributor-covenant.org/" target="_blank" class="text-blue-600 underline">Contributor Covenant</a> template.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Create using GitHub's template:</span>
+<span class="comment"># Go to repo → Add file → Create new file</span>
+<span class="comment"># Type "CODE_OF_CONDUCT.md"</span>
+<span class="comment"># GitHub will offer templates — choose "Contributor Covenant"</span>
+
+<span class="comment"># Or create manually at root level with Contributor Covenant 2.1 content</span>
+<span class="comment"># from: https://www.contributor-covenant.org/version/2/1/code_of_conduct/</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SUPPORT.md -->
+                <div class="flow-line pl-14 mb-6">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600">5.4</span>
+                            <h4 class="font-semibold text-slate-900">SUPPORT.md</h4>
+                            <span class="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">.github/SUPPORT.md</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-3">Tells users how to get help. GitHub links to it from the repo sidebar.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Support</span>
+
+<span class="keyword">## How to Get Help</span>
+- **Issues**: Open a GitHub Issue with the <code class="bg-slate-700 px-1 rounded">bug</code> or <code class="bg-slate-700 px-1 rounded">question</code> label
+- **Discussions**: Use GitHub Discussions for general questions
+- **Email**: <span class="string">your-email@example.com</span> for security issues only
+
+<span class="keyword">## Response Time</span>
+I typically respond within <span class="string">24-48 hours</span> on business days.</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create all governance files -->
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-purple-100 rounded-full flex items-center justify-center text-xs font-bold text-purple-600">5.5</span>
+                            <h4 class="font-semibold text-slate-900">Create All Governance Files</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Create CODEOWNERS</span>
+<span class="command">cat</span> <span class="flag">></span> <span class="string">.github/CODEOWNERS</span> <span class="flag">&lt;&lt; 'EOF'</span>
+/terraform/  @your-username
+/k8s/        @your-username
+/.github/workflows/  @your-username
+*  @your-username
+<span class="flag">EOF</span>
+
+<span class="comment"># Create SECURITY.md</span>
+<span class="command">cat</span> <span class="flag">></span> <span class="string">.github/SECURITY.md</span> <span class="flag">&lt;&lt; 'EOF'</span>
+# Security Policy
+## Reporting a Vulnerability
+Email: your-email@example.com
+Response time: 48 hours
+<span class="flag">EOF</span>
+
+<span class="comment"># Create SUPPORT.md</span>
+<span class="command">cat</span> <span class="flag">></span> <span class="string">.github/SUPPORT.md</span> <span class="flag">&lt;&lt; 'EOF'</span>
+# Support
+Open a GitHub Issue for bugs or questions.
+<span class="flag">EOF</span>
+
+<span class="comment"># Verify all files exist</span>
+<span class="command">ls</span> <span class="flag">-la</span> <span class="string">.github/</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 6 ==================== -->
+            <div id="step6" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">06</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 6</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Commit Standards & First Pull Request</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">6.1</span>
+                            <h4 class="font-semibold text-slate-900">Conventional Commits Format</h4>
+                        </div>
+                        <div class="info-box p-4 rounded-r-lg mb-4">
+                            <p class="text-sm text-blue-800"><strong>💡 Industry Standard:</strong> Use <a href="https://www.conventionalcommits.org/" target="_blank" class="underline">Conventional Commits</a>. This format is used by Google, Microsoft, and every enterprise. It also enables automatic changelog generation.</p>
+                        </div>
+                        <div class="bg-white rounded-lg border border-slate-200 overflow-hidden">
+                            <table class="w-full text-sm">
+                                <thead class="bg-slate-50">
+                                    <tr>
+                                        <th class="text-left px-4 py-3 font-semibold text-slate-700">Type</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-slate-700">When to Use</th>
+                                        <th class="text-left px-4 py-3 font-semibold text-slate-700">Example</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-100">
+                                    <tr><td class="px-4 py-2"><code class="text-green-600 bg-green-50 px-1.5 rounded text-xs">feat:</code></td><td class="px-4 py-2 text-slate-600">New feature</td><td class="px-4 py-2 text-slate-500 font-mono text-xs">feat: add user authentication</td></tr>
+                                    <tr><td class="px-4 py-2"><code class="text-red-600 bg-red-50 px-1.5 rounded text-xs">fix:</code></td><td class="px-4 py-2 text-slate-600">Bug fix</td><td class="px-4 py-2 text-slate-500 font-mono text-xs">fix: resolve login redirect loop</td></tr>
+                                    <tr><td class="px-4 py-2"><code class="text-blue-600 bg-blue-50 px-1.5 rounded text-xs">docs:</code></td><td class="px-4 py-2 text-slate-600">Documentation</td><td class="px-4 py-2 text-slate-500 font-mono text-xs">docs: update README setup steps</td></tr>
+                                    <tr><td class="px-4 py-2"><code class="text-purple-600 bg-purple-50 px-1.5 rounded text-xs">refactor:</code></td><td class="px-4 py-2 text-slate-600">Code refactoring</td><td class="px-4 py-2 text-slate-500 font-mono text-xs">refactor: extract db helper module</td></tr>
+                                    <tr><td class="px-4 py-2"><code class="text-amber-600 bg-amber-50 px-1.5 rounded text-xs">chore:</code></td><td class="px-4 py-2 text-slate-600">Maintenance</td><td class="px-4 py-2 text-slate-500 font-mono text-xs">chore: update dependencies</td></tr>
+                                    <tr><td class="px-4 py-2"><code class="text-cyan-600 bg-cyan-50 px-1.5 rounded text-xs">ci:</code></td><td class="px-4 py-2 text-slate-600">CI/CD changes</td><td class="px-4 py-2 text-slate-500 font-mono text-xs">ci: add lint stage to pipeline</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">6.2</span>
+                            <h4 class="font-semibold text-slate-900">Stage, Commit & Push Feature Branch</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Stage all changes</span>
+<span class="command">git</span> <span class="flag">add</span> <span class="string">.</span>
+
+<span class="comment"># Commit with conventional commit message</span>
+<span class="command">git</span> <span class="flag">commit</span> <span class="flag">-m</span> <span class="string">"chore: scaffold enterprise repo structure
+
+- Add src/client and src/server directories
+- Add k8s/qa and k8s/prod for environment separation
+- Add terraform/ for infrastructure as code
+- Add .github/workflows and .github/ISSUE_TEMPLATE
+- Add docs/, images/, scripts/ directories
+- Add .gitkeep files for empty folder tracking
+- Add CODEOWNERS, SECURITY.md, SUPPORT.md governance files"</span>
+
+<span class="comment"># Push feature branch to remote</span>
+<span class="command">git</span> <span class="flag">push</span> <span class="flag">-u</span> <span class="variable">origin</span> <span class="string">core-repo-scaffold</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">6.3</span>
+                            <h4 class="font-semibold text-slate-900">Create Pull Request via GH CLI</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="command">gh</span> <span class="flag">pr create</span> \
+  <span class="flag">--title</span> <span class="string">"chore: scaffold enterprise repository structure"</span> \
+  <span class="flag">--body</span> <span class="string">"## Summary
+This PR establishes the enterprise-grade repository structure.
+
+## Changes
+- [x] Added \`src/client\` and \`src/server\` for application code
+- [x] Added \`k8s/qa\` and \`k8s/prod\` for environment-specific manifests
+- [x] Added \`terraform/\` for infrastructure as code
+- [x] Added \`.github/workflows/\` for CI/CD pipelines
+- [x] Added \`.github/ISSUE_TEMPLATE/\` for standardized issues
+- [x] Added \`docs/\`, \`images/\`, \`scripts/\` directories
+- [x] Added \`.gitkeep\` files for empty folder tracking
+- [x] Added \`CODEOWNERS\`, \`SECURITY.md\`, \`SUPPORT.md\`
+
+## Testing
+- [x] Verified folder structure with \`find . -type d | sort\`
+- [x] Verified .gitkeep files are tracked by Git
+
+## Checklist
+- [x] Conventional commit message used
+- [x] No direct push to main branch
+- [x] PR created from feature branch"</span> \
+  <span class="flag">--base</span> <span class="string">main</span> \
+  <span class="flag">--head</span> <span class="string">core-repo-scaffold</span></pre>
+                        </div>
+                        <div class="success-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-green-800"><strong>✅ Result:</strong> PR is now created on GitHub! Go to the repo's "Pull requests" tab to see it. This is how every professional contributes to a project.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 7 ==================== -->
+            <div id="step7" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">07</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 7</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">GitHub Actions — CI Workflow</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">7.1</span>
+                            <h4 class="font-semibold text-slate-900">Create Repository Hygiene Workflow</h4>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-4">This CI pipeline automatically checks that required files exist and the repo structure is maintained on every PR.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># .github/workflows/repo-hygiene.yml</span>
+<span class="keyword">name:</span> <span class="string">Repository Hygiene Check</span>
+
+<span class="keyword">on:</span>
+  <span class="variable">pull_request:</span>
+    <span class="variable">branches:</span> <span class="string">[ main ]</span>
+  <span class="variable">push:</span>
+    <span class="variable">branches:</span> <span class="string">[ main ]</span>
+
+<span class="keyword">jobs:</span>
+  <span class="variable">hygiene:</span>
+    <span class="variable">runs-on:</span> <span class="string">ubuntu-latest</span>
+    <span class="variable">steps:</span>
+      - <span class="keyword">name:</span> <span class="string">Checkout</span>
+        <span class="keyword">uses:</span> <span class="string">actions/checkout@v4</span>
+
+      - <span class="keyword">name:</span> <span class="string">Check required files exist</span>
+        <span class="keyword">run:</span> |
+          <span class="variable">REQUIRED_FILES=(
+            "README.md"
+            "LICENSE"
+            ".gitignore"
+            ".github/CODEOWNERS"
+            ".github/SECURITY.md"
+            ".github/SUPPORT.md"
+            "src/client/.gitkeep"
+            "src/server/.gitkeep"
+            "k8s/qa/.gitkeep"
+            "k8s/prod/.gitkeep"
+            "terraform/.gitkeep"
+            "scripts/.gitkeep"
+            "docs/.gitkeep"
+          )
+          MISSING=0
+          for file in "${REQUIRED_FILES[@]}"; do
+            if [ ! -f "$file" ]; then
+              echo "❌ MISSING: $file"
+              MISSING=1
+            else
+              echo "✅ EXISTS: $file"
+            fi
+          done
+          if [ $MISSING -eq 1 ]; then
+            echo "::error::Required files are missing!"
+            exit 1
+          fi
+
+      - <span class="keyword">name:</span> <span class="string">Check for large files</span>
+        <span class="keyword">run:</span> |
+          <span class="comment"># Find files larger than 5MB</span>
+          LARGE=$(find . -type f -size +5M -not -path "./.git/*")
+          if [ -n "$LARGE" ]; then
+            echo "::error::Large files detected:"
+            echo "$LARGE"
+            exit 1
+          fi
+          echo "✅ No large files found"</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">7.2</span>
+                            <h4 class="font-semibold text-slate-900">Push Workflow to Feature Branch</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Create the workflow file</span>
+<span class="command">cat</span> <span class="flag">></span> <span class="string">.github/workflows/repo-hygiene.yml</span> <span class="flag">&lt;&lt; 'EOF'</span>
+<span class="comment"># (paste the YAML content from above)</span>
+<span class="flag">EOF</span>
+
+<span class="comment"># Commit and push</span>
+<span class="command">git</span> <span class="flag">add</span> <span class="string">.github/workflows/repo-hygiene.yml</span>
+<span class="command">git</span> <span class="flag">commit</span> <span class="flag">-m</span> <span class="string">"ci: add repository hygiene check workflow"</span>
+<span class="command">git</span> <span class="flag">push</span> <span class="variable">origin</span> <span class="string">core-repo-scaffold</span></pre>
+                        </div>
+                        <div class="info-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-blue-800"><strong>💡 Why this matters:</strong> This workflow will become a REQUIRED status check in Step 10. If any required file is deleted, the PR cannot be merged. This is how enterprises maintain repo standards at scale.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 8 ==================== -->
+            <div id="step8" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">08</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 8</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Issue & PR Templates</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-6">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">8.1</span>
+                            <h4 class="font-semibold text-slate-900">Bug Report Template</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># .github/ISSUE_TEMPLATE/bug_report.yml</span>
+<span class="keyword">name:</span> <span class="string">Bug Report</span>
+<span class="keyword">description:</span> <span class="string">Report a bug in the application</span>
+<span class="keyword">labels:</span> <span class="string">["bug", "triage"]</span>
+<span class="keyword">assignees:</span> <span class="string">[]</span>
+<span class="keyword">body:</span>
+  - <span class="keyword">type:</span> <span class="string">textarea</span>
+    <span class="keyword">id:</span> <span class="string">description</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Bug Description</span>
+      <span class="keyword">description:</span> <span class="string">Clear description of the bug</span>
+      <span class="keyword">placeholder:</span> <span class="string">"When I do X, Y happens instead of Z..."</span>
+    <span class="keyword">validations:</span>
+      <span class="keyword">required:</span> <span class="string">true</span>
+  - <span class="keyword">type:</span> <span class="string">textarea</span>
+    <span class="keyword">id:</span> <span class="string">steps</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Steps to Reproduce</span>
+      <span class="keyword">placeholder:</span> <span class="string">"1. Go to...\n2. Click on...\n3. See error"</span>
+    <span class="keyword">validations:</span>
+      <span class="keyword">required:</span> <span class="string">true</span>
+  - <span class="keyword">type:</span> <span class="string">textarea</span>
+    <span class="keyword">id:</span> <span class="string">expected</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Expected Behavior</span>
+    <span class="keyword">validations:</span>
+      <span class="keyword">required:</span> <span class="string">true</span>
+  - <span class="keyword">type:</span> <span class="string">input</span>
+    <span class="keyword">id:</span> <span class="string">environment</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Environment</span>
+      <span class="keyword">placeholder:</span> <span class="string">"e.g., QA, Production, Local"</span>
+  - <span class="keyword">type:</span> <span class="string">textarea</span>
+    <span class="keyword">id:</span> <span class="string">logs</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Relevant Logs / Screenshots</span>
+      <span class="keyword">description:</span> <span class="string">Paste any error logs or attach screenshots</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-6">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">8.2</span>
+                            <h4 class="font-semibold text-slate-900">Feature Request Template</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># .github/ISSUE_TEMPLATE/feature_request.yml</span>
+<span class="keyword">name:</span> <span class="string">Feature Request</span>
+<span class="keyword">description:</span> <span class="string">Suggest a new feature or enhancement</span>
+<span class="keyword">labels:</span> <span class="string">["enhancement", "triage"]</span>
+<span class="keyword">body:</span>
+  - <span class="keyword">type:</span> <span class="string">textarea</span>
+    <span class="keyword">id:</span> <span class="string">problem</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Problem Statement</span>
+      <span class="keyword">description:</span> <span class="string">What problem does this solve?</span>
+    <span class="keyword">validations:</span>
+      <span class="keyword">required:</span> <span class="string">true</span>
+  - <span class="keyword">type:</span> <span class="string">textarea</span>
+    <span class="keyword">id:</span> <span class="string">solution</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Proposed Solution</span>
+      <span class="keyword">description:</span> <span class="string">How should this be implemented?</span>
+    <span class="keyword">validations:</span>
+      <span class="keyword">required:</span> <span class="string">true</span>
+  - <span class="keyword">type:</span> <span class="string">dropdown</span>
+    <span class="keyword">id:</span> <span class="string">priority</span>
+    <span class="keyword">attributes:</span>
+      <span class="keyword">label:</span> <span class="string">Priority</span>
+      <span class="keyword">options:</span>
+        - <span class="string">Low</span>
+        - <span class="string">Medium</span>
+        - <span class="string">High</span>
+        - <span class="string">Critical</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center text-xs font-bold text-blue-600">8.3</span>
+                            <h4 class="font-semibold text-slate-900">Pull Request Template</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># .github/pull_request_template.md</span>
+
+<span class="keyword">## Summary</span>
+Brief description of what this PR does.
+
+<span class="keyword">## Type of Change</span>
+- [ ] 🐛 Bug fix
+- [ ] ✨ New feature
+- [ ] 🔧 Refactoring
+- [ ] 📝 Documentation
+- [ ] 🚀 CI/CD
+- [ ] 🔒 Security
+
+<span class="keyword">## Changes Made</span>
+- [ ] Change 1
+- [ ] Change 2
+
+<span class="keyword">## Testing</span>
+- [ ] Tested locally
+- [ ] All CI checks pass
+
+<span class="keyword">## Checklist</span>
+- [ ] Conventional commit message used
+- [ ] No secrets or sensitive data in code
+- [ ] Documentation updated (if needed)
+- [ ] Linked to relevant issue: <span class="string">#ISSUE_NUMBER</span></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 9 ==================== -->
+            <div id="step9" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">09</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-blue-600">SEGMENT 9</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Professional README.md</h2>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <p class="text-sm text-slate-500 mb-4">Your README is the FIRST thing anyone sees. It must have: badges, overview, architecture, setup steps, tech stack, and contribution guide.</p>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># README.md — Professional Template</span>
+
+<span class="comment"># Badges Row</span>
+[![CI](https://img.shields.io/github/actions/workflow/status/USER/three-tier-app-eks-gitops/repo-hygiene.yml?branch=main&style=flat-square)]()
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)]()
+[![GitHub Stars](https://img.shields.io/github/stars/USER/three-tier-app-eks-gitops?style=flat-square)]()
+
+<span class="keyword"># 🏗️ Three-Tier App on AWS EKS — GitOps</span>
+
+Enterprise-grade three-tier application deployed on **AWS EKS** using **GitOps** methodology with ArgoCD, Terraform, and GitHub Actions.
+
+<span class="keyword">## 📐 Architecture</span>
+[Insert architecture diagram from images/ folder]
+
+<span class="keyword">## 🛠️ Tech Stack</span>
+| Layer | Technology |
+|-------|-----------|
+| Frontend | React.js |
+| Backend | Node.js / Python Flask |
+| Database | Amazon RDS (PostgreSQL) |
+| Container | Docker |
+| Orchestration | Amazon EKS |
+| IaC | Terraform |
+| GitOps | ArgoCD |
+| CI/CD | GitHub Actions |
+| Monitoring | Prometheus + Grafana |
+
+<span class="keyword">## 🚀 Quick Start</span>
+\`\`\`bash
+# Clone the repository
+git clone https://github.com/USER/three-tier-app-eks-gitops.git
+cd three-tier-app-eks-gitops
+
+# Setup infrastructure
+cd terraform && terraform init && terraform apply
+
+# Deploy to QA
+kubectl apply -f k8s/qa/
+\`\`\`
+
+<span class="keyword">## 📁 Project Structure</span>
+\`\`\`
+src/client/    → Frontend application
+src/server/    → Backend API
+k8s/qa/        → QA Kubernetes manifests
+k8s/prod/      → Production Kubernetes manifests
+terraform/     → Infrastructure as Code
+.github/       → Workflows, templates, governance
+docs/          → Documentation
+scripts/       → Automation scripts
+\`\`\`
+
+<span class="keyword">## 🤝 Contributing</span>
+See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+PRs must pass CI checks and receive 1 approval.
+
+<span class="keyword">## 📄 License</span>
+This project is licensed under the MIT License — see [LICENSE](LICENSE).</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 10 (CRITICAL) ==================== -->
+            <div id="step10" class="mb-20 scroll-mt-24" id="security">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-red-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">10</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-red-600">SEGMENT 10 — CRITICAL</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Rule Sets & Branch Protection</h2>
+                    </div>
+                </div>
+
+                <div class="danger-box p-5 rounded-r-lg mb-8 ml-14">
+                    <p class="text-sm text-red-800"><strong>🚨 This is the MOST IMPORTANT segment.</strong> Without rule sets, anyone can force-push to main, delete the repo, or merge without review. This is what separates a toy repo from an enterprise repo.</p>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-red-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">10.1</span>
+                            <h4 class="font-semibold text-slate-900">Navigate to Rule Sets (Not Legacy Branch Protection)</h4>
+                        </div>
+                        <div class="info-box p-4 rounded-r-lg mb-4">
+                            <p class="text-sm text-blue-800"><strong>💡 Modern approach:</strong> Use <strong>Rule Sets</strong> (not the older "Branch protection rules"). Rule Sets are the modern, more powerful replacement. Path: <code class="bg-blue-100 px-1 rounded">Settings → Rules → Rulesets → New ruleset → New branch ruleset</code></p>
+                        </div>
+                        <ol class="text-sm text-slate-600 space-y-3 ml-4 list-decimal">
+                            <li>Go to your repository on GitHub</li>
+                            <li>Click <strong>Settings</strong> tab</li>
+                            <li>In left sidebar, click <strong>Rules</strong> → <strong>Rulesets</strong></li>
+                            <li>Click <strong>"New ruleset"</strong> → <strong>"New branch ruleset"</strong></li>
+                            <li>Name it: <code class="bg-slate-200 px-2 py-0.5 rounded text-xs">main-branch-protection</code></li>
+                            <li>Set <strong>Enforcement status</strong> to <strong>Active</strong></li>
+                            <li>Under <strong>Target branches</strong>, select <strong>"Include default branch"</strong></li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-red-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">10.2</span>
+                            <h4 class="font-semibold text-slate-900">Configure ALL 6 Protection Rules</h4>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-4">Enable each rule one by one in the ruleset configuration:</p>
+
+                        <div class="space-y-4">
+                            <!-- Rule 1 -->
+                            <div class="bg-white rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">1</span>
+                                    <h5 class="font-semibold text-slate-900 text-sm">Require a Pull Request before merging</h5>
+                                </div>
+                                <ul class="text-xs text-slate-500 space-y-1 ml-8">
+                                    <li>✅ Enable the toggle</li>
+                                    <li>✅ Required approving reviews: <strong>1</strong></li>
+                                    <li>✅ Allowed merge methods: <strong>ONLY "Squash merge"</strong> (disable create merge commit & rebase)</li>
+                                </ul>
+                            </div>
+                            <!-- Rule 2 -->
+                            <div class="bg-white rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">2</span>
+                                    <h5 class="font-semibold text-slate-900 text-sm">Require status checks to pass</h5>
+                                </div>
+                                <ul class="text-xs text-slate-500 space-y-1 ml-8">
+                                    <li>✅ Enable the toggle</li>
+                                    <li>✅ Search and add: <code class="bg-slate-100 px-1 rounded">hygiene</code> (from our CI workflow)</li>
+                                    <li>✅ Enable "Require branches to be up to date before merging"</li>
+                                </ul>
+                            </div>
+                            <!-- Rule 3 -->
+                            <div class="bg-white rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">3</span>
+                                    <h5 class="font-semibold text-slate-900 text-sm">Require linear history</h5>
+                                </div>
+                                <ul class="text-xs text-slate-500 space-y-1 ml-8">
+                                    <li>✅ Enable — prevents merge commits, keeps history clean</li>
+                                </ul>
+                            </div>
+                            <!-- Rule 4 -->
+                            <div class="bg-white rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">4</span>
+                                    <h5 class="font-semibold text-slate-900 text-sm">Require signed commits</h5>
+                                </div>
+                                <ul class="text-xs text-slate-500 space-y-1 ml-8">
+                                    <li>✅ Enable — only GPG/SSH signed commits can be pushed to main</li>
+                                </ul>
+                            </div>
+                            <!-- Rule 5 -->
+                            <div class="bg-white rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">5</span>
+                                    <h5 class="font-semibold text-slate-900 text-sm">Block force pushes</h5>
+                                </div>
+                                <ul class="text-xs text-slate-500 space-y-1 ml-8">
+                                    <li>✅ Enable — prevents <code class="bg-slate-100 px-1 rounded">git push --force</code> which rewrites history</li>
+                                </ul>
+                            </div>
+                            <!-- Rule 6 -->
+                            <div class="bg-white rounded-lg p-4 border border-slate-200">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="w-6 h-6 bg-green-100 rounded flex items-center justify-center text-xs font-bold text-green-700">6</span>
+                                    <h5 class="font-semibold text-slate-900 text-sm">Restrict deletions (if available)</h5>
+                                </div>
+                                <ul class="text-xs text-slate-500 space-y-1 ml-8">
+                                    <li>✅ Enable — prevents anyone from deleting the main branch</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-red-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">10.3</span>
+                            <h4 class="font-semibold text-slate-900">Bypass List — Keep It EMPTY</h4>
+                        </div>
+                        <div class="warning-box p-4 rounded-r-lg">
+                            <p class="text-sm text-amber-800"><strong>⚠️ Important:</strong> The bypass list lets specific people skip all rules. <strong>Leave it EMPTY</strong> or limit to maximum 1-2 trusted admins. In enterprises, even admins follow the PR process. The more people on the bypass list, the weaker your security.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-red-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">10.4</span>
+                            <h4 class="font-semibold text-slate-900">Test: Verify Protection Is Active</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># Switch to main and try direct push (SHOULD FAIL)</span>
+<span class="command">git</span> <span class="flag">checkout</span> <span class="string">main</span>
+<span class="command">echo</span> <span class="string">"test"</span> <span class="flag">>></span> <span class="string">README.md</span>
+<span class="command">git</span> <span class="flag">add</span> <span class="string">README.md</span>
+<span class="command">git</span> <span class="flag">commit</span> <span class="flag">-m</span> <span class="string">"test: direct push attempt"</span>
+<span class="command">git</span> <span class="flag">push</span> <span class="variable">origin</span> <span class="string">main</span>
+
+<span class="comment"># ❌ EXPECTED ERROR:</span>
+<span class="comment"># "remote: error: GH006: Protected branch update failed for refs/heads/main."</span>
+<span class="comment"># "remote: error: push declined due to repository rule violation"</span>
+
+<span class="comment"># ✅ This confirms your rule set is WORKING!</span>
+
+<span class="comment"># Clean up the test commit</span>
+<span class="command">git</span> <span class="flag">reset</span> <span class="flag">--hard</span> <span class="variable">HEAD~1</span>
+<span class="command">git</span> <span class="flag">checkout</span> <span class="string">core-repo-scaffold</span></pre>
+                        </div>
+                        <div class="success-box p-4 rounded-r-lg mt-4">
+                            <p class="text-sm text-green-800"><strong>✅ If you see the "push declined" error — CONGRATULATIONS!</strong> Your repository is now protected. Direct pushes to main are blocked forever.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ==================== STEP 11 ==================== -->
+            <div id="step11" class="mb-20 scroll-mt-24">
+                <div class="flex items-center gap-4 mb-8">
+                    <div class="w-14 h-14 bg-green-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold flex-shrink-0">11</div>
+                    <div>
+                        <span class="text-xs font-bold tracking-widest uppercase text-green-600">SEGMENT 11 — FINAL</span>
+                        <h2 class="text-2xl md:text-3xl font-semibold text-slate-900 tracking-tight">Releases, Versioning & Interview-Ready Profile</h2>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-xs font-bold text-green-600">11.1</span>
+                            <h4 class="font-semibold text-slate-900">Semantic Versioning with Git Tags</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="comment"># After merging your PR to main:</span>
+<span class="command">git</span> <span class="flag">checkout</span> <span class="string">main</span>
+<span class="command">git</span> <span class="flag">pull</span> <span class="variable">origin</span> <span class="string">main</span>
+
+<span class="comment"># Create an annotated tag (SEMVER: MAJOR.MINOR.PATCH)</span>
+<span class="command">git</span> <span class="flag">tag</span> <span class="flag">-a</span> <span class="string">v1.0.0</span> <span class="flag">-m</span> <span class="string">"Release v1.0.0: Enterprise repo structure with governance, CI, and security"</span>
+
+<span class="comment"># Push the tag</span>
+<span class="command">git</span> <span class="flag">push</span> <span class="variable">origin</span> <span class="string">v1.0.0</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flow-line pl-14 mb-8">
+                    <div class="step-card bg-slate-50 rounded-xl p-6 border border-slate-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center text-xs font-bold text-green-600">11.2</span>
+                            <h4 class="font-semibold text-slate-900">Create GitHub Release via GH CLI</h4>
+                        </div>
+                        <div class="code-block">
+                            <div class="code-header">
+                                <div class="code-dots"><span class="bg-red-500"></span><span class="bg-yellow-500"></span><span class="bg-green-500"></span></div>
+                                <button class="copy-btn text-slate-400 text-xs flex items-center gap-1 px-2 py-1 rounded" onclick="copyCode(this)"><i data-lucide="copy" class="w-3 h-3"></i> Copy</button>
+                            </div>
+                            <pre><span class="command">gh</span> <span class="flag">release create</span> <span class="string">v1.0.0</span> \
+  <span class="flag">--title</span> <span class="string">"v1.0.0 — Enterprise Repo Structure"</span> \
+  <span class="flag">--notes</span> <span class="string">"## What's New
+- ✅ Enterprise folder structure (src, k8s, terraform, .github, docs, scripts)
+- ✅ Governance files (CODEOWNERS, SECURITY.md, SUPPORT.md, CODE_OF_CONDUCT.md)
+- ✅ CI pipeline (repository hygiene checks)
+- ✅ Issue templates (bug report, feature request)
+- ✅ PR template with checklist
+- ✅ Professional README with badges
+- ✅ Branch protection via Rule Sets
+- ✅ MIT License
+
+## Breaking Changes
+None — initial release.
+
+## Installation
+\`git clone https://github.com/USER/three-tier-app-eks-gitops.git\`"</span> \
+  <span class="flag">--latest</span></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pl-14">
+                    <div class="step-card bg-green-50 rounded-xl p-6 border border-green-200">
+                        <div class="flex items-center gap-2 mb-3">
+                            <span class="w-6 h-6 bg-green-200 rounded-full flex items-center justify-center text-xs font-bold text-green-700">11.3</span>
+                            <h4 class="font-semibold text-green-900">🎉 Interview-Ready GitHub Profile Checklist</h4>
+                        </div>
+                        <p class="text-sm text-green-800 mb-4">Your repository AND profile should look like this when a recruiter visits:</p>
+                        <div class="grid md:grid-cols-2 gap-3">
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Professional profile picture & bio</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Pinned repositories (6 max)</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">README.md on profile with skills</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Green contribution graph</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Repo has badges, LICENSE, structure</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Releases tab has versioned releases</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Security tab is visible</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Actions tab shows green CI runs</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Issues have templates</span>
+                            </div>
+                            <div class="flex items-start gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0"></i>
+                                <span class="text-sm text-green-800">Branch protection is active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Final Checklist -->
+    <section id="checklist" class="py-24 bg-slate-900 text-white">
+        <div class="max-w-4xl mx-auto px-6">
+            <div class="text-center mb-12">
+                <span class="text-xs font-bold tracking-widest uppercase text-blue-400">FINAL CHECKLIST</span>
+                <h2 class="text-3xl md:text-4xl font-semibold tracking-tight mt-3">Verify Everything Is Done</h2>
+                <p class="text-slate-400 mt-4">Go through every item. If any is unchecked, go back to that segment.</p>
+            </div>
+
+            <div class="space-y-3" id="checklistContainer">
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Git Bash installed and verified</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 0</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">GitHub CLI (gh) installed and verified</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 0</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">GH CLI authenticated with token</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 1</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Global Git config set (defaultBranch, editor, fetch.prune)</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 1</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Repository created with description, .gitignore, MIT license</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 1</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Git identity configured (user.name, user.email)</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 2</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Feature branch created (never worked on main directly)</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 2</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">All enterprise directories created (src, k8s, terraform, .github, docs, scripts)</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 3</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">.gitkeep files added to all empty folders</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 4</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">CODEOWNERS file created in .github/</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 5</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">SECURITY.md file created in .github/</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 5</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">SUPPORT.md and CODE_OF_CONDUCT.md created</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 5</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Conventional commit format used for all commits</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 6</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Pull request created with proper description and checklist</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 6</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">CI workflow (repo-hygiene.yml) created and passing</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 7</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Issue templates (bug_report.yml, feature_request.yml) created</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 8</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">PR template (pull_request_template.md) created</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 8</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Professional README.md with badges, architecture, setup guide</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 9</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Rule Set created with ALL 6 rules (PR required, status checks, linear history, signed commits, no force push, no deletion)</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 10</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Direct push to main BLOCKED (verified with test)</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 10</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">Git tag created (v1.0.0) with semantic versioning</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 11</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-white/10 hover:bg-white/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-blue-600 focus:ring-blue-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-slate-300 group-hover:text-white transition-colors">GitHub Release created with changelog</span>
+                    <span class="ml-auto text-xs text-slate-500">Seg 11</span>
+                </label>
+                <label class="flex items-center gap-4 p-4 rounded-xl border border-green-500/30 hover:bg-green-500/5 transition-colors cursor-pointer group">
+                    <input type="checkbox" class="w-5 h-5 rounded border-slate-600 text-green-600 focus:ring-green-500 bg-slate-800" onchange="updateProgress()">
+                    <span class="text-sm text-green-400 group-hover:text-green-300 font-medium transition-colors">GitHub profile is interview-ready (bio, pinned repos, profile README)</span>
+                    <span class="ml-auto text-xs text-green-500">Seg 11</span>
+                </label>
+            </div>
+
+            <!-- Progress indicator -->
+            <div class="mt-8 p-4 rounded-xl border border-white/10">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm text-slate-400">Completion Progress</span>
+                    <span class="text-sm text-blue-400 font-semibold" id="progressText">0 / 23</span>
+                </div>
+                <div class="w-full bg-slate-800 rounded-full h-2">
+                    <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" id="checklistProgress" style="width: 0%"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="py-24 bg-blue-600 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-10 left-10 w-64 h-64 border border-white rounded-full"></div>
+            <div class="absolute bottom-10 right-10 w-96 h-96 border border-white rounded-full"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] border border-white rounded-full"></div>
+        </div>
+        <div class="relative max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-5xl font-semibold text-white tracking-tight mb-6">Your Repository Is Now<br>Enterprise-Ready 🎉</h2>
+            <p class="text-blue-100 text-lg max-w-2xl mx-auto mb-10">You've built something that 99% of DevOps beginners never do. This repository structure, security, automation, and governance is exactly what companies look for.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="https://github.com/jaiswaladi246/three-tier-app-eks-gitops" target="_blank" class="bg-white text-blue-600 hover:bg-blue-50 px-8 py-3.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                    <i data-lucide="external-link" class="w-4 h-4"></i>
+                    View the Reference Repo
+                </a>
+                <a href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;" class="border border-white/30 hover:bg-white/10 text-white px-8 py-3.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2">
+                    <i data-lucide="arrow-up" class="w-4 h-4"></i>
+                    Back to Top
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-white/10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                        <i data-lucide="git-branch" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <span class="text-white font-semibold">GitHub Pro Setup Guide</span>
+                </div>
+                <p class="text-sm">Based on <a href="https://github.com/jaiswaladi246/three-tier-app-eks-gitops" target="_blank" class="text-blue-400 hover:text-blue-300 underline">three-tier-app-eks-gitops</a> repository analysis</p>
+                <p class="text-xs text-slate-500">Built for DevOps engineers, by DevOps engineers</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Copy code functionality
+        function copyCode(btn) {
+            const codeBlock = btn.closest('.code-block');
+            const pre = codeBlock.querySelector('pre');
+            const text = pre.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                btn.classList.add('copied');
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Copied!';
+                setTimeout(() => {
+                    btn.classList.remove('copied');
+                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg> Copy';
+                }, 2000);
+            });
+        }
+
+        // Checklist progress
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('#checklistContainer input[type="checkbox"]');
+            const checked = document.querySelectorAll('#checklistContainer input[type="checkbox"]:checked').length;
+            const total = checkboxes.length;
+            const percent = Math.round((checked / total) * 100);
+            
+            document.getElementById('progressText').textContent = `${checked} / ${total}`;
+            document.getElementById('checklistProgress').style.width = `${percent}%`;
+        }
+
+        // Reading progress bar
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('progressBar').style.width = `${scrolled}%`;
+        });
+
+        // Mobile menu
+        document.getElementById('mobileMenuBtn').addEventListener('click', () => {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Close mobile menu on link click
+        document.querySelectorAll('#mobileMenu a').forEach(link => {
+            link.addEventListener('click', () => {
+                document.getElementById('mobileMenu').classList.add('hidden');
+            });
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
